@@ -1,4 +1,4 @@
-import styles from "./EstoqueHomeBarra.module.css"
+import styles from "./HomeBarra.module.css"
 
 const Home = () => {
   return (

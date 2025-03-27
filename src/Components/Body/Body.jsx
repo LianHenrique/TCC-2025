@@ -1,4 +1,4 @@
-import styles from "./FuncionarioBody.module.css"
+import styles from "./Body.module.css"
 
 const Body = () => {
 

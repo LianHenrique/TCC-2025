@@ -1,6 +1,7 @@
 :root{
     --tamanho-height: 35px;
     --bg-color: #a01d18;
+    --Act-color: #6b0d0d;
 }
 
 .body{
@@ -19,7 +20,7 @@
     border-top: none;
     height: var(--tamanho-height);
     width: 100px;
-    background-color: #6b0d0d;
+    background-color: var(--Act-color);
     color: white;
 }
 
@@ -31,4 +32,14 @@
     height: var(--tamanho-height);
     width: 100px;
     background-color: var(--bg-color);
+}
+
+.buttonOtherPage:hover{
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+    border-bottom: none;
+    border-top: none;
+    height: var(--tamanho-height);
+    width: 100px;
+    background-color: var(--Act-color);
 }
