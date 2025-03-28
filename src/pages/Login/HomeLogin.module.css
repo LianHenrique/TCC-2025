@@ -1,44 +1,36 @@
-:root{
-    --bg-color: #a01d18;
-    --width-all: 200px;
-}
-
 .body{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 90vh;
-}
+    width: 40%;
+    min-width: 300px;
+    max-width: 600px;
+    padding: 15px;
+    height: 100%;
 
-.bodyLogin{
-    min-width: 600px;
+    background-color: #727272;
+    color: whitesmoke;
 
-    @media(max-width: 590px){
-        min-width: 500px;
-    }
-    @media(max-width: 490px){
-        min-width: 400px;
-    }
-    @media(max-width: 390px){
-        min-width: 300px;
-    }
-
-    min-height: 300px;
-    background-color: var(--bg-color);
-    border-radius: 25px;
+    border-radius: 10px;
     text-align: center;
+    margin: 250px auto;
 }
 
-.buttonLogin{
-    max-width: 500px;
-    min-width: var(--width-all);
+.button{
+    width: 95%;
     height: 30px;
-    margin: 0 auto;
+
+    margin-top: 30px;
     border: none;
+    border-radius: 5px;
 }
 
-.inputLogin{
-    max-width: 500px;
-    min-width: var(--width-all);
+.button:hover{
+    background-color: #ccc;
+}
+
+.input{
+    width: 95%;
     height: 30px;
+
+    margin: 10px;
+    border: none;
+    border-radius: 5px;
 }

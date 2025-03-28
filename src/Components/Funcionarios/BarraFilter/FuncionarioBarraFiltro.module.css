@@ -35,11 +35,5 @@
 }
 
 .buttonOtherPage:hover{
-    border-left: 1px solid black;
-    border-right: 1px solid black;
-    border-bottom: none;
-    border-top: none;
-    height: var(--tamanho-height);
-    width: 100px;
     background-color: var(--Act-color);
 }

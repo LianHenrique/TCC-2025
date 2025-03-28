@@ -1,15 +1,15 @@
-import { useNavigate } from "react-router-dom";
-import styles from "./FuncionarioBarraFiltro.module.css"
+import { useNavigate } from "react-router-dom"
+import styles from "./FranquiasBarraFiltro.module.css"
 
 const BarraFiltro = () => {
 
     const navigate = useNavigate();
 
+    const funcionario = () => {
+        navigate('/funcionario');
+    }
     const estoque = () => {
         navigate('/estoque');
-    }
-    const franquias = () => {
-        navigate('/franquias');
     }
 
   return (
@@ -17,7 +17,8 @@ const BarraFiltro = () => {
         <div>
             {/* Botão para a tela funcionario */}
             <button 
-            className={styles.buttonAtual}>
+            className={styles.buttonOtherPage} 
+            onClick={funcionario}>
                 Funcionarios
             </button>
             {/* Botão indicativo da tela atual Estoque */}
@@ -28,8 +29,7 @@ const BarraFiltro = () => {
             </button>
             {/* Botão para a tela Franquias */}
             <button 
-            className={styles.buttonOtherPage}
-            onClick={franquias}>
+            className={styles.buttonAtual}>
                 Franquias
             </button>
         </div>
