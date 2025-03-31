@@ -12,7 +12,9 @@ const Estoque = () => {
     <div className={styles.body}>
       {menuAberto && <Menu />}
       <div className={styles.sistema}>
-        <HomeBarra useMenuAberto = {useMenuAberto} menuAberto = {menuAberto} />
+        <HomeBarra 
+        useMenuAberto = {useMenuAberto} 
+        menuAberto = {menuAberto} />
         <EstoqueBarraFiltro />
         <Body />
       </div>
