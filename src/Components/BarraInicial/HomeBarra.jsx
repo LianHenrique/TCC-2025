@@ -1,9 +1,19 @@
 import styles from "./HomeBarra.module.css"
+import { HiEllipsisHorizontal } from "react-icons/hi2";
 
-const Home = () => {
+const Home = (props) => {
+
   return (
     // corpo do site
     <div className={styles.body}>
+      <button 
+      className={styles.button}
+      onClick={() => {
+        props.useMenuAberto(!props.menuAberto)
+        console.log("Teste")
+      }}>
+        <HiEllipsisHorizontal />
+      </button>
     </div>
   )
 }

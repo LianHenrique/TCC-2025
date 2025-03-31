@@ -3,4 +3,18 @@
     height: 75px;
     width: 100%;
     border: 1px solid black;
+    align-content: center;
+}
+
+.button{
+    border: none;
+    margin: 10px;
+    height: 45px;
+    width: 45px;
+    font-size: 25px;
+    border-radius: 100%;
+}
+
+.button:hover{
+    background-color: #ccc;
 }

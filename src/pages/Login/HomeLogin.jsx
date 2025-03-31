@@ -12,6 +12,10 @@ const HomeLogin = () => {
     if (email == "ADM" && senha == "ADM") {
       navigate('/estoque');
     }
+    else{
+      alert("Login invalido (testes no momento)")
+      alert("Login ADM senha ADM")
+    }
   }
 
   return (
