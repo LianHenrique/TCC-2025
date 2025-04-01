@@ -2,24 +2,17 @@ import { useNavigate } from "react-router-dom"
 import styles from "./EstoqueBarraFiltro.module.css"
 
 const BarraFiltro = () => {
-
-    const navigate = useNavigate();
-
-    const funcionario = () => {
-        navigate('/funcionario');
-    }
-    const franquias = () => {
-        navigate('/franquias');
-    }
-
+    const navigate = useNavigate()
   return (
     <div className={styles.body}>
         <div>
             {/* Botão para a tela funcionario */}
             <button 
-            className={styles.buttonOtherPage} 
-            onClick={funcionario}>
-                Funcionarios
+            className={styles.buttonOtherPage}
+            onClick={() => {
+                navigate('/funcionario')
+            }}>
+                funcionario
             </button>
             {/* Botão indicativo da tela atual Estoque */}
             <button 
@@ -29,7 +22,9 @@ const BarraFiltro = () => {
             {/* Botão para a tela Franquias */}
             <button 
             className={styles.buttonOtherPage}
-            onClick={franquias}>
+            onClick={() => {
+                navigate('/franquia')
+            }}>
                 Franquias
             </button>
         </div>

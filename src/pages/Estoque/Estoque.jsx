@@ -2,7 +2,7 @@ import HomeBarra from "../../Components/BarraInicial/HomeBarra"
 import EstoqueBarraFiltro from "../../Components/Estoque/BarraFilter/EstoqueBarraFiltro"
 import Body from "../../Components/Body/Body"
 import Menu from "../../Components/Menu/Menu"
-import styles from "./Estoque.module.css"
+import styles from "../Pages.module.css"
 import { useState } from "react"
 
 const Estoque = () => {

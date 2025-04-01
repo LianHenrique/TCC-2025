@@ -10,7 +10,6 @@ const Home = (props) => {
       className={styles.button}
       onClick={() => {
         props.useMenuAberto(!props.menuAberto)
-        console.log("Teste")
       }}>
         <HiEllipsisHorizontal />
       </button>

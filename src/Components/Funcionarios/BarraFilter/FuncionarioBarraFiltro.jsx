@@ -22,14 +22,18 @@ const BarraFiltro = () => {
             </button>
             {/* Botão indicativo da tela atual Estoque */}
             <button 
-            className={styles.buttonOtherPage}
-            onClick={estoque}>
+                className={styles.buttonOtherPage}
+                onClick={() => {
+                    navigate('/Estoque')
+                }}>
                 Estoque
             </button>
             {/* Botão para a tela Franquias */}
             <button 
-            className={styles.buttonOtherPage}
-            onClick={franquias}>
+                className={styles.buttonOtherPage}
+                onClick={() => {
+                    navigate('/Franquias')
+                }}>
                 Franquias
             </button>
         </div>
