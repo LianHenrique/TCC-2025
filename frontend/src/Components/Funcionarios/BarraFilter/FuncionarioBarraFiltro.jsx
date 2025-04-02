@@ -32,7 +32,7 @@ const BarraFiltro = () => {
             <button 
                 className={styles.buttonOtherPage}
                 onClick={() => {
-                    navigate('/Franquias')
+                    navigate('/Franquia')
                 }}>
                 Franquias
             </button>

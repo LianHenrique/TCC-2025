@@ -6,13 +6,15 @@ const Home = (props) => {
   return (
     // corpo do site
     <div className={styles.body}>
-      <button 
+      {/* Ideia que talvez n usaremos */}
+      
+      {/* <button 
       className={styles.button}
       onClick={() => {
         props.useMenuAberto(!props.menuAberto)
       }}>
         <HiEllipsisHorizontal />
-      </button>
+      </button> */}
     </div>
   )
 }

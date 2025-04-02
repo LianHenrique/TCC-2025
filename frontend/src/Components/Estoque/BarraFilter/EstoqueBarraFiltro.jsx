@@ -12,7 +12,7 @@ const BarraFiltro = () => {
             onClick={() => {
                 navigate('/funcionario')
             }}>
-                funcionario
+                Funcionarios
             </button>
             {/* Botão indicativo da tela atual Estoque */}
             <button 
