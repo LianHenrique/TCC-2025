@@ -26,6 +26,7 @@
     height: var(--tamanho-height);
     width: 100px;
     background-color: var(--bg-color);
+    cursor: pointer;
 }
 
 .buttonOtherPage:hover{

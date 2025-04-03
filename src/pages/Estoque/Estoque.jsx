@@ -1,5 +1,5 @@
+import BarraFiltro from "../../Components/BarraFiltro/BarraFiltro"
 import HomeBarra from "../../Components/BarraInicial/HomeBarra"
-import EstoqueBarraFiltro from "../../Components/Estoque/BarraFilter/EstoqueBarraFiltro"
 import Body from "../../Components/Body/Body"
 import Menu from "../../Components/Menu/Menu"
 import styles from "../Pages.module.css"
@@ -15,7 +15,7 @@ const Estoque = () => {
         <HomeBarra 
         useMenuAberto = {useMenuAberto} 
         menuAberto = {menuAberto} />
-        <EstoqueBarraFiltro />
+        <BarraFiltro id = {1}/>
         <Body />
       </div>
     </div>

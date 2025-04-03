@@ -1,14 +1,14 @@
 import { useNavigate } from "react-router-dom"
-import styles from "./EstoqueBarraFiltro.module.css"
+import styles from "./BarraFiltro.module.css"
 
-const BarraFiltro = () => {
+const BarraFiltro = (props) => {
     const navigate = useNavigate()
   return (
     <div className={styles.body}>
         <div>
             {/* Botão para a tela funcionario */}
             <button 
-            className={styles.buttonOtherPage}
+            className={props.id == 3 ? styles.buttonAtual : styles.buttonOtherPage}
             onClick={() => {
                 navigate('/funcionario')
             }}>
@@ -16,12 +16,15 @@ const BarraFiltro = () => {
             </button>
             {/* Botão indicativo da tela atual Estoque */}
             <button 
-            className={styles.buttonAtual}>
+            className={props.id == 1 ? styles.buttonAtual : styles.buttonOtherPage}
+            onClick={() => {
+                navigate('/estoque')
+            }}>
                 Estoque
             </button>
             {/* Botão para a tela Franquias */}
             <button 
-            className={styles.buttonOtherPage}
+            className={props.id == 2 ? styles.buttonAtual : styles.buttonOtherPage}
             onClick={() => {
                 navigate('/franquia')
             }}>

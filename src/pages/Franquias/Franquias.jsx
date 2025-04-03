@@ -1,9 +1,9 @@
 import HomeBarra from "../../Components/BarraInicial/HomeBarra"
-import FranquiasBarraFiltro from "../../Components/Franquias/BarraFilter/FranquiasBarraFiltro"
 import Body from "../../Components/Body/Body"
 import Menu from "../../Components/Menu/Menu";
 import styles from "../Pages.module.css"
 import { useState } from "react";
+import BarraFiltro from "../../Components/BarraFiltro/BarraFiltro";
 
 const Franquias = () => {
   const [menuAberto, useMenuAberto] = useState(false);
@@ -15,7 +15,7 @@ const Franquias = () => {
         <HomeBarra 
         useMenuAberto = {useMenuAberto} 
         menuAberto = {menuAberto} />
-        <FranquiasBarraFiltro />
+        <BarraFiltro id = {2}/>
         <Body />
       </div>
     </div>

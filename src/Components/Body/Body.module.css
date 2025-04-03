@@ -8,22 +8,71 @@
     height: auto;
     border: 1px solid black;
     background-color: var(--bg-color-body);
+}
+
+.baseAlteracao{
+    width: 75%;
+    margin-top: 100px;
+    display: flex;
+    flex-flow: row-reverse;
     gap: 5px;
+    margin: 10px auto;
 }
 
 .basePesquisa{
-    margin-left: 70%;
-    margin-top: 3%;
-    display: flex;
-    gap: 5px;
+    width: 100%;
+    margin-top: 50px;
 }
 
-.input{
+.inputAlteração{
     height: 30px;
+    max-width: 50px;
+    border: 1px black solid;
+    border-radius: 5px;
+}
+
+.inputPesquisa{
+    height: 30px;
+    width: 70%;
+    max-width: 90%;
+    border: 1px black solid;
+    border-radius: 5px;
+}
+
+.buttonPesquisa{
+    margin-left: 10%;
+    border-radius: 100%;
+    border: 1px black solid;
+    background-color: #ffffff;
+    cursor: pointer;
+}
+
+.buttonPesquisa:hover{
+    background-color: #b4b4b4;
+}
+
+.buttonCadastro{
+    height: 34px;
+    max-width: 100%;
+    margin-right: 5px;
+    border-radius: 5px;
+    border: 1px black solid;
+    background-color: #6fd17c;
+    cursor: pointer;
+}
+
+.buttonCadastro:hover{
+    background-color: #3c8d47;
 }
 
 .icon{
     font-size: 25px;
+}
+
+.pesquisa{
+    width: 100%;
+    display: flex;
+    gap: 10px;
 }
 
 .buttonIcon{
@@ -33,6 +82,7 @@
     height: 40px;
     border-radius: 100%;
     background-color: var(--bg-color-body);
+    cursor: pointer;
 }
 
 .buttonIcon:hover{

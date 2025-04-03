@@ -1,9 +1,8 @@
-import Erro from "../../Components/Body/Erro";
-import styles from "./ErrorPage.module.css"
+import Erro from "../../Components/ErroPage/Erro"
 
 export const ErrorPage = () => {
   return (
-    <div className={styles.body}>
+    <div>
         <Erro />
     </div>
   )

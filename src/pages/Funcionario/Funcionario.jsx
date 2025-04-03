@@ -1,9 +1,9 @@
 import HomeBarra from "../../Components/BarraInicial/HomeBarra"
-import FuncionarioBarraFiltro from "../../Components/Funcionarios/BarraFilter/FuncionarioBarraFiltro"
 import Body from "../../Components/Body/Body"
 import styles from "../Pages.module.css"
 import { useState } from "react"
 import Menu from "../../Components/Menu/Menu"
+import BarraFiltro from "../../Components/BarraFiltro/BarraFiltro"
 
 const Funcionario = () => {
   const [menuAberto, useMenuAberto] = useState(false);
@@ -15,7 +15,7 @@ const Funcionario = () => {
         <HomeBarra 
         useMenuAberto = {useMenuAberto} 
         menuAberto = {menuAberto} />
-        <FuncionarioBarraFiltro />
+        <BarraFiltro id = {3}/>
         <Body />
       </div>
     </div>
