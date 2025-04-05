@@ -22,14 +22,6 @@ const BarraFiltro = (props) => {
             }}>
                 Estoque
             </button>
-            {/* Botão para a tela Franquias */}
-            <button 
-            className={props.id == 2 ? styles.buttonAtual : styles.buttonOtherPage}
-            onClick={() => {
-                navigate('/franquia')
-            }}>
-                Franquias
-            </button>
         </div>
     </div>
   )

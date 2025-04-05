@@ -2,9 +2,41 @@
 .Body{
     min-width: 100%;
     min-height: 200px;
+    margin-top: 10px;
     height: auto;
-    border: 1px solid black;
-    background-color: #3091c9;
+    border-radius: 5px;
+    background-color: rgba(0, 0, 0, 0.5);
+
+    & .basePesquisa{
+        width: 100%;
+        display: flex;
+        gap: 10px;
+
+        & input{
+            height: 30px;
+            width: 70%;
+            max-width: 90%;
+            border: 1px black solid;
+            border-radius: 5px;
+        }
+
+        & button{
+            margin-left: 10%;
+            border-radius: 100%;
+            border: 1px black solid;
+            background-color: #ffffff;
+            cursor: pointer;
+        }
+        & button:hover{
+            background-color: #b4b4b4;
+        }
+
+    }
+
+    & .baseAlteracao{
+        
+    }
+
 }
 
 .baseAlteracao{
@@ -16,36 +48,11 @@
     margin: 10px auto;
 }
 
-.basePesquisa{
-    width: 100%;
-    margin-top: 50px;
-}
-
 .inputAlteração{
     height: 30px;
     max-width: 50px;
     border: 1px black solid;
     border-radius: 5px;
-}
-
-.inputPesquisa{
-    height: 30px;
-    width: 70%;
-    max-width: 90%;
-    border: 1px black solid;
-    border-radius: 5px;
-}
-
-.buttonPesquisa{
-    margin-left: 10%;
-    border-radius: 100%;
-    border: 1px black solid;
-    background-color: #ffffff;
-    cursor: pointer;
-}
-
-.buttonPesquisa:hover{
-    background-color: #b4b4b4;
 }
 
 .buttonCadastro{
@@ -83,5 +90,5 @@
 }
 
 .buttonIcon:hover{
-    background-color: rgb(8, 100, 153)
+    background-color: #277497
 }
