@@ -8,7 +8,7 @@ const BarraFiltro = (props) => {
         <div>
             {/* Botão para a tela funcionario */}
             <button 
-            className={props.id == 3 ? styles.buttonAtual : styles.buttonOtherPage}
+            className={props.id == 1 ? styles.buttonAtual : styles.buttonOtherPage}
             onClick={() => {
                 navigate('/funcionario')
             }}>
@@ -16,11 +16,18 @@ const BarraFiltro = (props) => {
             </button>
             {/* Botão indicativo da tela atual Estoque */}
             <button 
-            className={props.id == 1 ? styles.buttonAtual : styles.buttonOtherPage}
+            className={props.id == 2 ? styles.buttonAtual : styles.buttonOtherPage}
             onClick={() => {
                 navigate('/estoque')
             }}>
                 Estoque
+            </button>
+            <button 
+            className={props.id == 3 ? styles.buttonAtual : styles.buttonOtherPage}
+            onClick={() => {
+                navigate('/relatorio')
+            }}>
+                Relatorio
             </button>
         </div>
     </div>

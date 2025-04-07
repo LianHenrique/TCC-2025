@@ -5,32 +5,34 @@
     padding: 15px;
     height: 100%;
 
-    background-color: #0d5585;
+    background-color: rgba(0, 0, 0, 0.5);
     color: whitesmoke;
 
     border-radius: 10px;
     text-align: center;
     margin: 250px auto;
-}
 
-.button{
-    width: 95%;
-    height: 30px;
+    & button{
+        width: 95%;
+        height: 30px;
+        margin-top: 30px;
+        border: none;
+        border-radius: 5px;
+        background-color: #1863A0;
+    }
 
-    margin-top: 30px;
-    border: none;
-    border-radius: 5px;
-}
+    & button:hover{
+        background-color: #0b4779;
+    }
 
-.button:hover{
-    background-color: #ccc;
-}
+    & input{
+        width: 95%;
+        height: 30px;
+        margin: 10px;
+        border: 1px #1863a0 solid;
+        border-radius: 5px;
+        background-color: rgba(0, 0, 0, 0.5);
+        color: white
+    }
 
-.input{
-    width: 95%;
-    height: 30px;
-
-    margin: 10px;
-    border: none;
-    border-radius: 5px;
 }

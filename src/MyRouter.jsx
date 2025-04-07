@@ -4,6 +4,7 @@ import Estoque from "./pages/Estoque/Estoque";
 import Funcionario from "./pages/Funcionario/Funcionario";
 import App from "./App";
 import { ErrorPage } from "./pages/Error/ErrorPage";
+import Relatorio from "./pages/Relatorio/Relatorio";
 
 const MyRouter = createBrowserRouter([
     {
@@ -26,6 +27,10 @@ const MyRouter = createBrowserRouter([
             {
                 path: '/funcionario', 
                 element: <Funcionario />
+            },
+            {
+                path: '/relatorio',
+                element: <Relatorio />
             },
         ]
     }

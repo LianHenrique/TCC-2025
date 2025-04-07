@@ -2,13 +2,13 @@
 .Body{
     min-width: 100%;
     min-height: 200px;
-    margin-top: 10px;
     height: auto;
-    border-radius: 5px;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: #1863a0;
+    border: 1px black solid;
 
     & .basePesquisa{
         width: 100%;
+        padding-top: 50px;
         display: flex;
         gap: 10px;
 
