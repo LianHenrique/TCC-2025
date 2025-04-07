@@ -26,9 +26,10 @@
     }
 
     & input{
-        width: 95%;
+        width: 90%;
         height: 30px;
         margin: 10px;
+        padding-left: 10px;
         border: 1px #1863a0 solid;
         border-radius: 5px;
         background-color: rgba(0, 0, 0, 0.5);

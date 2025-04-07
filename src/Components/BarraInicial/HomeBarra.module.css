@@ -4,17 +4,10 @@
     width: 100%;
     border: 1px solid black;
     align-content: center;
-}
 
-.button{
-    border: none;
-    margin: 10px;
-    height: 45px;
-    width: 45px;
-    font-size: 25px;
-    border-radius: 100%;
-}
+    & h1{
+        padding-left: 20px;
+        color: #0b4779;
+    }
 
-.button:hover{
-    background-color: #ccc;
 }

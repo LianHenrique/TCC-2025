@@ -20,7 +20,7 @@
             border-radius: 5px;
         }
 
-        & button{
+        & .buttonPesquisa{
             margin-left: 10%;
             border-radius: 100%;
             border: 1px black solid;
@@ -31,64 +31,40 @@
             background-color: #b4b4b4;
         }
 
+        & .buttonCadastro{
+            height: 34px;
+            max-width: 100%;
+            border-radius: 5px;
+            border: 1px black solid;
+            background-color: #6fd17c;
+            cursor: pointer;
+        }
+
+        .buttonCadastro:hover{
+            background-color: #3c8d47;
+        }
+
     }
 
     & .baseAlteracao{
-        
+        width: 75%;
+        margin-top: 100px;
+        display: flex;
+        flex-flow: row-reverse;
+        gap: 5px;
+        margin: 10px auto;
+
+        & input{
+            height: 30px;
+            max-width: 50px;
+            border: 1px black solid;
+            border-radius: 5px;
+        }
+
     }
 
-}
-
-.baseAlteracao{
-    width: 75%;
-    margin-top: 100px;
-    display: flex;
-    flex-flow: row-reverse;
-    gap: 5px;
-    margin: 10px auto;
-}
-
-.inputAlteração{
-    height: 30px;
-    max-width: 50px;
-    border: 1px black solid;
-    border-radius: 5px;
-}
-
-.buttonCadastro{
-    height: 34px;
-    max-width: 100%;
-    margin-right: 5px;
-    border-radius: 5px;
-    border: 1px black solid;
-    background-color: #6fd17c;
-    cursor: pointer;
-}
-
-.buttonCadastro:hover{
-    background-color: #3c8d47;
 }
 
 .icon{
     font-size: 25px;
-}
-
-.pesquisa{
-    width: 100%;
-    display: flex;
-    gap: 10px;
-}
-
-.buttonIcon{
-    border: none;
-    text-align: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 100%;
-    background-color: transparent;
-    cursor: pointer;
-}
-
-.buttonIcon:hover{
-    background-color: #277497
 }

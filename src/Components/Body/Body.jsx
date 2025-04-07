@@ -9,12 +9,15 @@ const Body = () => {
     className={styles.Body}>
         <div 
         className={styles.basePesquisa}>
-            <button>
+            <button className={styles.buttonPesquisa}>
               <HiSearch className={styles.icon}/>
-              </button>
+            </button>
             <input 
             type="text" 
             placeholder="Pesquisa" />
+            <button className={styles.buttonCadastro}>
+              Cadastro
+            </button>
         </div>
     </div>
   )
