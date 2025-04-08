@@ -18,10 +18,11 @@
             max-width: 90%;
             border: 1px black solid;
             border-radius: 5px;
+            padding-left: 10px;
         }
 
         & .buttonPesquisa{
-            margin-left: 10%;
+            margin-left: 5%;
             border-radius: 100%;
             border: 1px black solid;
             background-color: #ffffff;

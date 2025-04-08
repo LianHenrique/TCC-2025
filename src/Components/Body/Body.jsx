@@ -16,7 +16,7 @@ const Body = () => {
             type="text" 
             placeholder="Pesquisa" />
             <button className={styles.buttonCadastro}>
-              Cadastro
+              Cadastrar
             </button>
         </div>
     </div>
