@@ -4,6 +4,8 @@ import './index.css'
 
 import { RouterProvider } from 'react-router-dom'
 
+import 'bootstrap/dist/css/bootstrap.min.css';
+
 import MyRouter from './MyRouter.jsx'
 
 createRoot(document.getElementById('root')).render(

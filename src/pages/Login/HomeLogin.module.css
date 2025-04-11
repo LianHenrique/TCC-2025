@@ -1,9 +1,16 @@
+body{
+    background-color: #1863A0;
+}
+
 .body{
     width: 40%;
     min-width: 300px;
     max-width: 600px;
     padding: 15px;
     height: 100%;
+
+    display: flex;
+    flex-direction: column;
 
     background-color: rgba(0, 0, 0, 0.5);
     color: whitesmoke;
