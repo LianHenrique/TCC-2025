@@ -7,6 +7,7 @@ const BarraFiltro = (props) => {
     <div className={styles.body}>
         <div>
             {/* Botão para a tela funcionario */}
+            <h1>StoryBox</h1>
             <button 
             className={props.id == 1 ? styles.buttonAtual : styles.buttonOtherPage}
             onClick={() => {

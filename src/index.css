@@ -1,4 +1,8 @@
 :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  background-color: #0D416B;
+  background-color: #1863a0;
+}
+
+body{
+  margin: 0;
 }
