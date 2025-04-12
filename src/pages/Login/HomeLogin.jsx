@@ -47,8 +47,8 @@ const HomeLogin = () => {
           {loginInvalido && (
             <div ref={alertaRef} className={styles.alertWrapper}>
               <Alerta 
-                titulo="Tela não criada" 
-                texto="Esta tela ainda não foi criada, por favor aguarde atualizações futuras." 
+                titulo="Login" 
+                texto="Testes sendo feitos agora login: ADM senha: ADM." 
                 variante="warning" 
               />
             </div>
