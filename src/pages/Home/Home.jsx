@@ -8,10 +8,36 @@ function App() {
     <div>
       <NavBar />
       <CardsCurso 
-      titulo="Plano gratuito"
-      req1="Menor espaço"
-      req2="Sem todas funcionalidades"
-      req3="Usuario unico"/>
+      cards={[
+        {
+          key: 1,
+          titulo: "Plano gratuito",
+          req1: "Menor espaço",
+          req2: "Sem todas funcionalidades",
+          req3: "Usuario unico",
+        },
+        {
+          key: 2,
+          titulo: "Plano gratuito",
+          req1: "Menor espaço",
+          req2: "Sem todas funcionalidades",
+          req3: "Usuario unico",
+        },
+        {
+          key: 3,
+          titulo: "Plano gratuito",
+          req1: "Menor espaço",
+          req2: "Sem todas funcionalidades",
+          req3: "Usuario unico",
+        },
+        {
+          key: 4,
+          titulo: "Plano gratuito",
+          req1: "Menor espaço",
+          req2: "Sem todas funcionalidades",
+          req3: "Usuario unico",
+        },
+      ]}/>
     </div>
   )
 }

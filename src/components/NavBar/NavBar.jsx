@@ -14,9 +14,9 @@ const NavBar = () => {
                 <Button className={styles.ButtonGroup}>Preços</Button>
             </ButtonGroup>
         </div>
-        <div className={styles.Buttons}>
-            <Button className={styles.Cadastro}>Cadastro</Button>
-            <Button className={styles.Login}>Login</Button>
+        <div className={styles.BaseButtons}>
+            <Button className={styles.Button}>Cadastro</Button>
+            <Button className={styles.Button}>Login</Button>
         </div>
     </div>
   )
