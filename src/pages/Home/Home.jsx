@@ -1,4 +1,5 @@
 import CardsCurso from "../../components/Cards/CardsCurso"
+import CardsDescPlanoGratuito from "../../components/Cards/CardsDescPlanoGratuito"
 import NavBar from "../../components/NavBar/NavBar"
 import styles from "../app.module.css"
 
@@ -7,6 +8,9 @@ function App() {
   return (
     <div>
       <NavBar />
+
+      <CardsDescPlanoGratuito />
+
       <CardsCurso 
       cards={[
         {
