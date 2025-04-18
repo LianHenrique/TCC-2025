@@ -1,5 +1,5 @@
 import CardsCurso from "../../components/Cards/CardsCurso"
-import CardsDescPlanoGratuito from "../../components/Cards/CardsDescPlanoGratuito"
+import CardsDescPlanoGratuito from "../../components/Cards/CardsDesc"
 import NavBar from "../../components/NavBar/NavBar"
 import styles from "../app.module.css"
 
@@ -9,33 +9,36 @@ function App() {
     <div>
       <NavBar />
 
-      <CardsDescPlanoGratuito />
+      <CardsDescPlanoGratuito 
+      titulo="Gerencie o estoque do seu negócio de maneira ágil"
+      desc="Com o StoreBox, você pode gerenciar seus estoques
+      de maneira eficiente, contendo relatórios e outras 
+      funcionalidades que com toda certeza te auxiliarão!"
+      botaoTxt="Teste gratis"
+      comBotão={true}
+      txtComBotao="Experimente gratis por 30 dias"/>
 
       <CardsCurso 
       cards={[
         {
-          key: 1,
           titulo: "Plano gratuito",
           req1: "Menor espaço",
           req2: "Sem todas funcionalidades",
           req3: "Usuario unico",
         },
         {
-          key: 2,
           titulo: "Plano gratuito",
           req1: "Menor espaço",
           req2: "Sem todas funcionalidades",
           req3: "Usuario unico",
         },
         {
-          key: 3,
           titulo: "Plano gratuito",
           req1: "Menor espaço",
           req2: "Sem todas funcionalidades",
           req3: "Usuario unico",
         },
         {
-          key: 4,
           titulo: "Plano gratuito",
           req1: "Menor espaço",
           req2: "Sem todas funcionalidades",
