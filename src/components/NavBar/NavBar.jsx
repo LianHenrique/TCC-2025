@@ -12,7 +12,7 @@ const NavBar = () => {
       <h1 className={styles.FullH1}>StoryBox</h1>
       <div 
       className={styles.MinBaseButtons}>
-        <h1>StoryBox</h1>
+        <h1 translate="no">StoryBox</h1>
         <div>
           <Button 
           className={styles.Button}>
