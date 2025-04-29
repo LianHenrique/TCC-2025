@@ -1,7 +1,7 @@
 import CardsCurso from "../../components/Cards/CardsCurso"
 import CardsDescPlanoGratuito from "../../components/Cards/CardsDesc"
 import NavBar from "../../components/NavBar/NavBar"
-import styles from "../app.module.css"
+import Styles from "../app.module.css"
 
 function App() {
 
