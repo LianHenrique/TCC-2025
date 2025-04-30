@@ -2,6 +2,7 @@ import styles from "../Components.module.css"
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 
+
 const NavBar = () => {
 
   const navItems = ["Para quem", "Soluções", "Preços"];
