@@ -2,10 +2,9 @@ import React from 'react';
 import CardsCurso from "../../components/Cards/CardsCurso";
 import CardsDescPlanoGratuito from "../../components/Cards/CardsDesc";
 import NavBar from "../../components/NavBar/NavBar";
-import Styles from "../app.module.css";
+import './Home.css';
 
 function App() {
-
   return (
     <div>
       {/* NavBar Component */}
@@ -13,8 +12,8 @@ function App() {
 
       {/* CardsDescPlanoGratuito Component */}
       <CardsDescPlanoGratuito 
-        titulo="Gerencie o estoque do seu negócio de maneira ágil"
-        desc="Com o StoreBox, você pode gerenciar seus estoques de maneira eficiente, contendo relatórios e outras funcionalidades que com toda certeza te auxiliarão!"
+        titulo={<span className="alexandria bold">Gerencie o <strong className="destaque">estoque</strong> do seu negócio de maneira ágil</span>}
+        desc={<span className="alexandria2">StoreBox facilita o gerenciamento de estoques com eficiência e recursos úteis.</span>}
         botaoTxt="Teste grátis"
         comBotão={true}
         txtComBotao="Experimente grátis por 30 dias"

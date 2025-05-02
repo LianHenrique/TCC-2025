@@ -1,0 +1,38 @@
+
+body {
+    font-family: 'Alexandria', sans-serif; 
+  }
+  
+  /* Classe para a fonte Alexandria com um peso específico */
+  .alexandria {
+    font-family: 'Alexandria', sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 600; 
+    font-style: normal;
+  }
+  
+  /* Classe para a fonte Glory com um peso específico */
+  .glory {
+    font-family: 'Glory', sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 600;
+    font-style: normal;
+  }
+  
+  /* Classe para negrito */
+  .bold {
+    font-weight: bold; 
+  }
+
+  .alexandria2{
+    font-family: 'Alexandria', sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 400; 
+    font-style: normal;
+  }
+  
+  /* Classe para a cor azul */
+  .destaque {
+    color: #3858FF; 
+  }
+  
