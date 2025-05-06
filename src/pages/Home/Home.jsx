@@ -19,33 +19,31 @@ function App() {
         txtComBotao="Experimente grátis por 30 dias"
       />
 
+      
+      {<span className="alexandria2">1 Acesso em tempo real</span>}
+      {<span className="alexandria2">2 Redução de erros</span>}
+      {<span className="alexandria2">3 Relatórios detalhados</span>}
+
       {/* CardsCurso Component */}
       <CardsCurso 
-        cards={[
+        cards ={[
           {
-            titulo: "Plano gratuito",
-            req1: "Menor espaço",
-            req2: "Sem todas funcionalidades",
-            req3: "Usuário único",
+            titulo: "Grátis",
+            req1: "Experimente gratuito por 30 dias",
+            req2: "Uso limitado",
+            req3: "Sem recursos adicionais",
+            req4: "Sem imagem de reconhecimento",
+            req5: "Sem cadastro de funcionarios",
           },
           {
             titulo: "Plano 1",
-            req1: "Espaço maior",
-            req2: "Recursos adicionais",
-            req3: "Usuário múltiplo",
+            req1: " ",
           },
           {
             titulo: "Plano 2",
-            req1: "Espaço ilimitado",
-            req2: "Todas funcionalidades",
-            req3: "Usuários ilimitados",
+            req1: " ",
           },
-          {
-            titulo: "Plano 3",
-            req1: "Espaço personalizável",
-            req2: "Funcionalidades extras",
-            req3: "Usuários ilimitados",
-          },
+          
         ]}
       />
     </div>
