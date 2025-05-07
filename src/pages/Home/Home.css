@@ -17,6 +17,7 @@ body {
     font-optical-sizing: auto;
     font-weight: 600;
     font-style: normal;
+    font-size: 228px;
   }
   
   /* Classe para negrito */
@@ -35,4 +36,25 @@ body {
   .destaque {
     color: #3858FF; 
   }
-  
+  /* Tema Claro */
+body.light-mode {
+  background-color: white;
+  color: black;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Tema Escuro */
+body.dark-mode {
+  background-color: black;
+  color: white;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Botão para alternar tema */
+.theme-toggle-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin: 10px;
+  padding: 5px;
+}
