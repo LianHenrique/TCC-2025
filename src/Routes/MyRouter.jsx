@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router"
 import InitPages from "../pages/InitPages"
 import Home from "../pages/Home/Home"
 import Estoque from "../pages/Estoque/Estoque"
+import Relatorios from "../pages/Relatorios/Relatorios"
 
 const MyRouter = createBrowserRouter([
     {
@@ -20,6 +21,10 @@ const MyRouter = createBrowserRouter([
                 path: "/estoque",
                 element: <Estoque />
             },
+            {
+                path: "/relatorios",
+                element: <Relatorios />
+            }
         ]
     }
 ])
