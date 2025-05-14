@@ -4,7 +4,7 @@ const NavBar = () => {
 
   return (
     <Navbar style={{ minHeight: "90px" }} bg="primary" data-bs-theme="dark">
-      <Navbar.Brand href="#" className="fs-2 p-3">StoryBox</Navbar.Brand>
+      <Navbar.Brand href="#" className="fs-1 p-3">StoryBox</Navbar.Brand>
       <Nav className="me-auto">
         <Nav.Link href="#relatorio">Relatorio</Nav.Link>
         <Nav.Link href="/estoque">Estoque</Nav.Link>
