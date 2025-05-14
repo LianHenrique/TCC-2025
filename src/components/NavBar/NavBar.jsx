@@ -4,8 +4,6 @@ import { Container, Nav, Navbar } from "react-bootstrap";
 
 const NavBar = () => {
 
-  const navigate = useNavigate()
-
   return (
     <Navbar style={{ minHeight: "90px" }} bg="primary" data-bs-theme="dark">
       <Navbar.Brand href="#" className="fs-1 p-3">StoryBox</Navbar.Brand>
@@ -20,4 +18,3 @@ const NavBar = () => {
 };
 
 export default NavBar;
-
