@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 
 const NavBar = () => {
-  const navItems = ["Para quem  |", " Soluções  |", " Preços"];
+  const navItems = ["Para quem", "Soluções", "Preços"];
 
   return (
     <nav className={styles.NavBar}>
@@ -24,7 +24,7 @@ const NavBar = () => {
       <div className={styles.DivButton}>
         <ButtonGroup>
           {navItems.map((item, index) => (
-            <Button key={index} className={styles.ButtonGroup}>
+            <Button key={index} className={styles.Button}>
               {item}
             </Button>
           ))}
@@ -44,4 +44,3 @@ const NavBar = () => {
 };
 
 export default NavBar;
-
