@@ -1,8 +1,9 @@
+import { useNavigate } from "react-router";
 import styles from "../Components.module.css";
-import Button from 'react-bootstrap/Button';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import { Container, Nav, Navbar } from "react-bootstrap";
 
 const NavBar = () => {
+<<<<<<< HEAD
   const navItems = ["Para quem", "Soluções", "Preços"];
 
   return (
@@ -40,6 +41,21 @@ const NavBar = () => {
         </Button>
       </div>
     </nav>
+=======
+
+  const navigate = useNavigate()
+
+  return (
+    <Navbar bg="primary" data-bs-theme="dark">
+          <h1>StoryBox</h1>
+          <Nav className="me-auto">
+            <Nav.Link href="#relatorio">Relatorio</Nav.Link>
+            <Nav.Link href="/estoque">Estoque</Nav.Link>
+            <Nav.Link href="#funcionario">Funcionarios</Nav.Link>
+            <Nav.Link href="#cardapio">Cardapio</Nav.Link>
+          </Nav>
+      </Navbar>
+>>>>>>> 87b31c450c5db35bce4aa98907b4361ce85cdfe5
   );
 };
 
