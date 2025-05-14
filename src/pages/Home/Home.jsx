@@ -42,9 +42,9 @@ function App() {
             StoreBox facilita o gerenciamento de estoques com eficiência e recursos úteis.
           </span>
         }
-        botaoTxt="Teste grátis"
+        botaoTxt={<strong>Teste grátis</strong>}
         comBotão={true}
-        txtComBotao="Experimente grátis por 30 dias"
+        txtComBotao={<strong>Experimente grátis por 30 dias</strong>}
       />
 
       {/* Benefícios rápidos */}

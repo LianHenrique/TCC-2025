@@ -32,6 +32,18 @@ body {
   font-weight: bold;
 }
 
+/* Negrito azul (opcional) */
+.bold-blue {
+  font-weight: bold;
+  color: #3858FF;
+}
+
+/* Aplica estilo base para todos os <strong> */
+strong {
+  font-weight: bold;
+  color: inherit; /* Mantém a cor do contexto, pode alterar se quiser */
+}
+
 /* Destaque em azul */
 .destaque {
   color: #3858FF;
@@ -60,8 +72,6 @@ body.dark-mode {
   position: relative;
   z-index: 999;
 }
-
-
 
 /* Navbar fixa no topo */
 .navbar {
