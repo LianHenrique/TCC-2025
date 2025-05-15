@@ -11,9 +11,6 @@ const NavBar = () => {
         <Nav.Link href="#funcionario">Funcionarios</Nav.Link>
             <Nav.Link href="#cardapio">Cardapio</Nav.Link>
       </Nav>
-       <section>
-      <p>Teste</p>
-    </section>
     </Navbar>
   );
 };
