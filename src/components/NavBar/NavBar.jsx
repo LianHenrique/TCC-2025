@@ -15,7 +15,7 @@ const NavBar = () => {
 
   return (
     <div>
-        <Navbar expand="lg" bg="primary" data-bs-theme="dark">
+        <Navbar expand="md" bg="primary" data-bs-theme="dark">
             <Container>
                 <Navbar.Brand href="/home">
                     StoryBox
@@ -24,7 +24,7 @@ const NavBar = () => {
                 <Navbar.Collapse id="minha-nav">
                     <Nav className="me-auto">
                         <Nav.Link href="/home"> Produtos </Nav.Link>
-                        <Nav.Link href="/cadastro-produto"> Cadastro </Nav.Link>
+                        <Nav.Link href="/estoque"> Estoque </Nav.Link>
                     </Nav>
                     <Nav className="justify-content-end">
                         <Navbar.Text style={{color:"white", marginRight:"5px"}}>
@@ -33,7 +33,7 @@ const NavBar = () => {
                             usuarioNome === "Visitante" ? (
                                 <>
                                     <Button variant="primary" href="/login"
-                                    style={{width:"100px",margin:"10px 0"}}
+                                    style={{width:"100px"}}
                                     >
                                         Entrar
                                     </Button>
