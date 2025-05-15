@@ -11,7 +11,7 @@ const Relatorios = () => {
 
         {/* Parte da descrição do relatório */}
         <section className={styles.EscopoRelatorio}>
-            <img src="/representacaografica.svg" alt="" />
+            <img src="representacaografica.svg" className={styles.img} alt="Não carregou"/>
             <h4>Descrição do relatório de ganhos semanais (15 a 21 de abril de 2025)</h4>
 
             <p>Durante a semana de 15 a 21 de abril de 2025, a hamburgueria apresentou variação nos ganhos diários. Na segunda-feira (15/04), os ganhos foram de R$800, subindo levemente na terça-feira (16/04) para R$950. Na quarta-feira (17/04), houve um aumento significativo, chegando a R$1.200. Quinta-feira (18/04) registrou um pequeno recuo para R$1.100.</p>
