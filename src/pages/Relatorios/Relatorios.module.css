@@ -11,6 +11,8 @@
     width: 90%;
 }
 
-.img{
-    
+@media (max-width: 768px){
+   .EscopoRelatorio p{
+        background-color: rebeccapurple;
+    }
 }
