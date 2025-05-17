@@ -1,6 +1,7 @@
 .EscopoRelatorio h4{ 
     padding-left: 55vw;
-    font-size:larger;
+    font-size:1.2vw !important;
+    width: 85vw;
     font-weight: bold;
     font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
@@ -9,6 +10,7 @@
     display: flex;
     flex-direction:column;
     align-items: flex-start;
+    margin-bottom: 5vh;
 }
 
 .EscopoRelatorio p{
@@ -19,10 +21,49 @@
 }
 
 .EscopoRelatorio img{
-    position: relative;
-    left: 16vw;
-    top: 24vh;
-    border: 3px solid blue;
+    position: absolute; 
+    margin-left: 15vw; 
+    width: 35vw;
+    margin-top: -1vh;
+}
+
+/* Estilo do card */
+.Card_Funcionario{
+    margin-left: 16.5vw;
+    width: 15vw !important;
+    margin-bottom: 13vh;
+    box-shadow: 1px 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Contatenando os botões para deixar responsivo */
+.Contatenando_Butoes{
+    display: flex;
+    justify-content: center;
+}
+
+/* Estilização da tag do nome do funcoinário */
+.p{
+    margin-left: 4vw;
+    font-size: 1vw !important;
+}
+
+/* Estilização do botão de (deletar), o botão vermelho*/
+.BotaoVermelho{
+    margin-left: 65%;
+    margin-top: -10%;
+    width: 3vw;
+    height: auto;
+    color: #E33F42;
+    border-radius: 50%;
+}
+
+/* Estilização do botão de (atualizar), o botão amarelo*/
+ .BotaoAmarelo{
+    border-radius: 50%;
+    margin-left: 5%; 
+    width: 3vw;
+    height: auto;
+    margin-top: -10%;
 }
 
 @media (max-width:600px){
@@ -37,7 +78,8 @@
     }
 
     .EscopoRelatorio h4{
-        padding-left: 10vw; 
+        padding-left: 2vw;
+        padding-right: 10vw; 
         margin-top: -5vh;
         margin-bottom: 15px;
         font-size: 4vw !important;
@@ -46,7 +88,47 @@
 
     .EscopoRelatorio img{
         position: relative;
-        top: 70vh;
-        margin-left: 32vw; 
+        justify-content: center;
+        bottom: 7vh;
+        width: 55vh;
+        height: auto;
+        margin-left: 1vw; 
+    }
+
+    .Card_Funcionario{
+        width: 40vw !important;
+        position: relative;
+        top: -18vh;
+    }
+
+    .BotaoAmarelo{
+        width: 40% !important;
+    }
+
+    .BotaoVermelho{
+        width: 20% !important;
+        height: 3vh;
+    }
+
+    .BotaoAmarelo{
+        width: 20% !important;
+        height: 3vh;
+    }
+
+    .BotaoVermelho img{
+        position: relative;
+        top: -1vh;
+        left: -1.6vw;
+    }
+
+    .BotaoAmarelo img{
+        position: relative;
+        top: -1vh;
+        left: -1.6vw;
+    }
+
+    /* Mexer na tela */
+    .p{
+        font-size: 2vh !important;
     }
 }
