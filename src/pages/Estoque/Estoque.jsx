@@ -4,7 +4,6 @@ const Estoque = () => {
   return (
     <div>
         <NavBar />
-        
     </div>
   )
 }

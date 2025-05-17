@@ -3,6 +3,9 @@ import InitPages from "../pages/InitPages"
 import Home from "../pages/Home/Home"
 import Estoque from "../pages/Estoque/Estoque"
 import Relatorios from "../pages/Relatorios/Relatorios"
+import Login from "../pages/Login/Login"
+import Cardapio from "../pages/Cardapio/Cardapio"
+import Funcionarios from "../pages/Funcionarios/Funcionarios"
 
 const MyRouter = createBrowserRouter([
     {
@@ -24,7 +27,19 @@ const MyRouter = createBrowserRouter([
             {
                 path: "/relatorios",
                 element: <Relatorios />
-            }
+            },
+            {
+                path: "/login",
+                element: <Login />
+            },
+            {
+                path: "/cardapio",
+                element: <Cardapio />
+            },
+            {
+                path: "/funcionarios",
+                element: <Funcionarios />
+            },
         ]
     }
 ])
