@@ -5,14 +5,48 @@
     font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 
-.EscopoRelatorio p{
-    padding-left: 55vw;
-    font-size:small;
-    width: 90%;
+.EscopoRelatorio{
+    display: flex;
+    flex-direction:column;
+    align-items: flex-start;
 }
 
-@media (max-width: 768px){
-   .EscopoRelatorio p{
-        background-color: rebeccapurple;
+.EscopoRelatorio p{
+    font-size: clamp(12px, 1vw, 1.5vw)!important;
+    max-width: 50vw;
+    padding-right: 10vw;
+    margin-left: 55%;
+}
+
+.EscopoRelatorio img{
+    position: relative;
+    left: 16vw;
+    top: 24vh;
+    border: 3px solid blue;
+}
+
+@media (max-width:600px){
+
+    .EscopoRelatorio p{
+        font-size: 4vw !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        max-width: 0;
+        padding-right: 0;
+        margin-left: 0;
+    }
+
+    .EscopoRelatorio h4{
+        padding-left: 10vw; 
+        margin-top: -5vh;
+        margin-bottom: 15px;
+        font-size: 4vw !important;
+        width: 100vw;
+    }
+
+    .EscopoRelatorio img{
+        position: relative;
+        top: 70vh;
+        margin-left: 32vw; 
     }
 }
