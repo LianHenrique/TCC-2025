@@ -6,7 +6,20 @@ import { FaEdit, FaRegTrashAlt } from 'react-icons/fa'
 const Funcionarios = () => {
   return (
     <div>
-      <NavBar />
+      <NavBar 
+      nomeDrop="Cargo" 
+      lista={[
+        {
+          lista: "Gerente",
+          link: "#gerente"  
+        },
+        {
+          lista: "Estoquista",
+          link: "#estoquista"  
+        }
+      ]}
+      />
+
       <Pesquisa />
       <Card style={{ width: '18rem', margin: "10px", padding: "5px" }}>
         <Card.Img variant="top" src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" />

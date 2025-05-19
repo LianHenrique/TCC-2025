@@ -4,6 +4,7 @@ import Home from "../pages/Home/Home"
 import Estoque from "../pages/Estoque/Estoque"
 import Login from "../pages/Login/Login"
 import Funcionarios from "../pages/Funcionarios/Funcionarios"
+import Cadastro from "../pages/Cadastro/Cadastro"
 
 const MyRouter = createBrowserRouter([
     {
@@ -29,6 +30,10 @@ const MyRouter = createBrowserRouter([
             {
                 path: "/login",
                 element: <Login />
+            },
+            {
+                path: "/cadastro",
+                element: <Cadastro />
             },
         ]
     }
