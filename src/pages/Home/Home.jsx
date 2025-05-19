@@ -2,23 +2,24 @@ import { useState, useEffect } from 'react';
 import CardsCurso from "../../components/Cards/CardsCurso";
 import CardsDescPlanoGratuito from "../../components/Cards/CardsDesc";
 import NavBar from "../../components/NavBar/NavBar";
+import styles from './Home.module.css'; // Usando CSS Modules
 
-function App() {
+function Home() {
   const [temaEscuro, setTemaEscuro] = useState(false);
 
   useEffect(() => {
-    document.body.className = temaEscuro ? 'dark-mode' : 'light-mode';
+    document.body.className = temaEscuro ? styles['dark-mode'] : styles['light-mode'];
   }, [temaEscuro]);
 
   const alternarTema = () => setTemaEscuro(prev => !prev);
 
   return (
-    <div className="App">
+    <div className={styles.App}>
       {/* Navegação */}
       <NavBar />
 
       {/* Botão de alternância de tema */}
-      <button className="theme-toggle-button" onClick={alternarTema}>
+      <button className={styles['theme-toggle-button']} onClick={alternarTema}>
         <svg viewBox="0 0 24 24" width="24" height="24">
           <path
             fill="currentColor"
@@ -30,24 +31,25 @@ function App() {
       </button>
 
       {/* Descrição principal */}
-      <CardsDescPlanoGratuito 
-        titulo={
-          <span className="alexandria bold">
-            Gerencie o <strong className="destaque">estoque</strong> do seu negócio de maneira ágil
-          </span>
-        }
-        desc={
-          <span className="alexandria2">
-            StoreBox facilita o gerenciamento de estoques com eficiência e recursos úteis.
-          </span>
-        }
-        botaoTxt="Teste grátis"
-        comBotão={true}
-        txtComBotao="Experimente grátis por 30 dias"
-      />
+<CardsDescPlanoGratuito 
+  titulo={(
+    <span className={styles.alexandria}>
+      Gerencie o <strong className={styles.destaque}>estoque</strong> do seu negócio de maneira ágil
+    </span>
+  )}
+  desc={(
+    <span className={styles.alexandria2}>
+      StoreBox facilita o gerenciamento de estoques com eficiência e recursos úteis.
+    </span>
+  )}
+  botaoTxt={<button className={styles.botaoTesteGratis}>Teste grátis</button>}
+  comBotão={true}
+  txtComBotao="Experimente grátis por 30 dias"
+/>
+
 
       {/* Benefícios rápidos */}
-      <div className="alexandria2">
+      <div className={styles.alexandria2}>
         <p>1 Acesso em tempo real</p>
         <p>2 Redução de erros</p>
         <p>3 Relatórios detalhados</p>
@@ -55,7 +57,7 @@ function App() {
 
       {/* Planos */}
       <CardsCurso 
-        cards={[
+        cards={[ 
           {
             titulo: "Grátis",
             req1: "Experimente gratuito por 30 dias",
@@ -66,11 +68,11 @@ function App() {
           },
           {
             titulo: "Plano 1",
-            req1: " ",
+            req1: "Acesso completo",
           },
           {
             titulo: "Plano 2",
-            req1: " ",
+            req1: "Funcionalidades avançadas",
           },
         ]}
       />
@@ -78,4 +80,4 @@ function App() {
   );
 }
 
-export default App;
+export default Home;
