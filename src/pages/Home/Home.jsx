@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import CardsCurso from "../../components/Cards/CardsCurso";
 import CardsDescPlanoGratuito from "../../components/Cards/CardsDesc";
 import NavBar from "../../components/NavBar/NavBar";
-import './Home.css';
 
 function App() {
   const [temaEscuro, setTemaEscuro] = useState(false);
