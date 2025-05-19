@@ -3,6 +3,7 @@ import InitPages from "../pages/InitPages"
 import Home from "../pages/Home/Home"
 import Estoque from "../pages/Estoque/Estoque"
 import Login from "../pages/Login/Login"
+import Funcionarios from "../pages/Funcionarios/Funcionarios"
 
 const MyRouter = createBrowserRouter([
     {
@@ -20,6 +21,10 @@ const MyRouter = createBrowserRouter([
             {
                 path: "/estoque",
                 element: <Estoque />
+            },
+            {
+                path: "/funcionarios",
+                element: <Funcionarios />
             },
             {
                 path: "/login",
