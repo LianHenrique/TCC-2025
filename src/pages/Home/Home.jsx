@@ -4,6 +4,7 @@ import CardsDescPlanoGratuito from "../../components/Cards/CardsDesc";
 import NavBar from "../../components/NavBar/NavBar";
 import styles from './Home.module.css'; // Usando CSS Modules
 
+
 function Home() {
   const [temaEscuro, setTemaEscuro] = useState(false);
 

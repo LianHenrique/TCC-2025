@@ -1,0 +1,15 @@
+.login-bg {
+  min-height: 100vh;
+  background: #1a237e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-box {
+  background: #e3e8fd;
+  padding: 40px 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+  min-width: 350px;
+}
