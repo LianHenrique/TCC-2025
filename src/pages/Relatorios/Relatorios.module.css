@@ -66,6 +66,19 @@
     margin-top: -10%;
 }
 
+.img2{
+    margin-top: 80vh !important;
+}
+
+/* Relatório de insumos */
+.h4_2{
+    margin-top: 10rem;
+}
+
+.Qtd_Saida_Insumo{
+    padding-left: 1vw;
+}
+
 @media (max-width:600px){
 
     .EscopoRelatorio p{
@@ -93,6 +106,12 @@
         width: 55vh;
         height: auto;
         margin-left: 1vw; 
+    }
+
+    .img2{
+        margin-bottom: -50vh;
+        height: auto;
+        width: 55vh;
     }
 
     .Card_Funcionario{

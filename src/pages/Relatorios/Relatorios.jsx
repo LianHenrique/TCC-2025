@@ -21,10 +21,10 @@ const Relatorios = () => {
         <p className="fs-6 fs-md-5 fs-lg-4">O maior volume de vendas foi observado no fim de semana. Na sexta-feira (19/04), os ganhos saltaram para R$2.300, seguidos por um pico no sábado (20/04) com R$2.800, o dia mais lucrativo da semana. No domingo (21/04), os ganhos fecharam em R$2.000, mantendo o alto desempenho do fim de semana.</p>
 
         <p className="fs-6 fs-md-5 fs-lg-4">Esses dados mostram claramente o padrão de maior movimento nos últimos dias da semana, essencial para decisões estratégicas como reforço de equipe e aumento de estoque nesses períodos. </p>
-      </section>
 
-      {/* Card dos funcionários se formos usar: */}
-      <Card className={styles.Card_Funcionario}
+        {/* Card dos funcionários se formos usar: */}
+
+        {/* <Card className={styles.Card_Funcionario}
         style={{
           borderRadius: '8%',
         }}>
@@ -35,26 +35,39 @@ const Relatorios = () => {
               fontSize: '15px',
               marginBottom: '1.5vw',
             }}
-          >Funcionário</Card.Text>
+          >Funcionário</Card.Text> */}
 
-          {/* Tag apagada = Card.Text */}
-
-          <div className={styles.Contatenando_Butoes}>
-            {/* Botão vermelho */}
+        {/* Aqui tem os botões amarelo e vermelho */}
+        {/* <div className={styles.Contatenando_Butoes}>
             <Button variant="danger" className={styles.BotaoVermelho}><img src="../src/public/Delete.svg" /></Button>
 
 
-            {/* Botão amarelo */}
+             
             <Button variant="warning" className={styles.BotaoAmarelo} style={{
               backgroundColor: '#F2FF00',
               borderColor: '#F2FF00',
             }}>
               <img src="../src/public/editar.svg" /></Button>
-          </div>
-        </Card.Body>
-      </Card>
+          </div> */}
+
+
+        {/* </Card.Body> */}
+        {/* </Card> */}
+
+        <img src="../src/public/Grafico.svg" className={styles.img2} alt="Gráfico API" />
+        <h4 className={styles.h4_2}>Descrição do (mês X) dos pedidos com mais saídas</h4>
+        <p className={styles.Qtd_Saida_Insumo}>
+          Insumos com maiores taxas de saída: <br />
+          Insumo1-tantasSaídas <br />
+          insumo 2-tantasSaídas <br />
+          insumo 3-tantasSaídas <br />
+          insumo 4-tantasSaídas <br />
+          insumo 5-tantasSaídas <br />
+          insumo 6-tantasSaídas <br />
+        </p>
+      </section>
     </div>
-  )
-}
+  ) 
+} 
 
 export default Relatorios

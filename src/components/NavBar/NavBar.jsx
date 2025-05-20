@@ -12,8 +12,9 @@ const NavBar = () => {
 
   return (
 
-    <div>
-      <Navbar expand="lg" bg="primary" data-bs-theme="dark" className="d-flex justify-content-center ">
+    <div> 
+      {/* Coloquei fixed-top na navbar */}
+      <Navbar expand="lg" bg="primary" data-bs-theme="dark" className="d-flex justify-content-center fixed-top">
         <Container>
           <Navbar.Brand 
           className="fs-1"
