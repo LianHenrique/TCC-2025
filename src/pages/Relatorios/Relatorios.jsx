@@ -65,9 +65,12 @@ const Relatorios = () => {
           insumo 5-tantasSaídas <br />
           insumo 6-tantasSaídas <br />
         </p>
+
+        
+        
       </section>
-    </div>
-  ) 
+    </div> 
+  )  
 } 
 
 export default Relatorios
