@@ -18,13 +18,7 @@ body {
 
 .alexandria2 {
   font-family: 'Alexandria', sans-serif;
-  font-weight: 400;
-}
-
-.glory {
-  font-family: 'Glory', sans-serif;
   font-weight: 600;
-  font-size: 228px;
 }
 
 /* Negrito */
@@ -38,13 +32,13 @@ body {
 }
 
 /* Temas */
-body.light-mode {
+.light-mode {
   background-color: white;
   color: black;
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-body.dark-mode {
+.dark-mode {
   background-color: black;
   color: white;
   transition: background-color 0.3s ease, color 0.3s ease;
@@ -61,8 +55,6 @@ body.dark-mode {
   z-index: 999;
 }
 
-
-
 /* Navbar fixa no topo */
 .navbar {
   position: fixed;
@@ -71,6 +63,8 @@ body.dark-mode {
   width: 100%;
   height: 60px; /* altura da navbar */
   z-index: 1000;
+  background-color: #fff;
+  box-shadow: 0 4px 2px -2px gray;
 }
 
 /* Container principal */
@@ -84,3 +78,30 @@ body.dark-mode {
   box-sizing: border-box;
   padding-top: 60px; /* compensação para navbar fixa */
 }
+/* Estilo para o botão "Teste grátis" */
+.botaoTesteGratis {
+  background-color: #3858FF; /* Cor de fundo azul padrão */
+  color: white; /* Cor do texto */
+  border: none; /* Sem borda */
+  border-radius: 20px; /* Bordas arredondadas */
+  padding: 10px 20px; /* Distância interna do botão */
+  font-size: 16px; /* Tamanho da fonte */
+  cursor: pointer; /* Cursor de ponteiro para indicar interatividade */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Transição suave para a cor e animação */
+}
+
+/* Efeito de hover */
+.botaoTesteGratis:hover {
+  background-color: #1a42d1; /* Azul mais escuro */
+  transform: scale(1.05); /* Um pequeno aumento no tamanho do botão para efeito visual */
+}
+
+/* Efeito de foco no botão */
+.botaoTesteGratis:focus {
+  outline: none; /* Remover a borda de foco padrão */
+}
+
+
+
+
+

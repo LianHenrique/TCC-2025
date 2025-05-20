@@ -1,28 +1,41 @@
-import { FaEdit, FaRegTrashAlt } from 'react-icons/fa'
+import { Button, Card } from 'react-bootstrap'
 import NavBar from '../../components/NavBar/NavBar'
 import Pesquisa from '../../components/Pesquisa/Pesquisa'
-import { Button, Card } from 'react-bootstrap'
+import { FaEdit, FaRegTrashAlt } from 'react-icons/fa'
 
-const Estoque = () => {
+const Funcionarios = () => {
   return (
     <div>
-      <NavBar />
+      <NavBar 
+      nomeDrop="Cargo" 
+      lista={[
+        {
+          lista: "Gerente",
+          link: "#gerente"  
+        },
+        {
+          lista: "Estoquista",
+          link: "#estoquista"  
+        }
+      ]}
+      />
+
       <Pesquisa />
       <Card style={{ width: '18rem', margin: "10px", padding: "5px" }}>
-        <Card.Img variant="top" src="https://organic4.com.br/wp-content/uploads/2023/04/img-site-1-lanches-burger-carne.jpg" />
+        <Card.Img variant="top" src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" />
         <Card.Body>
-          <Card.Title>Hamburguer</Card.Title>
+          <Card.Title>Nome</Card.Title>
           <Card.Text>
-            Carne de lanche comum
+            Cargo: X
           </Card.Text>
           <Card.Text>
-            Data de entrada: XX/XX/XXXX
+            Idade: XX
           </Card.Text>
           <Card.Text>
-            Quantidade: XX
+            Calendario
           </Card.Text>
           <Card.Text>
-            R$ XX
+            Salario
           </Card.Text>
           <Button
             variant="warning"
@@ -40,4 +53,4 @@ const Estoque = () => {
   )
 }
 
-export default Estoque
+export default Funcionarios
