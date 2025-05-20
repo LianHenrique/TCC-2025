@@ -96,7 +96,10 @@
     }
 
     .Card_Funcionario{
-        width: 40vw !important;
+        margin-top: 45%;
+        margin-left: 25%;
+        width: 48vw !important;
+        height: 28vh;
         position: relative;
         top: -18vh;
     }
@@ -106,29 +109,33 @@
     }
 
     .BotaoVermelho{
+        margin-top: 2%;
+        margin-left: 53%;
         width: 20% !important;
         height: 3vh;
     }
 
     .BotaoAmarelo{
+        margin-top: 2%;
         width: 20% !important;
         height: 3vh;
     }
 
     .BotaoVermelho img{
+        margin-top: 10%;
         position: relative;
         top: -1vh;
-        left: -1.6vw;
+        left: -1vw;
     }
 
     .BotaoAmarelo img{
         position: relative;
         top: -1vh;
-        left: -1.6vw;
+        left: -1vw;
     }
 
     /* Mexer na tela */
     .p{
-        font-size: 2vh !important;
+        font-size: 25px !important;
     }
 }
