@@ -1,7 +1,7 @@
 import { Button, Dropdown, FloatingLabel, Form } from "react-bootstrap"
 import { useForm } from "react-hook-form";
 
-const Pesquisa = (lista, nomeDrop) => {
+const Pesquisa = ({lista, nomeDrop}) => {
 
     const {
         register,
@@ -22,22 +22,20 @@ const Pesquisa = (lista, nomeDrop) => {
                         placeholder="Pesquisa"
                         className="rounded-3"
                     />
-                    <Dropdown
-                        className="d-flex"
-                    >
+                    <Dropdown className="d-flex">
                         <Dropdown.Toggle variant="outline-primary">
                             {nomeDrop}
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
-                            {
-                                lista.map((item, index) => (
-                                    <Dropdown.Item 
-                                    key={index}
-                                    href={item.link}>
-                                        {item.lista}
-                                    </Dropdown.Item>
-                            ))
-                            }
+                            {lista.map((item, index) => (
+                            <Dropdown.Item
+                                key={index}
+                                to={item.link}
+                                className="dropdown-item"
+                            >
+                                {item.lista}
+                            </Dropdown.Item>
+                            ))}
                         </Dropdown.Menu>
                     </Dropdown>
                     <Button>
