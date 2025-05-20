@@ -79,6 +79,12 @@
     padding-left: 1vw;
 }
 
+.Card_Insumos{
+    width: 15vw !important;
+    margin-bottom: 13vh;
+    box-shadow: 1px 10px 20px rgba(0, 0, 0, 0.2);
+}
+
 @media (max-width:600px){
 
     .EscopoRelatorio p{
