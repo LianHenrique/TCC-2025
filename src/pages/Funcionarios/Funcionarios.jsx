@@ -7,7 +7,20 @@ const Funcionarios = () => {
   return (
     <div>
       <NavBar />
-      <Pesquisa />
+
+      <Pesquisa 
+      nomeDrop="Cargo" 
+      lista={[
+        {
+          lista: "Gerente",
+          link: "#gerente"  
+        },
+        {
+          lista: "Estoquista",
+          link: "#estoquista"  
+        }
+      ]}
+      />
       <Card style={{ width: '18rem', margin: "10px", padding: "5px" }}>
         <Card.Img variant="top" src="https://cdn-icons-png.flaticon.com/512/1077/1077114.png" />
         <Card.Body>

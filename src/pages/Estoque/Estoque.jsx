@@ -7,7 +7,23 @@ const Estoque = () => {
   return (
     <div>
       <NavBar />
-      <Pesquisa />
+      <Pesquisa 
+      nomeDrop="Filtro" 
+      lista={[
+        {
+          lista: "Carne",
+          link: "#bebida"  
+        },
+        {
+          lista: "Bebida",
+          link: "#bebida"  
+        },
+        {
+          lista: "Salada",
+          link: "#salada"  
+        },
+      ]}
+      />
       <Card style={{ width: '18rem', margin: "10px", padding: "5px" }}>
         <Card.Img variant="top" src="https://organic4.com.br/wp-content/uploads/2023/04/img-site-1-lanches-burger-carne.jpg" />
         <Card.Body>

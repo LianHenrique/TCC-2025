@@ -1,10 +1,7 @@
-import { Button, Card, Dropdown, FloatingLabel, Form } from "react-bootstrap"
+import { Button, Dropdown, FloatingLabel, Form } from "react-bootstrap"
 import { useForm } from "react-hook-form";
 
-import { FaRegTrashAlt } from "react-icons/fa";
-import { FaEdit } from "react-icons/fa";
-
-const Pesquisa = (props) => {
+const Pesquisa = ({lista, nomeDrop}) => {
 
     const {
         register,
@@ -25,17 +22,20 @@ const Pesquisa = (props) => {
                         placeholder="Pesquisa"
                         className="rounded-3"
                     />
-                    <Dropdown
-                        className="d-flex"
-                    >
+                    <Dropdown className="d-flex">
                         <Dropdown.Toggle variant="outline-primary">
-                            Filtro
+                            {nomeDrop}
                         </Dropdown.Toggle>
-
                         <Dropdown.Menu>
-                            <Dropdown.Item href="#/action-1">Bebidas</Dropdown.Item>
-                            <Dropdown.Item href="#/action-2">Carnes</Dropdown.Item>
-                            <Dropdown.Item href="#/action-3">Saladas</Dropdown.Item>
+                            {lista.map((item, index) => (
+                            <Dropdown.Item
+                                key={index}
+                                to={item.link}
+                                className="dropdown-item"
+                            >
+                                {item.lista}
+                            </Dropdown.Item>
+                            ))}
                         </Dropdown.Menu>
                     </Dropdown>
                     <Button>
