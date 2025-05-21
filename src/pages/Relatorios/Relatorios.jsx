@@ -22,37 +22,7 @@ const Relatorios = () => {
 
         <p className="fs-6 fs-md-5 fs-lg-4">Esses dados mostram claramente o padrão de maior movimento nos últimos dias da semana, essencial para decisões estratégicas como reforço de equipe e aumento de estoque nesses períodos. </p>
 
-        {/* Card dos funcionários se formos usar: */}
 
-        {/* <Card className={styles.Card_Funcionario}
-        style={{
-          borderRadius: '8%',
-        }}>
-        <Card.Img variant="top" src="../src/public/Funcionario01.svg" />
-        <Card.Body>
-          <Card.Text className={styles.p}
-            style={{
-              fontSize: '15px',
-              marginBottom: '1.5vw',
-            }}
-          >Funcionário</Card.Text> */}
-
-        {/* Aqui tem os botões amarelo e vermelho */}
-        {/* <div className={styles.Contatenando_Butoes}>
-            <Button variant="danger" className={styles.BotaoVermelho}><img src="../src/public/Delete.svg" /></Button>
-
-
-             
-            <Button variant="warning" className={styles.BotaoAmarelo} style={{
-              backgroundColor: '#F2FF00',
-              borderColor: '#F2FF00',
-            }}>
-              <img src="../src/public/editar.svg" /></Button>
-          </div> */}
-
-
-        {/* </Card.Body> */}
-        {/* </Card> */}
 
         <img src="../src/public/Grafico.svg" className={styles.img2} alt="Gráfico API" />
         <h4 className={styles.h4_2}>Descrição do (mês X) dos pedidos com mais saídas</h4>
@@ -65,19 +35,6 @@ const Relatorios = () => {
           insumo 5-tantasSaídas <br />
           insumo 6-tantasSaídas <br />
         </p>
-
-
-        <Card className={styles.Card_Insumos}>
-          <Card.Img variant="top" src="holder.js/100px180" />
-          <Card.Body>
-            <Card.Title>Card Title</Card.Title>
-            <Card.Text>
-              Some quick example text to build on the card title and make up the
-              bulk of the card's content.
-            </Card.Text>
-            <Button variant="primary">Go somewhere</Button>
-          </Card.Body>
-        </Card>
         
       </section>
     </div>  
