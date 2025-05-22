@@ -7,12 +7,13 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview", 
+    "preview": "vite preview",
     "server": "json-server --watch src/data/db.json --port 5000"
   },
   "dependencies": {
     "bootstrap": "^5.3.5",
     "cor": "^0.0.0",
+    "cors": "^2.8.5",
     "express": "^5.1.0",
     "json-server": "^1.0.0-beta.3",
     "mysql2": "^3.14.1",

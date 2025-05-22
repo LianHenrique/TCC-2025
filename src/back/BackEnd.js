@@ -1,43 +1,84 @@
-// Usando express como facilitador.
-
 import express from 'express';
 import connection from './db.js';
+import cors from 'cors'; //se não instalar isso aqui, ele dá erro quando roda pq o backend tá em  uma porta diferente da porta do front
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
-app.get('/funcionarios', (requisicao, resposta) => {
-    connection.query('SELECT nome_funcionario FROM Funcionarios', (error, resultados) => {
-        if(error){
-            return resposta.status(500).json({error: 'Erro ao buscar funcionários'})
-        }
-        resposta.json(resultados)
-    })
-})
 
+// buscando funcionário por ID
 app.get('/funcionarios/:id_funcionario', (requisicao, resposta) => {
-    const { id } = requisicao.params;
-    console.log(id);
+    const { id_funcionario } = requisicao.params;
+    console.log("Buscando funcionário com ID", id_funcionario);
 
-    // criando a query agora, no caso usando o id para buscar o funcionário no bando de dados.
     connection.query(
         'SELECT * FROM Funcionarios WHERE id_funcionario = ?',
-        [id],
+        [id_funcionario],
         (error, resultados) => {
-            if(error){
-                return resposta.status(500).json({error : 'Erro ao buscar funcionário'})
+            if (error) {
+                return resposta.status(500).json({ error: 'Erro ao buscar funcionário' });
             }
-            if(resultados.length === 0){
-                return resposta.status(404).json({error: 'Funcionário não encontrado'})
+            if (resultados.length === 0) {
+                return resposta.status(404).json({ error: 'Funcionário não encontrado' });
             }
-            resposta.json(resultados[0])
+            resposta.json(resultados[0]);
+        }
+    );
+});
+
+
+// buscando todos os funcionários
+app.get('/funcionarios', (requisicao, resposta) => {
+    connection.query(
+        'SELECT * FROM Funcionarios',
+        (error, resultados) => {
+            if (error) {
+                return resposta.status(500).json({ error: "Erro ao buscar funcionários" })
+            }
+            resposta.json(resultados);
         }
     )
 })
 
+
+// buscando todos os produtos
+app.get('/produtos', (requisicao, resposta) => {
+    connection.query(
+        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM Produto',
+        (error, resultados) => {
+            if (error) {
+                return resposta.status(500).json({ error: 'Erro ao buscar produtos' });
+            }
+            resposta.json(resultados);
+        }
+    );
+});
+
+
+//  buscando produto por ID
+app.get('/produtos/:id', (requisicao, resposta) => {
+    const { id } = requisicao.params;
+
+    connection.query(
+        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM Produto WHERE id_produto = ?',
+        [id],
+        (error, resultados) => {
+            if (error) {
+                return resposta.status(500).json({ error: 'Erro ao buscar produto' });
+            }
+            if (resultados.length === 0) {
+                return resposta.status(404).json({ error: 'Produto não encontrado' });
+            }
+            resposta.json(resultados[0]);
+        }
+    );
+});
+
+
 const PORTA = 3000;
 app.listen(PORTA, () => {
-    console.log(`Servidor rodando na porta ${PORTA}`)
-})
+    console.log(`Servidor rodando na porta ${PORTA}`);
+});
 
 export default app;

@@ -13,11 +13,18 @@ function App(){
     useEffect(() => {
         fetch('http://localhost:3000/funcionarios')
         .then(response => response.json()) // converto a resposta p/json 
-        
+
         .then(data => {
-
-
+            setFuncionarios(data)
         })
-    })
+        .catch(error => console.log("Erro ao buscar funcionários:", error))
+    }, [])
+
+    return(
+        <div className='CardFuncionario'>
+            <CardGeral filtro="funcionarios" card={funcionarios}/>
+        </div>
+    )
 
 }
+export default App

@@ -1,10 +1,52 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import NavBar from '../../components/NavBar/NavBar'
 import styles from './Relatorios.module.css'
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
+import CardGeral from '../../components/Cards/CardGeral';
 
 const Relatorios = () => {
+  const [funcionarios, setFuncionarios] = useState([])
+
+  const fetchFuncionarios = async () => {
+    try {
+
+      // Aqui eu tive que definir os ids, pq agente não sabe como exatamente que o funcionário vai estar presente no relatório.
+      const IDfuncionario = [1, 2, 3, 4];
+
+      const responsePromises = IDfuncionario.map(id =>
+        fetch(`http://localhost:3000/funcionarios/${id}`)
+          .then((response) => response.json())
+          .catch((error) => {
+            console.error('Erro ao buscar funcionário:', error);
+          })
+      );
+
+      // Vai esperar tudo ser puxado para rodar
+      const funcionariosData = await Promise.all(responsePromises)
+
+      // formatando os dados. (opcional)
+      const funcionariosFormatados = funcionariosData.map(func => ({
+        nome: func.nome_funcionairo, //sim, o pedro digitou errado no banco
+        link: func.imagem_url || 'https://img.freepik.com/fotos-premium/hamburguer-bonito-em-fundo-escuro_213607-15.jpg',
+        descricao: [
+          { texto: `Cargo: ${func.cargo_funcionario}` },
+          { texto: `ID: ${func.id_funcionario}` }
+        ]
+      }))
+
+      setFuncionarios(funcionariosFormatados);
+    } catch (error) {
+      console.error('Erro ao buscar dados dos funcionários:', error)
+    }
+  }
+
+  useEffect(() => {
+    if (funcionarios.length === 0) {
+      fetchFuncionarios();
+    }
+  }, []);
+
   return (
     <div>
       <section style={{ paddingBottom: '8rem' }}>
@@ -32,10 +74,21 @@ const Relatorios = () => {
           insumo 4-tantasSaídas <br />
           insumo 5-tantasSaídas <br />
           insumo 6-tantasSaídas <br />
-        </p>      
+        </p>
       </section>
-    </div>   
-  )    
-} 
+
+      <section>
+
+      {/* Não tá bonito pq o foco primordial é fazer ele funcional */}
+        <CardGeral
+          filtro="Funcionários"
+          card={funcionarios}
+        />
+
+      </section>
+
+    </div>
+  )
+}
 
 export default Relatorios
