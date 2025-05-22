@@ -19,50 +19,24 @@ const Cadastroprod = () => {
 
         // const usuarioExistente = users.find((user) => user.email === email);
 
-        if (senha === "" || nome === ""){
-            alert ("Os campos não podem ser vazios")
+        if (senha === "" || nome === "") {
+            alert("Os campos não podem ser vazios")
             setNomeprod("");
             setSenha("");
             return;
         } // mantem mudando as validações
-        if(senha.length >= 0){
-            alert ("A Quantidade/preço deve ter no mínimo 1 numero")
+        if (senha.length >= 0) {
+            alert("A Quantidade/preço deve ter no mínimo 1 numero")
             setNomeprod("");
             setSenha("");
             return;
-        } // posso tirar ou alterar 
-        // if (senha != confirmarSenha){
-        //     alert ("As senhas não são iguais")
-        //     setConfir("");
-        //     setEmail("");
-        //     setNomeprod("");
-        //     setSenha("");
-        //     return;
-        // } // isso eu posso tirar
-
-        // if (usuarioExistente) {
-        //     alert("Este email já está cadastrado!");
-        //     setConfir("");
-        //     setEmail("");
-        //     setNomeprod("");
-        //     setSenha("");
-        //     return;
-        // } // posso tirar 
-
-        // if(!validarEmail(email)) {
-        //     alert("Formato de email inválido!");
-        //     setConfir("");
-        //     setEmail("");
-        //     setNomeprod("");
-        //     setSenha("");
-        //     return;
-        // } // não mantem 
+        }
 
         const novoUsuario = {
             nome: nome,
             senha: senha,
         };
-  
+
         users.push(novoUsuario);
 
         localStorage.setItem("users", JSON.stringify(users));
@@ -70,37 +44,37 @@ const Cadastroprod = () => {
         alert("Cadastro realizado com sucesso!");
         setNomeprod("");
         setSenha("");
-    } 
+    }
 
-  return (
-     <div className="login-bg">
+    return (
+        <div className="login-bg">
             <div className="login-box">
-        <h2>Cadastro</h2>
-       
-       <Lay/>
-            <Form>
-                  <Form.Group className="mb-3" controlId="formGroupEmail">
-                             <Form.Label>NomeProd</Form.Label>
-                             <Form.Control type="text" placeholder='Nome do produto' value={nome} onChange={(e) => setEmail(e.target.value) } />
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formGroupPassword">
-                            <Form.Label>QtdProd</Form.Label>
-                            <Form.Control type="text" placeholder='Quantidade do produto' value={senha} onChange={(e) => setSenha(e.target.value)} />
-                  </Form.Group>
-                    <Form.Group className="mb-3" controlId="formGroupPassword">
-                            <Form.Label>Descrica</Form.Label>
-                            <Form.Control type="text" placeholder='Descreva o produto(opcional)' value={nome} onChange={(e) => setSenha(e.target.value)} />
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formGroupPassword">
-                            <Form.Label>ValorProd</Form.Label>
-                            <Form.Control type="text" placeholder='Valor produto' value={senha} onChange={(e) => setSenha(e.target.value)} />
-                  </Form.Group>              
-            </Form>
-            <button variant="primary" style={{ width: '100%', backgroundColor: '#3840BA' }} onClick={Cadastrosprod} onClickCapture={() => navigate('/')}>Entrar</button>
-    </div>
-    </div>
+                <h2>Cadastro</h2>
 
-        )
+                <Lay />
+                <Form>
+                    <Form.Group className="mb-3" controlId="formGroupEmail">
+                        <Form.Label>NomeProd</Form.Label>
+                        <Form.Control type="text" placeholder='Nome do produto' value={nome} onChange={(e) => setEmail(e.target.value)} />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formGroupPassword">
+                        <Form.Label>QtdProd</Form.Label>
+                        <Form.Control type="text" placeholder='Quantidade do produto' value={senha} onChange={(e) => setSenha(e.target.value)} />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formGroupPassword">
+                        <Form.Label>Descrica</Form.Label>
+                        <Form.Control type="text" placeholder='Descreva o produto(opcional)' value={nome} onChange={(e) => setSenha(e.target.value)} />
+                    </Form.Group>
+                    <Form.Group className="mb-3" controlId="formGroupPassword">
+                        <Form.Label>ValorProd</Form.Label>
+                        <Form.Control type="text" placeholder='Valor produto' value={senha} onChange={(e) => setSenha(e.target.value)} />
+                    </Form.Group>
+                </Form>
+                <button variant="primary" style={{ width: '100%', backgroundColor: '#3840BA' }} onClick={Cadastrosprod} onClickCapture={() => navigate('/')}>Entrar</button>
+            </div>
+        </div>
+
+    )
 }
 
 export default Cadastroprod

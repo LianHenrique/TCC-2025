@@ -40,7 +40,10 @@ const NavBar = () => {
                 {
                   usuarioNome === "Visitante" ? (
                     <div className="d-flex align-items-center gap-3">
-                      <Nav.Link href="#"> Cadastre-se </Nav.Link>
+                      <Nav.Link 
+                      href="/cadastro">
+                        Cadastre-se 
+                      </Nav.Link>
                       <Button 
                         className="shadow"
                         variant="primary" 
