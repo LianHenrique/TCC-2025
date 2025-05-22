@@ -2,6 +2,7 @@ import { FaEdit, FaRegTrashAlt } from 'react-icons/fa'
 import NavBar from '../../components/NavBar/NavBar'
 import Pesquisa from '../../components/Pesquisa/Pesquisa'
 import { Button, Card, Container } from 'react-bootstrap'
+import CardGeral from '../../components/Cards/CardGeral'
 
 const Estoque = () => {
   return (
@@ -12,42 +13,36 @@ const Estoque = () => {
         nomeDrop="Filtro" 
         lista={[
           {
-            lista: "Carne",
-            link: "#carne"  
+            lista: "Carnes",
+            link: "#carnes"  
           },
           {
-            lista: "Bebida",
-            link: "#bebida"  
+            lista: "Bebidas",
+            link: "#bebidas"  
           },
           {
-            lista: "Salada",
-            link: "#salada"  
+            lista: "Saladas",
+            link: "#saladas"  
           },
         ]}
         />
-        <h2>Carne</h2>
-        <Card className='shadow'  style={{ width: '12rem', border: "none", margin: "6px", padding: "5px" }}>
-          <Card.Img style={{borderRadius: "10px"}} variant="top" src="https://organic4.com.br/wp-content/uploads/2023/04/img-site-1-lanches-burger-carne.jpg" />
-          <Card.Body>
-            <Card.Title>Hamburguer</Card.Title>
-            <Card.Text>
-              Data de entrada: XX/XX/XXXX
-            </Card.Text>
-            <Card.Text>
-              Quantidade: XX
-            </Card.Text>
-            <Button
-              variant="warning"
-              className="rounded-circle fs-5 text-center shadow m-1">
-              <FaEdit />
-            </Button>
-            <Button
-              variant="danger"
-              className="rounded-circle fs-5 text-center shadow">
-              <FaRegTrashAlt />
-            </Button>
-          </Card.Body>
-        </Card>
+        <CardGeral 
+        filtro="Carnes"
+        card={[
+          {
+            nome:"Hamburguer",
+            link:"https://organic4.com.br/wp-content/uploads/2023/04/img-site-1-lanches-burger-carne.jpg",
+            descricao:[
+              {
+                texto:"Data de entrada: XX/XX/XXXX"
+              },
+              {
+                texto:"Quantidade: XX"
+              },
+            ]
+          },
+        ]}
+        />
       </Container>
     </div>
   )
