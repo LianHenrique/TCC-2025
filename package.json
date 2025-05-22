@@ -12,7 +12,10 @@
   },
   "dependencies": {
     "bootstrap": "^5.3.5",
+    "cor": "^0.0.0",
+    "express": "^5.1.0",
     "json-server": "^1.0.0-beta.3",
+    "mysql2": "^3.14.1",
     "react": "^19.1.0",
     "react-bootstrap": "^2.10.9",
     "react-dom": "^19.0.0",
