@@ -2,7 +2,7 @@ import { useState } from "react"
 import Form from 'react-bootstrap/Form';
 import NavBar from '../../components/NavBar/NavBar';
 import '../Style/login.css'; // Importa o CSS
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 const Login = () => {
     const [email, setEmail] = useState("");
