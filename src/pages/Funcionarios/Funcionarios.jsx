@@ -52,7 +52,7 @@ const Funcionarios = () => {
       <NavBar />
 
       <Container>
-        {/* <Pesquisa
+        <Pesquisa
           nomeDrop="Cargo"
           lista={[
             {
@@ -68,7 +68,7 @@ const Funcionarios = () => {
               link: "#funcionario"
             }
           ]}
-        /> */}
+        />
         <CardGeral
           filtro="Funcionarios"
           card={funcionarios}

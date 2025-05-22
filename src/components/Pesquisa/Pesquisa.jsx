@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Button, Dropdown, FloatingLabel, Form } from "react-bootstrap"
 import { useForm } from "react-hook-form";
 
@@ -5,11 +6,11 @@ const Pesquisa = ({ lista, nomeDrop }) => {
 
     const [funcionarios, setFuncionarios] = useState([])
 
+    const [pesquisa, setPesquisa] = useState("")
+
     const fetchFuncionarios = async () => {
         try {
-
-            // Aqui eu tive que definir os ids, pq agente não sabe como exatamente que o funcionário vai estar presente no relatório.
-            const NomeFuncionario = [func.nome_funcionairo];
+            const NomeFuncionario = [pesquisa];
 
             const nomeResponsePromises = NomeFuncionario.map(nome =>
                 fetch(`http://localhost:3000/funcionarios/${nome}`)
@@ -19,11 +20,10 @@ const Pesquisa = ({ lista, nomeDrop }) => {
                     })
             );
 
-            // Vai esperar tudo ser puxado para rodar
-            const funcionariosData = await Promise.all(responsePromises)
+            const funcionariosPesquisa = await Promise.all(nomeResponsePromises)
 
             // formatando os dados. (opcional)
-            const funcionariosFormatados = funcionariosData.map(func => ({
+            const funcionariosFormatados = funcionariosPesquisa.map(func => ({
                 nome: func.nome_funcionairo, //sim, o pedro digitou errado no banco
                 link: func.imagem_url || 'https://img.freepik.com/fotos-premium/hamburguer-bonito-em-fundo-escuro_213607-15.jpg',
                 descricao: [
@@ -39,14 +39,14 @@ const Pesquisa = ({ lista, nomeDrop }) => {
     }
 
     useEffect(() => {
-        if (funcionarios.length === 0) {
-            fetchFuncionarios();
-        }
-    }, []);
+        const delayDebounceFn = setTimeout(() => {
+            if (pesquisa.length > 0) {
+                fetchFuncionarios();
+            }
+        }, 500); // espera 500ms depois do usuário parar de digitar
 
-    const {
-        formState: { errors },
-    } = useForm();
+        return () => clearTimeout(delayDebounceFn); // limpa o timeout se digitar novamente
+    }, [pesquisa]);
 
     return (
         <div style={{
@@ -58,6 +58,9 @@ const Pesquisa = ({ lista, nomeDrop }) => {
                         type="text"
                         placeholder="Pesquisa"
                         className="rounded-5 shadow"
+                        onChange={(e) => {
+                            setPesquisa(e.target.value)
+                        }}
                         style={{
                             border: "none"
                         }}
