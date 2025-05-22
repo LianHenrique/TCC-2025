@@ -82,8 +82,15 @@ const Cadastro = () => {
   }
 
   return (
-    <div>
+    <div
+    style={{
+      marginTop: "150px"
+    }}>
       <NavBar />
+      <Container
+      style={{
+        width: "650px"
+      }}>
         <Form
           className='shadow'
           style={{
@@ -91,7 +98,11 @@ const Cadastro = () => {
             margin: "100px",
             borderRadius: "20px",
           }}>
-
+          <h1 style={{
+            textAlign: "center"
+          }}>
+            Cadastro
+          </h1>
           <FloatingLabel
             controlId="floatingInput"
             label="Nome"
@@ -168,10 +179,22 @@ const Cadastro = () => {
               padding: "15px",
               width: "90%",
               borderRadius: "30px",
+              marginLeft: "20px"
             }}>
             Cadastrar
           </Button>
+          <Button
+            className="shadow mt-4"
+            style={{
+              padding: "15px",
+              width: "90%",
+              borderRadius: "30px",
+              marginLeft: "20px"
+            }}>
+            Voltar
+          </Button>
         </Form>
+      </Container>
     </div>
   )
 }

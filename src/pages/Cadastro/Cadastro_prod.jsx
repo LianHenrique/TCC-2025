@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import Form from 'react-bootstrap/Form';
 import '../Style/login.css'; // Importa o CSS
+import NavBar from '../../components/NavBar/NavBar';
+import { Button, Container, FloatingLabel, Form } from 'react-bootstrap';
 
 const Cadastroprod = () => {
     const [senha, setSenha] = useState("");
@@ -37,32 +38,110 @@ const Cadastroprod = () => {
     }
 
     return (
-        <div className="login-bg">
-            <div className="login-box">
-                <h2>Cadastro</h2>
+        <div
+    style={{
+      marginTop: "150px"
+    }}>
+      <NavBar />
+      <Container
+      style={{
+        width: "650px"
+      }}>
+        <Form
+          className='shadow'
+          style={{
+            padding: "10px",
+            margin: "100px",
+            borderRadius: "20px",
+          }}>
+          <h1 style={{
+            textAlign: "center"
+          }}>
+            Cadastro
+          </h1>
+          <FloatingLabel
+            controlId="floatingInput"
+            label="Nome"
+            className="m-2">
+            <Form.Control
+              type="text"
+              placeholder="Nome"
+              className="rounded-5 shadow mt-3"
+              style={{
+                border: "none"
+              }}
+            />
+          </FloatingLabel>
 
-                <Lay />
-                <Form>
-                    <Form.Group className="mb-3" controlId="formGroupEmail">
-                        <Form.Label>NomeProd</Form.Label>
-                        <Form.Control type="text" placeholder='Nome do produto' value={nome} onChange={(e) => setEmail(e.target.value)} />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formGroupPassword">
-                        <Form.Label>QtdProd</Form.Label>
-                        <Form.Control type="text" placeholder='Quantidade do produto' value={senha} onChange={(e) => setSenha(e.target.value)} />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formGroupPassword">
-                        <Form.Label>Descrica</Form.Label>
-                        <Form.Control type="text" placeholder='Descreva o produto(opcional)' value={nome} onChange={(e) => setSenha(e.target.value)} />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formGroupPassword">
-                        <Form.Label>ValorProd</Form.Label>
-                        <Form.Control type="text" placeholder='Valor produto' value={senha} onChange={(e) => setSenha(e.target.value)} />
-                    </Form.Group>
-                </Form>
-                <button variant="primary" style={{ width: '100%', backgroundColor: '#3840BA' }} onClick={Cadastrosprod} onClickCapture={() => navigate('/')}>Entrar</button>
-            </div>
-        </div>
+          <FloatingLabel
+            controlId="floatingInput"
+            label="Email"
+            className="m-2">
+            <Form.Control
+              type="text"
+              placeholder="Email"
+              className="rounded-5 shadow mt-3"
+              style={{
+                border: "none"
+              }}
+            />
+          </FloatingLabel>
+
+          <FloatingLabel
+            controlId="floatingInput"
+            label="Senha"
+            className="m-2">
+            <Form.Control
+              type="Senha"
+              placeholder="Nome"
+              className="rounded-5 shadow mt-3"
+              style={{
+                border: "none"
+              }}
+            />
+          </FloatingLabel>
+
+          <FloatingLabel
+            controlId="floatingInput"
+            label="Confirmação de senha"
+            className="m-2">
+            <Form.Control
+              type="text"
+              placeholder="Confirmação de senha"
+              className="rounded-5 shadow mt-3"
+              style={{
+                border: "none"
+              }}
+            />
+          </FloatingLabel>
+
+          <FloatingLabel
+            controlId="floatingInput"
+            label="CNPJ"
+            className="m-2">
+            <Form.Control
+              type="number"
+              placeholder="CNPJ"
+              className="rounded-5 shadow mt-3"
+              style={{
+                border: "none"
+              }}
+            />
+          </FloatingLabel>
+
+          <Button
+            className="shadow mt-4"
+            style={{
+              padding: "15px",
+              width: "90%",
+              borderRadius: "30px",
+              marginLeft: "20px"
+            }}>
+            Cadastrar
+          </Button>
+        </Form>
+      </Container>
+    </div>
 
     )
 }

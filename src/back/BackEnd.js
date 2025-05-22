@@ -27,6 +27,24 @@ app.get('/funcionarios/:id_funcionario', (requisicao, resposta) => {
     );
 });
 
+app.get('/funcionarios/:nome_funcionario', (requisicao, resposta) => {
+    const { nome_funcionario } = requisicao.params;
+    console.log("Buscando funcionário com nome", nome_funcionario);
+
+    connection.query(
+        'SELECT * FROM Funcionarios WHERE nome_funcionario = ?',
+        [nome_funcionario],
+        (error, resultados) => {
+            if (error) {
+                return resposta.status(500).json({ error: 'Erro ao buscar funcionário' });
+            }
+            if (resultados.length === 0) {
+                return resposta.status(404).json({ error: 'Funcionário não encontrado' });
+            }
+            resposta.json(resultados[0]);
+        }
+    );
+});
 
 // buscando todos os funcionários
 app.get('/funcionarios', (requisicao, resposta) => {
@@ -41,6 +59,24 @@ app.get('/funcionarios', (requisicao, resposta) => {
     )
 })
 
+//  buscando produto por ID
+app.get('/produtos/:id_produto', (requisicao, resposta) => {
+    const { id_produto } = requisicao.params;
+
+    connection.query(
+        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM Produto WHERE id_produto = ?',
+        [id_produto],
+        (error, resultados) => {
+            if (error) {
+                return resposta.status(500).json({ error: 'Erro ao buscar produto' });
+            }
+            if (resultados.length === 0) {
+                return resposta.status(404).json({ error: 'Produto não encontrado' });
+            }
+            resposta.json(resultados[0]);
+        }
+    );
+});
 
 // buscando todos os produtos
 app.get('/produtos', (requisicao, resposta) => {
@@ -55,27 +91,7 @@ app.get('/produtos', (requisicao, resposta) => {
     );
 });
 
-
-//  buscando produto por ID
-app.get('/produtos/:id', (requisicao, resposta) => {
-    const { id } = requisicao.params;
-
-    connection.query(
-        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM Produto WHERE id_produto = ?',
-        [id],
-        (error, resultados) => {
-            if (error) {
-                return resposta.status(500).json({ error: 'Erro ao buscar produto' });
-            }
-            if (resultados.length === 0) {
-                return resposta.status(404).json({ error: 'Produto não encontrado' });
-            }
-            resposta.json(resultados[0]);
-        }
-    );
-});
-
-
+// Porta de entrada para o banco
 const PORTA = 3000;
 app.listen(PORTA, () => {
     console.log(`Servidor rodando na porta ${PORTA}`);

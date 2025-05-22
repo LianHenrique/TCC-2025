@@ -12,15 +12,15 @@ const Estoque = () => {
         nomeDrop="Filtro" 
         lista={[
           {
-            lista: "Carnes",
+            texto: "Carnes",
             link: "#carnes"  
           },
           {
-            lista: "Bebidas",
+            texto: "Bebidas",
             link: "#bebidas"  
           },
           {
-            lista: "Saladas",
+            texto: "Saladas",
             link: "#saladas"  
           },
         ]}

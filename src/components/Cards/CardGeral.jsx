@@ -15,8 +15,8 @@ const CardGeral = ({filtro, card}) => {
               key={index}
               className='shadow'  
               style={{ 
-                minWidth: '15rem',
-                maxWidth: "15rem", 
+                minWidth: '17rem',
+                maxWidth: "20rem", 
                 border: "none",
                 borderRadius: "15px", 
                 margin: "6px", 
