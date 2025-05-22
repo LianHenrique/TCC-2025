@@ -13,7 +13,7 @@ const NavBar = () => {
   return (
 
     <div>
-      <Navbar expand="lg" bg="primary" data-bs-theme="dark" className="d-flex justify-content-center ">
+      <Navbar expand="lg" bg="primary" data-bs-theme="dark" className="d-flex justify-content-center shadow">
         <Container>
           <Navbar.Brand 
           className="fs-1"
