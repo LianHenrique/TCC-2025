@@ -9,19 +9,10 @@ const Pesquisa = ({ lista, nomeDrop }) => {
         try {
 
             // Aqui eu tive que definir os ids, pq agente não sabe como exatamente que o funcionário vai estar presente no relatório.
-            const IDfuncionario = [1, 2, 3, 4];
             const NomeFuncionario = [func.nome_funcionairo];
 
             const nomeResponsePromises = NomeFuncionario.map(nome =>
                 fetch(`http://localhost:3000/funcionarios/${nome}`)
-                    .then((response) => response.json())
-                    .catch((error) => {
-                        console.error('Erro ao buscar funcionário:', error);
-                    })
-            );
-
-            const idResponsePromises = IDfuncionario.map(id =>
-                fetch(`http://localhost:3000/funcionarios/${id}`)
                     .then((response) => response.json())
                     .catch((error) => {
                         console.error('Erro ao buscar funcionário:', error);
