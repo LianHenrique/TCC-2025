@@ -6,6 +6,7 @@ import Login from "../pages/Login/Login"
 import Funcionarios from "../pages/Funcionarios/Funcionarios"
 import Cadastro from "../pages/Cadastro/Cadastro"
 import Relatorios from "../pages/Relatorios/Relatorios"
+import Cardapio from "../pages/Cardapio/Cardapio"
 
 const MyRouter = createBrowserRouter([
     {
@@ -39,7 +40,11 @@ const MyRouter = createBrowserRouter([
             {
                 path: "/relatorios",
                 element: <Relatorios/>
-            }
+            },
+            {
+                path: "/cardapio",
+                element: <Cardapio />
+            },
         ]
     }
 ])

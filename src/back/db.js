@@ -1,7 +1,6 @@
 // Criando o db.js, a conexão no caso
 
-const { error } = require('console');
-const mysql = require('mysql2');
+import mysql from 'mysql2'
 
 const connection = mysql.createConnection({
     host:'localhost',
@@ -21,4 +20,4 @@ connection.connect((error) => {
 })
 
 // Exportando
-module.exports = connection;
+export default connection;
