@@ -2,16 +2,14 @@ import { useEffect, useState } from "react";
 import { Button, Dropdown, FloatingLabel, Form } from "react-bootstrap"
 import { useForm } from "react-hook-form";
 
-const Pesquisa = ({ lista, nomeDrop }) => {
+const Pesquisa = ({ lista, nomeDrop, onResultado }) => {
+    // ...restante do código...
 
-    const [funcionarios, setFuncionarios] = useState([])
-
-    const [pesquisa, setPesquisa] = useState("")
+    const [pesquisa, setPesquisa] = useState("");
 
     const fetchFuncionarios = async () => {
         try {
             const NomeFuncionario = [pesquisa];
-
             const nomeResponsePromises = NomeFuncionario.map(nome =>
                 fetch(`http://localhost:3000/funcionarios/${nome}`)
                     .then((response) => response.json())
@@ -20,32 +18,35 @@ const Pesquisa = ({ lista, nomeDrop }) => {
                     })
             );
 
-            const funcionariosPesquisa = await Promise.all(nomeResponsePromises)
+            const funcionariosPesquisa = await Promise.all(nomeResponsePromises);
 
-            // formatando os dados. (opcional)
             const funcionariosFormatados = funcionariosPesquisa.map(func => ({
-                nome: func.nome_funcionairo, //sim, o pedro digitou errado no banco
+                nome: func.nome_funcionairo,
                 link: func.imagem_url || 'https://img.freepik.com/fotos-premium/hamburguer-bonito-em-fundo-escuro_213607-15.jpg',
                 descricao: [
                     { texto: `Cargo: ${func.cargo_funcionario}` },
                     { texto: `Email: : ${func.email_funcionario}` },
                 ]
-            }))
+            }));
 
-            setFuncionarios(funcionariosFormatados);
+            // Em vez de setar localmente, envia para o pai
+            onResultado(funcionariosFormatados);
+
         } catch (error) {
             console.error('Erro ao buscar dados dos funcionários:', error)
         }
     }
 
     useEffect(() => {
-        const delayDebounceFn = setTimeout(() => {
-            if (pesquisa.length > 0) {
+        const delayDebounce = setTimeout(() => {
+            if (pesquisa.trim().length > 0) {
                 fetchFuncionarios();
+            } else {
+                onResultado([]); // limpa resultados se o campo for apagado
             }
-        }, 500); // espera 500ms depois do usuário parar de digitar
+        }, 500); // 500ms de debounce
 
-        return () => clearTimeout(delayDebounceFn); // limpa o timeout se digitar novamente
+        return () => clearTimeout(delayDebounce);
     }, [pesquisa]);
 
     return (
@@ -58,12 +59,9 @@ const Pesquisa = ({ lista, nomeDrop }) => {
                         type="text"
                         placeholder="Pesquisa"
                         className="rounded-5 shadow"
-                        onChange={(e) => {
-                            setPesquisa(e.target.value)
-                        }}
-                        style={{
-                            border: "none"
-                        }}
+                        value={pesquisa}        // <-- deixa o input controlado
+                        onChange={(e) => setPesquisa(e.target.value)}
+                        style={{ border: "none" }}
                     />
                     <Dropdown className="d-flex shadow rounded-5">
                         <Dropdown.Toggle variant="outline-primary rounded-5">

@@ -5,13 +5,14 @@ import CardGeral from '../../components/Cards/CardGeral'
 import { useEffect, useState } from 'react'
 
 const Funcionarios = () => {
+  const [funcionarios, setFuncionarios] = useState([]);
 
-  const [funcionarios, setFuncionarios] = useState([])
+  const handleResultadoPesquisa = (resultados) => {
+    setFuncionarios(resultados);
+  };
 
   const fetchFuncionarios = async () => {
     try {
-
-      // Aqui eu tive que definir os ids, pq agente não sabe como exatamente que o funcionário vai estar presente no relatório.
       const IDfuncionario = [1, 2, 3, 4];
 
       const responsePromises = IDfuncionario.map(id =>
@@ -22,24 +23,22 @@ const Funcionarios = () => {
           })
       );
 
-      // Vai esperar tudo ser puxado para rodar
-      const funcionariosData = await Promise.all(responsePromises)
+      const funcionariosData = await Promise.all(responsePromises);
 
-      // formatando os dados. (opcional)
       const funcionariosFormatados = funcionariosData.map(func => ({
-        nome: func.nome_funcionairo, //sim, o pedro digitou errado no banco
+        nome: func.nome_funcionairo,
         link: func.imagem_url || 'https://img.freepik.com/fotos-premium/hamburguer-bonito-em-fundo-escuro_213607-15.jpg',
         descricao: [
           { texto: `Cargo: ${func.cargo_funcionario}` },
           { texto: `Email: : ${func.email_funcionario}` },
         ]
-      }))
+      }));
 
       setFuncionarios(funcionariosFormatados);
     } catch (error) {
-      console.error('Erro ao buscar dados dos funcionários:', error)
+      console.error('Erro ao buscar dados dos funcionários:', error);
     }
-  }
+  };
 
   useEffect(() => {
     if (funcionarios.length === 0) {
@@ -50,24 +49,15 @@ const Funcionarios = () => {
   return (
     <div>
       <NavBar />
-
       <Container>
         <Pesquisa
           nomeDrop="Cargo"
           lista={[
-            {
-              texto: "ADM",
-              link: "#ADM"
-            },
-            {
-              texto: "Gerente",
-              link: "#gerente"
-            },
-            {
-              texto: "Funcionario",
-              link: "#funcionario"
-            }
+            { texto: "ADM", link: "#ADM" },
+            { texto: "Gerente", link: "#gerente" },
+            { texto: "Funcionario", link: "#funcionario" }
           ]}
+          onResultado={handleResultadoPesquisa}
         />
         <CardGeral
           filtro="Funcionarios"
@@ -75,7 +65,7 @@ const Funcionarios = () => {
         />
       </Container>
     </div>
-  )
-}
+  );
+};
 
 export default Funcionarios
