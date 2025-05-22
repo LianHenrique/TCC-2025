@@ -43,7 +43,7 @@ app.get('/funcionarios', (requisicao, resposta) => {
 
 
 // buscando todos os produtos
-app.get('/produtos', (requisicao, resposta) => {
+app.get('/produto', (requisicao, resposta) => {
     connection.query(
         'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM Produto',
         (error, resultados) => {
@@ -57,7 +57,7 @@ app.get('/produtos', (requisicao, resposta) => {
 
 
 //  buscando produto por ID
-app.get('/produtos/:id', (requisicao, resposta) => {
+app.get('/produto/:id', (requisicao, resposta) => {
     const { id } = requisicao.params;
 
     connection.query(

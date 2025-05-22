@@ -36,6 +36,17 @@ CREATE TABLE `funcionarios` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
+INSERT INTO Funcionarios (
+  id_funcionario, nome_funcionairo, cargo_funcionario, senha_funcionario, email_funcionario
+) VALUES
+(1, 'Ana Souza', 'Gerente', 123456, 'ana.souza@empresa.com'),
+(2, 'Carlos Lima', 'ADM', 234567, 'carlos.lima@empresa.com'),
+(3, 'Juliana Rocha', 'Funcionario', 345678, 'juliana.rocha@empresa.com'),
+(4, 'Marcos Silva', 'Funcionario', 456789, 'marcos.silva@empresa.com');
+
+
+select * from funcionarios;
+
 --
 -- Dumping data for table `funcionarios`
 --
