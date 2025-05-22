@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import CardsCurso from "../../components/Cards/CardsCurso";
-import CardsDescPlanoGratuito from "../../components/Cards/CardsDesc";
 import NavBar from "../../components/NavBar/NavBar";
 import styles from './Home.module.css'; // Usando CSS Modules
 
@@ -14,9 +12,10 @@ function Home() {
   const alternarTema = () => setTemaEscuro(prev => !prev);
 
   return (
-    <div className={styles.App}>
-      {/* Navegação */}
+    <div>
       <NavBar />
+      <div className={styles.App}>
+      {/* Navegação */}
 
       {/* Botão de alternância de tema */}
       <button className={styles['theme-toggle-button']} onClick={alternarTema}>
@@ -31,7 +30,7 @@ function Home() {
       </button>
 
       {/* Descrição principal */}
-<CardsDescPlanoGratuito 
+{/* <CardsDescPlanoGratuito 
   titulo={(
     <span className={styles.alexandria}>
       Gerencie o <strong className={styles.destaque}>estoque</strong> do seu negócio de maneira ágil
@@ -45,7 +44,7 @@ function Home() {
   botaoTxt={<button className={styles.botaoTesteGratis}>Teste grátis</button>}
   comBotão={true}
   txtComBotao="Experimente grátis por 30 dias"
-/>
+/> */}
 
 
       {/* Benefícios rápidos */}
@@ -56,7 +55,7 @@ function Home() {
       </div>
 
       {/* Planos */}
-      <CardsCurso 
+      {/* <CardsCurso 
         cards={[ 
           {
             titulo: "Grátis",
@@ -75,7 +74,8 @@ function Home() {
             req1: "Funcionalidades avançadas",
           },
         ]}
-      />
+      /> */}
+    </div>
     </div>
   );
 }
