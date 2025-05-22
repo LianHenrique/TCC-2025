@@ -20,10 +20,13 @@ const Pesquisa = ({lista, nomeDrop}) => {
                     <Form.Control
                         type="text"
                         placeholder="Pesquisa"
-                        className="rounded-3 shadow"
+                        className="rounded-5 shadow"
+                        style={{
+                            border: "none"
+                        }}
                     />
-                    <Dropdown className="d-flex shadow">
-                        <Dropdown.Toggle variant="outline-primary">
+                    <Dropdown className="d-flex shadow rounded-5">
+                        <Dropdown.Toggle variant="outline-primary rounded-5">
                             {nomeDrop}
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
@@ -38,7 +41,7 @@ const Pesquisa = ({lista, nomeDrop}) => {
                             ))}
                         </Dropdown.Menu>
                     </Dropdown>
-                    <Button className="shadow">
+                    <Button className="shadow rounded-5">
                         Cadastrar
                     </Button>
                 </FloatingLabel>

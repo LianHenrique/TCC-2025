@@ -1,7 +1,6 @@
-import { Button, Card, Container } from 'react-bootstrap'
+import { Container } from 'react-bootstrap'
 import NavBar from '../../components/NavBar/NavBar'
 import Pesquisa from '../../components/Pesquisa/Pesquisa'
-import { FaEdit, FaRegTrashAlt } from 'react-icons/fa'
 import CardGeral from '../../components/Cards/CardGeral'
 
 const Cardapio = () => {

@@ -1,23 +1,13 @@
 import { useState } from 'react';
 import Form from 'react-bootstrap/Form';
-import NavBar from '../../components/NavBar/NavBar';
 import '../Style/login.css'; // Importa o CSS
 
 const Cadastroprod = () => {
-    const [senha, setSenha] = useState(""); // alterado para numero de ingredientes
-    // const [confirmarSenha, setConfir] = useState(""); // posso tirar tbm
-    // const [email, setEmail] = useState(""); // posso tirar tbm 
-    const [nome, setNomeprod] = useState(""); // mantem e muda para nomeProd
-
-    // const validarEmail = (email) => {
-    //     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    //     return regex.test(email);
-    // };
+    const [senha, setSenha] = useState("");
+    const [nome, setNomeprod] = useState("");
 
     const Cadastrosprod = () => {
         const users = JSON.parse(localStorage.getItem("users")) || [];
-
-        // const usuarioExistente = users.find((user) => user.email === email);
 
         if (senha === "" || nome === "") {
             alert("Os campos não podem ser vazios")
