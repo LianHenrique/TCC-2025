@@ -1,36 +1,38 @@
 import { Button, Card } from 'react-bootstrap'
 import { FaEdit, FaRegTrashAlt } from 'react-icons/fa'
 
-const CardGeral = ({filtro, card}) => {
+const CardGeral = ({ filtro, card, ClassNameCard, ClassImg, enableOverflow = true, Desc }) => {
   return (
-    <div>
+    <div className={ClassNameCard}>
       <h2>{filtro}</h2>
       <div className='d-flex' style={{
-        overflowX:"auto",
-        borderRadius:"20px"
+        overflowX: enableOverflow ? "auto" : "visible",
+        borderRadius: "20px"
       }}>
-          {
-            card.map((item, index) => (
-              <Card 
+        {
+          card.map((item, index) => (
+            <Card
               key={index}
-              className='shadow'  
-              style={{ 
+              className={`shadow`}
+              style={{
                 minWidth: '15rem',
-                maxWidth: "15rem", 
+                maxWidth: "15rem",
                 border: "none",
-                borderRadius: "15px", 
-                margin: "6px", 
-                padding: "5px" 
-                }}>
-                <Card.Img 
-                style={{borderRadius: "10px"}} 
-                variant="top" 
-                src={item.link} />
+                borderRadius: "15px",
+                margin: "6px",
+                padding: "5px"
+              }}>
+              <div>
+                <Card.Img
+                  className={ClassImg}
+                  style={{ borderRadius: "10px" }}
+                  variant="top"
+                  src={item.link} />
                 <Card.Body>
                   <Card.Title>{item.nome}</Card.Title>
                   {
                     item.descricao.map((desc, index) => (
-                      <Card.Text key={index}>
+                      <Card.Text key={index} className={Desc}>
                         {desc.texto}
                       </Card.Text>
                     ))
@@ -46,9 +48,10 @@ const CardGeral = ({filtro, card}) => {
                     <FaRegTrashAlt />
                   </Button>
                 </Card.Body>
-              </Card>
-            ))
-          }
+              </div>
+            </Card>
+          ))
+        }
       </div>
     </div>
   )

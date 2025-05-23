@@ -61,16 +61,18 @@ app.get('/produto/:id', (requisicao, resposta) => {
     const { id } = requisicao.params;
 
     connection.query(
-        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM Produto WHERE id_produto = ?',
+        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM produto WHERE id_produto = ?',
         [id],
         (error, resultados) => {
             if (error) {
+                console.log("Erro na query:", error)
                 return resposta.status(500).json({ error: 'Erro ao buscar produto' });
             }
             if (resultados.length === 0) {
                 return resposta.status(404).json({ error: 'Produto não encontrado' });
             }
-            resposta.json(resultados[0]);
+            console.log("Resultado encontrado:", resultados)
+            resposta.json(resultados);
         }
     );
 });

@@ -1,0 +1,38 @@
+.Container{
+    display: flex;
+    align-items: center;
+    margin-top: 10vh;
+}
+
+.corpo_card{
+    margin-top: 60vh;
+    border: solid 5px blueviolet;
+}
+
+.img{
+    position: relative;
+    top: -57vh;
+    left: 4.5vw;
+    height: 60vh;
+    width: 30vw;
+    box-shadow: 5px 6px 9px rgba(0, 0, 0, 0.4);
+}
+
+.descricao{
+    position: relative;
+    font-size: 1.5em;
+    margin-bottom: 63rem;
+    left: 23vw;
+}
+
+ul{
+    /* border: solid 2px blueviolet; */
+    margin-bottom: 55rem;
+    margin-right: 15vw;
+}
+
+.desc{
+    position: relative;
+    left: 42vw;
+    bottom: 50em;
+}
