@@ -78,6 +78,7 @@ const Visualizar = () => {
                         ClassImg={style.img}
                         enableOverflow={false}
                         Desc={style.desc}
+                        ClassTitulo={style.titulo}
                     />
                 )}
             </Container>

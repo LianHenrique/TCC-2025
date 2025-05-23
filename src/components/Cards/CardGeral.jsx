@@ -1,7 +1,7 @@
 import { Button, Card } from 'react-bootstrap'
 import { FaEdit, FaRegTrashAlt } from 'react-icons/fa'
 
-const CardGeral = ({ filtro, card, ClassNameCard, ClassImg, enableOverflow = true, Desc }) => {
+const CardGeral = ({ filtro, card, ClassNameCard, ClassTitulo , ClassImg, enableOverflow = true, Desc }) => {
   return (
     <div className={ClassNameCard}>
       <h2>{filtro}</h2>
@@ -29,7 +29,7 @@ const CardGeral = ({ filtro, card, ClassNameCard, ClassImg, enableOverflow = tru
                   variant="top"
                   src={item.link} />
                 <Card.Body>
-                  <Card.Title>{item.nome}</Card.Title>
+                  <Card.Title className={ClassTitulo}>{item.nome}</Card.Title>
                   {
                     item.descricao.map((desc, index) => (
                       <Card.Text key={index} className={Desc}>
