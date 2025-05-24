@@ -2,8 +2,9 @@ import React, { useEffect, useState } from 'react';
 
 // UseState cria variáveis que mudam com o tempo.
 // UseEffect executa algo enquanto a página carrega
-
 import CardGeral from '../components/Cards/CardGeral';
+
+
 
 function App() {
 
@@ -25,39 +26,45 @@ function App() {
     }, [])
 
 
+
     // Esse é para a tela de visualizar
     useEffect(() => {
         fetch('http://localhost:3000/produto')
             .then(response => response.json())
 
             .then(data => {
+              console.log("Dado bruto recebido:", data)
+                // Se for indefinido, retorno um array vazio.
+
+                if (!data){
+                    setProdutos([]);
+                    setLoading(false);
+                    setError('Não encontrado')
+                    return;
+                }
+
                 const produtosFormatados = Array.isArray(data) ? data.map(produto => ({
                     nome: produto.nome_produto || 'Sem nome',
-                    link: 'https://via.placeholder.com/150',
+                    link: produto.imagem_url || 'https://via.placeholder.com/150',
                     descricao: [
                         { texto: `Quantidade ${produto.QTD_produto}` },
                         { texto: `Entrada ${new Date(produto.QTD_entrada_produto).toLocaleDateString()}` },
-                        { texto: `Vencimento: ${new Date(produto.data_vencimento_prod).toLocaleDateString()}` }
+                        { texto: `Vencimento: ${new Date(produto.data_vencimento_prod).toLocaleDateString()}`},
+                        { texto: `Descrição: ${produto.descricao_produto ?? 'N/A'}`}
                     ]
                 })) : []
-
+              console.log('Produtos formatados:', produtosFormatados)
               setProdutos(produtosFormatados);
             })
             .catch(error => console.log("Erro ao buscar produto", error))
     }, [])
 
-    
+
+
     return (
         <div className='CardFuncionario'>
             <CardGeral filtro="funcionarios" card={funcionarios} />
-
-            {loading ? (
-                <p>Carrefando produto...</p>
-            ) : !produtos.length ? (
-                <p>Nenhum produto encontrado</p>
-            ) : (
-                <CardGeral filtro="produtos" card={produtos} />
-            )}
+            <CardGeral filtro="produtos" card={produtos} />
         </div>
     )
 

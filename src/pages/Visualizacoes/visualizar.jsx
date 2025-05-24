@@ -3,6 +3,7 @@ import Navbar from '../../components/NavBar/NavBar'
 import CardGeral from '../../components/Cards/CardGeral'
 import { Container } from 'react-bootstrap'
 import style from './visualizar.module.css'
+import { useParams } from 'react-router'
 
 // tem que pegar o id da tela de cardápio, props.
 const Visualizar = () => {
@@ -11,51 +12,59 @@ const Visualizar = () => {
 
     // Eu personalizei essse código apenas para testar se a requisição tá certa e fazer a bomba do css logo, por que ele não tá integrado nem com funcionário e nem com cardápio , pq fazer isso sem ter o código pronto é difícl demais. :/
 
-    const id = 1
+    const { id } = useParams();
     const [produtos, setProdutos] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
 
     useEffect(() => {
-        console.log("Use effect disparou. id igual a:", id)
+        console.log("Use effect disparou. id igual a:", id);
 
         if (!id) {
             setProdutos([]);
             setLoading(false);
-            return
+            return;
         }
 
         fetch(`http://localhost:3000/produto/${id}`)
             .then(response => {
-                if (!response.ok) throw new Error('Produto não encontrado')
-                return response.json()
+                if (!response.ok) throw new Error('Produto não encontrado');
+                return response.json();
             })
             .then(data => {
-                const produtoArray = Array.isArray(data) ? data : [data]
-                const produtosFormatados = produtoArray.map(produto => ({
+                console.log('Data bruto recebido:', data);
+
+                // Corrige se o backend retornou apenas um objeto
+                const produto = Array.isArray(data) ? data[0] : data;
+
+                const imagemValida = produto.imagem_url && produto.imagem_url.trim() !== ''
+                    ? `${produto.imagem_url}?t=${new Date().getTime()}`
+                    : 'https://www.valuehost.com.br/blog/wp-content/uploads/2022/01/post_thumbnail-77d8f2a95f2f41b5863f3fba5a261d7e.jpeg.webp';
+
+                const produtoFormatado = {
                     nome: produto.nome_produto || 'Sem nome',
-                    link: 'https://cdn.oantagonista.com/uploads/2024/10/Coca-Cola_1729950505807-1024x576.jpg',
+                    link: imagemValida,
                     descricao: [
                         { texto: `Quantidade: ${produto.QTD_produto ?? 'N/A'}` },
                         { texto: `Entrada: ${produto.QTD_entrada_produto ? new Date(produto.QTD_entrada_produto).toLocaleDateString() : 'N/A'}` },
                         { texto: `Vencimento: ${produto.data_vencimento_prod ? new Date(produto.data_vencimento_prod).toLocaleDateString() : 'N/A'}` },
+                        { texto: `Descrição: ${produto.descricao_produto ?? 'N/A'}` }
                     ]
+                };
 
-                }))
-                // Vendo se passou
-                console.log('Dados recebidos:', produtosFormatados)
-
-                setProdutos(produtosFormatados)
-                setLoading(false)
-                setError(null)
+                console.log('Dados recebidos formatados:', produtoFormatado);
+                setProdutos([produtoFormatado]); // coloca em array porque CardGeral espera um array
+                setLoading(false);
+                setError(null);
             })
             .catch(error => {
-                console.log("ERro ao buscar produto", error)
-                setProdutos([])
-                setLoading(false)
-                setError(error.message)
-            })
-    }, [id])
+                console.log("Erro ao buscar produto", error);
+                setProdutos([]);
+                setLoading(false);
+                setError(error.message);
+            });
+    }, [id]);
+
 
     if (loading) return <p>Carregando produto...</p>
     if (error) return <p>{error}</p>
@@ -82,6 +91,7 @@ const Visualizar = () => {
                     />
                 )}
             </Container>
+            <p className={style.title}>Descrição do insumo:</p>
         </div>
 
     )

@@ -1,7 +1,7 @@
 import { Button, Card } from 'react-bootstrap'
 import { FaEdit, FaRegTrashAlt } from 'react-icons/fa'
 
-const CardGeral = ({ filtro, card, ClassNameCard, ClassTitulo , ClassImg, enableOverflow = true, Desc }) => {
+const CardGeral = ({ filtro, card, ClassNameCard, ClassTitulo , ClassImg, enableOverflow = true, Desc, onCardClick }) => {
   return (
     <div className={ClassNameCard}>
       <h2>{filtro}</h2>
@@ -14,6 +14,7 @@ const CardGeral = ({ filtro, card, ClassNameCard, ClassTitulo , ClassImg, enable
             <Card
               key={index}
               className={`shadow`}
+              onClick={() => onCardClick && onCardClick(item.id)}
               style={{
                 minWidth: '15rem',
                 maxWidth: "15rem",

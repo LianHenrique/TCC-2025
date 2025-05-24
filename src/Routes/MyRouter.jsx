@@ -47,7 +47,7 @@ const MyRouter = createBrowserRouter([
                 element: <Cardapio />
             },
             {
-                path: "/visualizar",
+                path: "/visualizar/:id",
                 element: <Visualizar/>
             }
         ]

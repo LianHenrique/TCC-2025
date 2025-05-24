@@ -45,7 +45,7 @@ app.get('/funcionarios', (requisicao, resposta) => {
 // buscando todos os produtos
 app.get('/produto', (requisicao, resposta) => {
     connection.query(
-        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM Produto',
+        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, imagem_url, data_vencimento_prod, descricao_produto FROM Produto',
         (error, resultados) => {
             if (error) {
                 return resposta.status(500).json({ error: 'Erro ao buscar produtos' });
@@ -61,7 +61,7 @@ app.get('/produto/:id', (requisicao, resposta) => {
     const { id } = requisicao.params;
 
     connection.query(
-        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM produto WHERE id_produto = ?',
+        'SELECT * FROM produto WHERE id_produto = ?',
         [id],
         (error, resultados) => {
             if (error) {
@@ -71,11 +71,28 @@ app.get('/produto/:id', (requisicao, resposta) => {
             if (resultados.length === 0) {
                 return resposta.status(404).json({ error: 'Produto não encontrado' });
             }
-            console.log("Resultado encontrado:", resultados)
-            resposta.json(resultados);
+            console.log("Resultado encontrado:", resultados[0])
+            console.log("Produto retornado do MySQL:", resultados[0]);
+            resposta.json(resultados[0]);
         }
     );
 });
+
+
+// Buscando todos os itens do cardápio
+// No select eu só peguei o que importa pra a parte fake 
+
+app.get('cardapio', (requisicao, resposta) => {
+    connection.query(
+        'SELECT nome_c_produto, descri_prod_insumos',
+        (error, resultados) => {
+            if(error){
+                return resposta.status(500).json({ error: 'Erro ao buscar produtos' });
+            }
+            resposta.json(resultados);
+        }
+    )
+})
 
 
 const PORTA = 3000;
