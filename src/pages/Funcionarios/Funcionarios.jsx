@@ -1,14 +1,15 @@
-import { Container } from 'react-bootstrap'
-import NavBar from '../../components/NavBar/NavBar'
-import Pesquisa from '../../components/Pesquisa/Pesquisa'
-import CardGeral from '../../components/Cards/CardGeral'
-import { useEffect, useState } from 'react'
+import { Container } from 'react-bootstrap';
+import NavBar from '../../components/NavBar/NavBar';
+import Pesquisa from '../../components/Pesquisa/Pesquisa';
+import CardGeral from '../../components/Cards/CardGeral';
+import { useEffect, useState, useMemo } from 'react';
 
 const Funcionarios = () => {
   const [funcionarios, setFuncionarios] = useState([]);
+  const [filtroCargo, setFiltroCargo] = useState("");
 
   const handleResultadoPesquisa = (resultados) => {
-    setFuncionarios(resultados);
+    setFiltroCargo(resultados);
   };
 
   const fetchFuncionarios = async () => {
@@ -26,11 +27,11 @@ const Funcionarios = () => {
       const funcionariosData = await Promise.all(responsePromises);
 
       const funcionariosFormatados = funcionariosData.map(func => ({
-        nome: func.nome_funcionairo,
+        nome: func.nome_funcionario,
         link: func.imagem_url || 'https://img.freepik.com/fotos-premium/hamburguer-bonito-em-fundo-escuro_213607-15.jpg',
         descricao: [
           { texto: `Cargo: ${func.cargo_funcionario}` },
-          { texto: `Email: : ${func.email_funcionario}` },
+          { texto: `Email: ${func.email_funcionario}` },
         ]
       }));
 
@@ -41,10 +42,18 @@ const Funcionarios = () => {
   };
 
   useEffect(() => {
-    if (funcionarios.length === 0) {
-      fetchFuncionarios();
-    }
+    fetchFuncionarios();
   }, []);
+
+  const funcionariosFiltrados = useMemo(() => {
+    if (!filtroCargo) return funcionarios;
+    return funcionarios.filter(func =>
+      func.descricao.some(d =>
+        typeof d.texto === 'string' &&
+        d.texto.toLowerCase().includes(filtroCargo.toLowerCase())
+      )
+    );
+  }, [filtroCargo, funcionarios]);
 
   return (
     <div>
@@ -61,11 +70,11 @@ const Funcionarios = () => {
         />
         <CardGeral
           filtro="Funcionarios"
-          card={funcionarios}
+          card={funcionariosFiltrados}
         />
       </Container>
     </div>
   );
 };
 
-export default Funcionarios
+export default Funcionarios;
