@@ -71,7 +71,7 @@ const Visualizar = () => {
 
     return (
 
-        <div>
+        <div className={style.teste}>
             <Navbar />
             <Container className={style.Container}>
                 {/* Se o id for vazio, então: */}
@@ -83,11 +83,14 @@ const Visualizar = () => {
                     <CardGeral
                         filtro={null}
                         card={produtos}
-                        ClassNameCard={style.corpo_card}
+                        ClassNameCard={style.corpo_card} 
                         ClassImg={style.img}
                         enableOverflow={false}
                         Desc={style.desc}
                         ClassTitulo={style.titulo}
+
+                        // O que eu tenho que fazer: eu tenho que arrumar um jeito de deixar o .corpo.card com a mesma cor da tela de fundo
+                        // e quando eu conseguir deixar com a mesma cor eu tenho que tirar a borda
                     />
                 )}
             </Container>
