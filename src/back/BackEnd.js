@@ -82,9 +82,9 @@ app.get('/produto/:id', (requisicao, resposta) => {
 // Buscando todos os itens do cardápio
 // No select eu só peguei o que importa pra a parte fake 
 
-app.get('cardapio', (requisicao, resposta) => {
+app.get('/cardapio', (requisicao, resposta) => {
     connection.query(
-        'SELECT nome_c_produto, descri_prod_insumos',
+        'SELECT * FROM cardapio',
         (error, resultados) => {
             if(error){
                 return resposta.status(500).json({ error: 'Erro ao buscar produtos' });

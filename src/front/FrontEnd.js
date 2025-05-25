@@ -10,6 +10,7 @@ function App() {
 
     const [funcionarios, setFuncionarios] = useState([])
     const [produtos, setProdutos] = useState([])
+    const [cardapio, setCardapio] = useState([])
     const [loading, setLoading] = useState(true)
 
 
@@ -33,10 +34,10 @@ function App() {
             .then(response => response.json())
 
             .then(data => {
-              console.log("Dado bruto recebido:", data)
+                console.log("Dado bruto recebido:", data)
                 // Se for indefinido, retorno um array vazio.
 
-                if (!data){
+                if (!data) {
                     setProdutos([]);
                     setLoading(false);
                     setError('Não encontrado')
@@ -49,14 +50,35 @@ function App() {
                     descricao: [
                         { texto: `Quantidade ${produto.QTD_produto}` },
                         { texto: `Entrada ${new Date(produto.QTD_entrada_produto).toLocaleDateString()}` },
-                        { texto: `Vencimento: ${new Date(produto.data_vencimento_prod).toLocaleDateString()}`},
-                        { texto: `Descrição: ${produto.descricao_produto ?? 'N/A'}`}
+                        { texto: `Vencimento: ${new Date(produto.data_vencimento_prod).toLocaleDateString()}` },
+                        { texto: `Descrição: ${produto.descricao_produto ?? 'N/A'}` }
                     ]
                 })) : []
-              console.log('Produtos formatados:', produtosFormatados)
-              setProdutos(produtosFormatados);
+                console.log('Produtos formatados:', produtosFormatados)
+                setProdutos(produtosFormatados);
             })
             .catch(error => console.log("Erro ao buscar produto", error))
+    }, [])
+
+
+
+    // Para a tela de cardapio
+    useEffect(() => {
+        fetch('http://localhost:3000/cardapio')
+            .then(resposta => resposta.json())
+            .then(data => {
+                console.log("Cardápio bruto:", data)
+                const cardapioFormatado = data.map(item => ({
+                    nome: produto.nome_c_produto || 'Sem nome',
+                    link: produto.link_prod_cardapio || 'https://via.placeholder.com/150',
+                    descricao: [
+                        { texto: `Nome: ${produto.nome_c_produto}` },
+                        { texto: `Ingredientes: ${produto.descri_prod_insumos}` }
+                    ],
+                }))
+                setCardapio(cardapioComFormatacao)
+            })
+            .catch(error => console.log("Erro ao buscar produto:", error))
     }, [])
 
 
@@ -65,6 +87,7 @@ function App() {
         <div className='CardFuncionario'>
             <CardGeral filtro="funcionarios" card={funcionarios} />
             <CardGeral filtro="produtos" card={produtos} />
+            <CardGeral filtro="cardapio" card={cardapio} />
         </div>
     )
 
