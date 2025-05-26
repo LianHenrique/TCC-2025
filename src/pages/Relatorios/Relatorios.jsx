@@ -80,10 +80,10 @@ const Relatorios = () => {
       <section>
 
       {/* Não tá bonito pq o foco primordial é fazer ele funcional */}
-        <CardGeral
+        {/* <CardGeral
           filtro="Funcionários"
           card={funcionarios}
-        />
+        /> */}
 
       </section>
 

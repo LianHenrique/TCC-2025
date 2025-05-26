@@ -79,9 +79,9 @@ app.get('/produtos/:id_produto', (requisicao, resposta) => {
 });
 
 // buscando todos os produtos
-app.get('/produtos', (requisicao, resposta) => {
+app.get('/produto', (requisicao, resposta) => {
     connection.query(
-        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM Produto',
+        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, imagem_url, data_vencimento_prod, descricao_produto FROM Produto',
         (error, resultados) => {
             if (error) {
                 return resposta.status(500).json({ error: 'Erro ao buscar produtos' });

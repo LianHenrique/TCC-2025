@@ -8,6 +8,7 @@ import Cadastro from "../pages/Cadastro/Cadastro"
 import Relatorios from "../pages/Relatorios/Relatorios"
 import Cardapio from "../pages/Cardapio/Cardapio"
 import Cadastroprod from "../pages/Cadastro/Cadastro_prod"
+import Visualizar from "../pages/Visualizacoes/visualizar"
 
 const MyRouter = createBrowserRouter([
     {
@@ -50,6 +51,10 @@ const MyRouter = createBrowserRouter([
                 path: "/cardapio",
                 element: <Cardapio />
             },
+            {
+                path: "/visualizar/:id",
+                element: <Visualizar/>
+            }
         ]
     }
 ])

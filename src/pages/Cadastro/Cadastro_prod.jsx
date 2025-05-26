@@ -2,6 +2,7 @@ import { useState } from 'react';
 import '../Style/login.css'; // Importa o CSS
 import NavBar from '../../components/NavBar/NavBar';
 import { Button, Container, Dropdown, FloatingLabel, Form } from 'react-bootstrap';
+import Filtro from '../../components/Filtro/Filtro';
 
 const Cadastroprod = () => {
 
@@ -70,23 +71,18 @@ const Cadastroprod = () => {
             />
           </FloatingLabel>
 
-          <Dropdown 
-          className="m-2 mt-3 rounded-5">
-            <Dropdown.Toggle 
-            variant="outline-primary rounded-5"
-            style={{
-            padding: "16px 12px"
-          }}>
-              Filtro
-            </Dropdown.Toggle>
-            <Dropdown.Menu className="rounded-5">
-              <Dropdown.Item
-                to="#"
-                className="dropdown-item">
-                Carnes
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
+          <Filtro 
+          nome="Filtro"
+          lista={[
+            {
+              link:"#",
+              texto:"Carnes"
+            },
+            {
+              link:"#",
+              texto:"Saladas"
+            },
+          ]}/>
 
           <Button
             className="shadow mt-4"

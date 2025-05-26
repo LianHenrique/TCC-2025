@@ -3,7 +3,7 @@ import NavBar from '../../components/NavBar/NavBar'
 import Pesquisa from '../../components/Pesquisa/Pesquisa'
 import CardGeral from '../../components/Cards/CardGeral'
 
-const Cardapio = () => {
+const Cardapio = () => { 
   return (
     <div>
         <NavBar />
