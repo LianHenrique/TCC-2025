@@ -105,7 +105,7 @@ const Cadastro = () => {
                   </Form.Group>
                   
             </Form>
-            <button variant="primary" style={{ width: '100%', backgroundColor: '#3840BA' }} onClick={Cadastros} onClickCapture={() => navigate('/Mecanica')}>Entrar</button>
+            <button variant="primary" style={{ width: '100%', backgroundColor: '#3840BA',color: '#fff' }} onClick={Cadastros} onClickCapture={() => navigate('/Mecanica')}>Entrar</button>
     </div>
     </div>
 

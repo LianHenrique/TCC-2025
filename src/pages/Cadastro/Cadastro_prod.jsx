@@ -5,14 +5,7 @@ import '../Style/login.css'; // Importa o CSS
 
 const Cadastroprod = () => {
     const [senha, setSenha] = useState(""); // alterado para numero de ingredientes
-    // const [confirmarSenha, setConfir] = useState(""); // posso tirar tbm
-    // const [email, setEmail] = useState(""); // posso tirar tbm 
     const [nome, setNomeprod] = useState(""); // mantem e muda para nomeProd
-
-    // const validarEmail = (email) => {
-    //     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    //     return regex.test(email);
-    // };
 
     const Cadastrosprod = () => {
         const users = JSON.parse(localStorage.getItem("users")) || [];
@@ -51,7 +44,7 @@ const Cadastroprod = () => {
             <div className="login-box">
                 <h2>Cadastro</h2>
 
-                <NavBar />
+                <Lay />
                 <Form>
                     <Form.Group className="mb-3" controlId="formGroupEmail">
                         <Form.Label>NomeProd</Form.Label>
@@ -70,7 +63,7 @@ const Cadastroprod = () => {
                         <Form.Control type="text" placeholder='Valor produto' value={senha} onChange={(e) => setSenha(e.target.value)} />
                     </Form.Group>
                 </Form>
-                <button variant="primary" style={{ width: '100%', backgroundColor: '#3840BA' }} onClick={Cadastrosprod} onClickCapture={() => navigate('/')}>Entrar</button>
+                <button variant="primary" style={{ width: '100%', backgroundColor: '#3840BA', color: '#fff' }} onClick={Cadastrosprod} onClickCapture={() => navigate('/')}>Entrar</button>
             </div>
         </div>
 

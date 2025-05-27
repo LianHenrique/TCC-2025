@@ -48,7 +48,7 @@ const Login = () => {
         
          <div className="login-bg">
             <div className="login-box">
-        <Lay/>
+        <NavBar/>
         <h2>Login</h2>
             <Form>
                   <Form.Group className="mb-3" controlId="formGroupEmail">
@@ -62,7 +62,7 @@ const Login = () => {
                  
             </Form>
              
-            <button variant="primary" style={{ width: '100%', backgroundColor: '#3840BA' }}>Entrar</button>
+            <button variant="primary" style={{ width: '100%', backgroundColor: '#3840BA',color: '#fff' }}>Entrar</button>
 
             {verificacao.ok && navigate('/')}
         </div>
