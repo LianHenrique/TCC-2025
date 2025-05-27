@@ -51,7 +51,7 @@ const Cadastroprod = () => {
             <div className="login-box">
                 <h2>Cadastro</h2>
 
-                <Lay />
+                <NavBar />
                 <Form>
                     <Form.Group className="mb-3" controlId="formGroupEmail">
                         <Form.Label>NomeProd</Form.Label>

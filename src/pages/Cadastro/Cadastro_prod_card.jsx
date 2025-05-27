@@ -27,8 +27,8 @@ const Cadastro = () => {
             setSenha("");
             return;
         } 
-        if(senha.length < 8){
-            alert ("A senha deve ter no mínimo 8 caracteres")
+        if(senha.length < 1){
+            alert ("A senha deve ter no mínimo 1 caracteres")
             setConfir("");
             setEmail("");
             setNome("");
@@ -88,21 +88,18 @@ const Cadastro = () => {
        <NavBar/>
             <Form>
                   <Form.Group className="mb-3" controlId="formGroupEmail">
-                             <Form.Label>Email</Form.Label>
-                             <Form.Control type="text" placeholder='Email' value={email} onChange={(e) => setEmail(e.target.value) } />
+                             <Form.Label>Produto_cardapio</Form.Label>
+                             <Form.Control type="text" placeholder='Nome do produto' value={nome} onChange={(e) => setNome(e.target.value) } />
                   </Form.Group>
                   <Form.Group className="mb-3" controlId="formGroupPassword">
-                            <Form.Label>Senha</Form.Label>
-                            <Form.Control type="password" placeholder='Senha' value={senha} onChange={(e) => setSenha(e.target.value)} />
+                            <Form.Label>Quantdade_produto</Form.Label>
+                            <Form.Control type="text" placeholder='Digite a qunatidade do produto' value={senha} onChange={(e) => setSenha(e.target.value)} />
                   </Form.Group>
                    <Form.Group className="mb-3" controlId="formGroupPassword">
-                            <Form.Label>Confirmar Senha</Form.Label>
-                            <Form.Control type="password" placeholder='Confirmar Senha' value={confirmarSenha} onChange={(e) => setConfir(e.target.value)}/>
+                            <Form.Label>Descrção produtos </Form.Label>
+                            <Form.Control type="text" placeholder='EScreva uma descrição do produto' value={nome} onChange={(e) => setConfir(e.target.value)}/>
                   </Form.Group>
-                  <Form.Group className="mb-3" controlId="formGroupPassword">
-                            <Form.Label>Cargo</Form.Label>
-                            <Form.Control type="text" placeholder='Digite a função do funcionario' value={nome} onChange={(e) => setNome(e.target.value)}/>
-                  </Form.Group>
+                
                   
             </Form>
             <button variant="primary" style={{ width: '100%', backgroundColor: '#3840BA' }} onClick={Cadastros} onClickCapture={() => navigate('/Mecanica')}>Entrar</button>
