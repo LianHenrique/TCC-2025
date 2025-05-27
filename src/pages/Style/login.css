@@ -1,15 +1,25 @@
 .login-bg {
   min-height: 100vh;
-  background: #1a237e;
+  background: #fff; /* Fundo branco */
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .login-box {
-  background: #e3e8fd;
-  padding: 40px 30px;
-  border-radius: 12px;
-  box-shadow: 0 4px 24px rgba(0,0,0,0.15);
-  min-width: 350px;
+  background: #fff; /* Box branco */
+  padding: 100px 120px; /* Espaçamento interno maior */
+  border-radius: 16px;
+  box-shadow: 0 6px 32px rgba(26, 35, 126, 0.10), 0 1.5px 6px rgba(0,0,0,0.06);
+  min-width: 720px; /* Aumenta a largura mínima */
+  min-height: 1020px; /* Aumenta a altura mínima */
+  border: 1.5px solid #e3e8fd; /* Borda sutil */
+  transition: box-shadow 0.3s;
+  display: flex;
+  flex-direction: column;
+  gap: 70px; /* Espaçamento entre os componentes internos */
+}
+
+.login-box:hover {
+  box-shadow: 0 12px 40px rgba(26, 35, 126, 0.15), 0 2px 8px rgba(0,0,0,0.10);
 }
