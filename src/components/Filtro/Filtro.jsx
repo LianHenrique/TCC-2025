@@ -1,4 +1,4 @@
-import { Dropdown } from "react-bootstrap"
+import { Button, Dropdown } from "react-bootstrap"
 
 const Filtro = (nome, lista) => {
     return (

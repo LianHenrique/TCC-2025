@@ -71,18 +71,70 @@ const Cadastroprod = () => {
             />
           </FloatingLabel>
 
-          <Filtro 
-          nome="Filtro"
-          lista={[
-            {
-              link:"#",
-              texto:"Carnes"
-            },
-            {
-              link:"#",
-              texto:"Saladas"
-            },
-          ]}/>
+          <FloatingLabel
+            controlId="floatingInput"
+            label="Quantidade"
+            className="m-2">
+            <Form.Control
+              type="Senha"
+              placeholder="Quantidade"
+              className="rounded-5 shadow mt-3"
+              style={{
+                border: "none"
+              }}
+            />
+          </FloatingLabel>
+
+          <div
+            className="d-flex m-2"
+            style={{
+              alignContent:"center"
+            }}>
+            <Dropdown
+              className="d-flex shadow rounded-5 mt-2"
+              style={{
+                width: "150px",
+                height: "60px"
+              }}>
+              <Dropdown.Toggle
+                variant="outline-primary rounded-5"
+                style={{
+                  width: "150px",
+                  height: "60px"
+                }}>
+                Filtro
+              </Dropdown.Toggle>
+              <Dropdown.Menu
+              className='rounded-3'>
+                <Dropdown.Item
+                  to=""
+                  className="dropdown-item rounded-5"
+                >
+                  Carnes
+                </Dropdown.Item>
+                <Dropdown.Item
+                  to=""
+                  className="dropdown-item rounded-5"
+                >
+                  Bebidas
+                </Dropdown.Item>
+                <Dropdown.Item
+                  to=""
+                  className="dropdown-item rounded-5"
+                >
+                  Saladas
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+            <Button
+              className="rounded-5 m-2 mt-2 fs-2"
+              style={{
+                width: "60px",
+                height: "60px"
+              }}>
+              +
+            </Button>
+          </div>
 
           <Button
             className="shadow mt-4"
@@ -97,6 +149,7 @@ const Cadastroprod = () => {
           <Button
             className="shadow mt-4"
             variant='outline-primary'
+            href="/estoque"
             style={{
               padding: "15px",
               width: "90%",

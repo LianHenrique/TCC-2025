@@ -105,11 +105,12 @@ const Login = () => {
               borderRadius: "30px",
               marginLeft: "20px"
             }}>
-            Cadastrar
+            Entrar
           </Button>
           <Button
             className="shadow mt-4"
             variant='outline-primary'
+            href="/home"
             style={{
               padding: "15px",
               width: "90%",
@@ -118,6 +119,10 @@ const Login = () => {
             }}>
             Voltar
           </Button>
+          <p
+          className="m-2"
+          href="/cadastro"
+          >Cadastrar-se</p>
         </Form>
       </Container>
     </div>

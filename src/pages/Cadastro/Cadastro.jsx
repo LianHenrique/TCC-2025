@@ -112,6 +112,7 @@ const Cadastro = () => {
           <Button
             className="shadow mt-4"
             variant='outline-primary'
+            href="/home"
             style={{
               padding: "15px",
               width: "90%",
