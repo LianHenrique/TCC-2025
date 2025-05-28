@@ -26,20 +26,6 @@ const Cardapio = () => {
           }
         ]}
         />
-        <CardGeral 
-        filtro=""
-        card={[
-          {
-            nome:"",
-            link:"",
-            descricao:[
-              {
-                texto:"",
-              }
-            ]
-          }
-        ]}
-        />
         </Container>
     </div>
   )
