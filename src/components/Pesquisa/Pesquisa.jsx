@@ -51,7 +51,7 @@ const Pesquisa = ({ lista, nomeDrop, onResultado }) => {
   };
 
   return (
-    <div style={{ marginTop: "100px" }}>
+    <div style={{ marginTop: "200px" }}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <FloatingLabel controlId="floatingInput" label="Pesquisa" className="m-2 d-flex gap-3">
           <Form.Control
