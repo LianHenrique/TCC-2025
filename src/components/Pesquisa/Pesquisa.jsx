@@ -1,61 +1,13 @@
 import { Button, Dropdown, FloatingLabel, Form } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 
-const Pesquisa = ({ lista, nomeDrop, onResultado, link }) => {
-  const { register, handleSubmit } = useForm();
-  const [pesquisa, setPesquisa] = useState("");
-
-  const fetchFuncionarios = async () => {
-    try {
-      const NomeFuncionario = [pesquisa];
-      const nomeResponsePromises = NomeFuncionario.map(nome =>
-        fetch(`http://localhost:3000/funcionarios/${nome}`)
-          .then(response => response.json())
-          .catch(error => {
-            console.error("Erro ao buscar funcionário:", error);
-          })
-      );
-
-      const funcionariosPesquisa = await Promise.all(nomeResponsePromises);
-
-      const funcionariosFormatados = funcionariosPesquisa.map(func => ({
-        nome: func.nome_funcionario,
-        link: func.imagem_url || "https://img.freepik.com/fotos-premium/hamburguer-bonito-em-fundo-escuro_213607-15.jpg",
-        descricao: [
-          { texto: `Cargo: ${func.cargo_funcionario}` },
-          { texto: `Email: ${func.email_funcionario}` },
-        ]
-      }));
-
-      onResultado(funcionariosFormatados);
-    } catch (error) {
-      console.error("Erro ao buscar dados dos funcionários:", error);
-    }
-  };
-
-  useEffect(() => {
-    const delayDebounce = setTimeout(() => {
-      if (pesquisa.trim().length > 0) {
-        fetchFuncionarios();
-      } else {
-        onResultado([]);
-      }
-    }, 500);
-
-    return () => clearTimeout(delayDebounce);
-  }, [pesquisa]);
-
-  const onSubmit = data => {
-    setPesquisa(data.pesquisa);
-  };
+const Pesquisa = ({ lista, nomeDrop, navega }) => {
+  const { register } = useForm();
 
   return (
-    <div
-      className="d-flex"
-      style={{
-        marginTop: "100px",
-        position: "absolute"
-      }}>
+    <div style={{
+      marginTop: "150px"
+    }}>
       <FloatingLabel controlId="floatingInput" label="Pesquisa" className="m-2 d-flex gap-3">
         <Form.Control
           type="text"
@@ -64,11 +16,19 @@ const Pesquisa = ({ lista, nomeDrop, onResultado, link }) => {
           {...register("pesquisa")}
           style={{ border: "none" }}
         />
-        <Dropdown className="d-flex shadow rounded-5">
-          <Dropdown.Toggle variant="outline-primary rounded-5">
+        <Dropdown
+          className="d-flex shadow rounded-5"
+          style={{
+            width: "160px"
+          }}>
+          <Dropdown.Toggle
+            variant="outline-primary rounded-5"
+            style={{
+              width: "160px"
+            }}>
             {nomeDrop}
           </Dropdown.Toggle>
-          <Dropdown.Menu className="rounded-5">
+          <Dropdown.Menu className="rounded-3">
             {lista.map((item, index) => (
               <Dropdown.Item key={index} to={item.link} className="dropdown-item">
                 {item.texto}
@@ -76,11 +36,15 @@ const Pesquisa = ({ lista, nomeDrop, onResultado, link }) => {
             ))}
           </Dropdown.Menu>
         </Dropdown>
-        <Button
-          className="shadow rounded-5">
-          Cadastrar
-        </Button>
       </FloatingLabel>
+      <Button
+        href={navega}
+        style={{
+          padding: "15px"
+        }}
+        className="shadow rounded-5 m-2">
+        Cadastrar
+      </Button>
     </div>
   );
 };

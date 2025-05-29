@@ -40,8 +40,8 @@ const Estoque = () => {
       <NavBar />
       <Container>
         <Pesquisa 
-        nomeDrop="Filtro"
-        link="#"
+        nomeDrop="Filtro" 
+        navega="/cadastro_produto"
         lista={[
           {
             texto: "Carnes",
