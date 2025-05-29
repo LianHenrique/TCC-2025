@@ -27,6 +27,8 @@ app.get('/funcionarios/:id_funcionario', (requisicao, resposta) => {
     );
 });
 
+
+
 app.get('/funcionarios/:nome_funcionario', (requisicao, resposta) => {
     const { nome_funcionario } = requisicao.params;
     console.log("Buscando funcionário com nome", nome_funcionario);
@@ -46,6 +48,8 @@ app.get('/funcionarios/:nome_funcionario', (requisicao, resposta) => {
     );
 });
 
+
+
 // buscando todos os funcionários
 app.get('/funcionarios', (requisicao, resposta) => {
     connection.query(
@@ -58,6 +62,8 @@ app.get('/funcionarios', (requisicao, resposta) => {
         }
     )
 })
+
+
 
 //  buscando produto por ID
 app.get('/produtos/:id_produto', (requisicao, resposta) => {
@@ -93,6 +99,23 @@ app.get('/cardapio', (requisicao, resposta) => {
         }
     );
 });
+
+
+
+// Buscando os insumos
+app.get('/insumos', (req, res) =>{
+    const sql = 'SELECT * FROM insumos'
+
+    connection.query(sql, (error, resposta) => {
+        if(error){
+            console.error('Erro no sql:', error);
+            console.log({error: 'erro no banco de dados'})
+        }
+        res.json(resposta)
+    })
+})
+
+
 
 // Porta de entrada para o banco
 const PORTA = 3000;

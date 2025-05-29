@@ -6,29 +6,37 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
 
 const Estoque = () => {
-  const [produtos, setprodutos] = useState([])
+  const [produtos, setProdutos] = useState({})
   const navigate = useNavigate()
 
-
   useEffect(() => {
-    fetch('http://localhost:3000/produto')
+    fetch('http://localhost:3000/produto') 
       .then(res => res.json())
       .then(data => {
-        const produtosComId = data.map(item => ({
-          id: item.id_produto,
-          nome: item.nome_produto,
-          link: item.imagem_url || 'https://via.placeholder.com/150',
-          descricao: [
-            { texto: `Data de entrada: ${new Date(item.QTD_entrada_produto).toLocaleDateString()}` },
-            { texto: `Quantidade: ${item.QTD_produto}` },
-          ],
-        }))
-        setprodutos(produtosComId)
+        const agrupados = data.reduce((acc, produto) => {
+          const cat = produto.categoria || 'Outros'  
+          
+          if (!acc[cat]) {
+            acc[cat] = []
+          }
+          
+          acc[cat].push({
+            id: produto.id_produto,
+            nome: produto.nome_produto,
+            link: produto.imagem_url || 'https://via.placeholder.com/150',
+            descricao: [
+              { texto: `Quantidade: ${produto.QTD_produto}` },
+              { texto: `Entrada: ${new Date(produto.QTD_entrada_produto).toLocaleDateString()}` }
+            ]
+          })
+          
+          return acc
+        }, {})
+        
+        setProdutos(agrupados)
       })
-
       .catch(err => console.error(err))
   }, [])
-
 
   function handleCardClick(id) {
     navigate(`/visualizar/${id}`)
@@ -39,30 +47,26 @@ const Estoque = () => {
       <NavBar />
       <Container>
         <Pesquisa 
-        nomeDrop="Filtro" 
-        lista={[
-          {
-            texto: "Carnes",
-            link: "#carnes"  
-          },
-          {
-            texto: "Bebidas",
-            link: "#bebidas"  
-          },
-          {
-            texto: "Saladas",
-            link: "#saladas"  
-          },
-        ]}
+          nomeDrop="Filtro" 
+          lista={[
+            { texto: "Carnes", link: "#carnes" },
+            { texto: "Bebidas", link: "#bebidas" },
+            { texto: "Saladas", link: "#saladas" },
+          ]}
         />
         <Button className="shadow rounded-5">Cadastrar</Button>
-        <CardGeral
-          filtro="produtos"
-          card={produtos}
-          onCardClick={handleCardClick}
-        />
+        
+        {Object.entries(produtos).map(([categoria, produtosDaCategoria]) => (
+          <div key={categoria} style={{ marginBottom: '2rem' }}>
+            <h2>{categoria}</h2>
+            <CardGeral
+              filtro="produtos"
+              card={produtosDaCategoria}
+              onCardClick={handleCardClick}
+            />
+          </div>
+        ))}
       </Container>
-      
     </div>
   )
 }
