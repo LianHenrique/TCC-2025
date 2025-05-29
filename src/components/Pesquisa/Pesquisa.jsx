@@ -64,27 +64,11 @@ const Pesquisa = ({ lista, nomeDrop, onResultado, link }) => {
           {...register("pesquisa")}
           style={{ border: "none" }}
         />
-<<<<<<< HEAD
         <Dropdown className="d-flex shadow rounded-5">
           <Dropdown.Toggle variant="outline-primary rounded-5">
             {nomeDrop}
           </Dropdown.Toggle>
           <Dropdown.Menu className="rounded-5">
-=======
-        <Dropdown
-          className="d-flex shadow rounded-5"
-          style={{
-            width: "160px"
-          }}>
-          <Dropdown.Toggle
-            variant="outline-primary rounded-5"
-            style={{
-              width: "160px"
-            }}>
-            {nomeDrop}
-          </Dropdown.Toggle>
-          <Dropdown.Menu className="rounded-3">
->>>>>>> main
             {lista.map((item, index) => (
               <Dropdown.Item key={index} to={item.link} className="dropdown-item">
                 {item.texto}
