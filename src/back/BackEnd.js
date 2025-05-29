@@ -6,7 +6,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-
 // buscando funcionário por ID
 app.get('/funcionarios/:id_funcionario', (requisicao, resposta) => {
     const { id_funcionario } = requisicao.params;
@@ -78,6 +77,17 @@ app.get('/produtos/:id_produto', (requisicao, resposta) => {
     );
 });
 
+app.get('/produtos', (req, res) => {
+    connection.query(
+        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM insumos',
+        (error, resultados) => {
+            if (error) {
+                return res.status(500).json({ error: 'Erro ao buscar produtos' });
+            }
+            res.json(resultados);
+        }
+    );
+});
 
 // Buscando todos os itens do cardápio
 // No select eu só peguei o que importa pra a parte fake 
@@ -93,6 +103,25 @@ app.get('/cardapio', (requisicao, resposta) => {
         }
     );
 });
+
+app.get('/estoque', (req, res) => {
+    res.json({ message: 'Página de estoque encontrada!' });
+});
+
+// cadastro adm
+app.post("/funcionario/insert", (req, res) => {
+    const email = req.body.email
+    const senha = req.body.senha
+
+    const sql = `INSERT INTO cliente (email_cliente, senha_cliente) VALUES (?, ?)`;
+    connection.query(sql, [email, senha], (erro, data) => {
+        if (erro) {
+            console.log(erro);
+            return res.status(500).json({ error: 'Erro ao cadastrar funcionário' });
+        }
+        res.status(201).json({ message: 'Funcionário cadastrado com sucesso' });
+    });
+})
 
 // Porta de entrada para o banco
 const PORTA = 3000;
