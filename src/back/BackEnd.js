@@ -13,7 +13,7 @@ app.get('/funcionarios/:id_funcionario', (requisicao, resposta) => {
     console.log("Buscando funcionário com ID", id_funcionario);
 
     connection.query(
-        'SELECT * FROM Funcionarios WHERE id_funcionario = ?',
+        'SELECT * FROM funcionario WHERE id_funcionario = ?',
         [id_funcionario],
         (error, resultados) => {
             if (error) {
@@ -32,7 +32,7 @@ app.get('/funcionarios/:nome_funcionario', (requisicao, resposta) => {
     console.log("Buscando funcionário com nome", nome_funcionario);
 
     connection.query(
-        'SELECT * FROM Funcionarios WHERE nome_funcionario = ?',
+        'SELECT * FROM funcionario WHERE nome_funcionario = ?',
         [nome_funcionario],
         (error, resultados) => {
             if (error) {
@@ -49,7 +49,7 @@ app.get('/funcionarios/:nome_funcionario', (requisicao, resposta) => {
 // buscando todos os funcionários
 app.get('/funcionarios', (requisicao, resposta) => {
     connection.query(
-        'SELECT * FROM Funcionarios',
+        'SELECT * FROM funcionario',
         (error, resultados) => {
             if (error) {
                 return resposta.status(500).json({ error: "Erro ao buscar funcionários" })
@@ -64,7 +64,7 @@ app.get('/produtos/:id_produto', (requisicao, resposta) => {
     const { id_produto } = requisicao.params;
 
     connection.query(
-        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM Produto WHERE id_produto = ?',
+        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM insumos WHERE id_produto = ?',
         [id_produto],
         (error, resultados) => {
             if (error) {
@@ -81,7 +81,7 @@ app.get('/produtos/:id_produto', (requisicao, resposta) => {
 // buscando todos os produtos
 app.get('/produto', (requisicao, resposta) => {
     connection.query(
-        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, imagem_url, data_vencimento_prod, descricao_produto FROM Produto',
+        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, imagem_url, data_vencimento_prod, descricao_produto FROM insumos',
         (error, resultados) => {
             if (error) {
                 return resposta.status(500).json({ error: 'Erro ao buscar produtos' });
