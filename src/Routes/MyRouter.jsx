@@ -9,6 +9,7 @@ import Relatorios from "../pages/Relatorios/Relatorios"
 import Cardapio from "../pages/Cardapio/Cardapio"
 import Cadastroprod from "../pages/Cadastro/Cadastro_prod"
 import Visualizar from "../pages/Visualizacoes/visualizar"
+import VisualizarFuncionario from '../pages/VisualizarFuncionario/VisualizarFuncionario'
 
 const MyRouter = createBrowserRouter([
     {
@@ -54,6 +55,10 @@ const MyRouter = createBrowserRouter([
             {
                 path: "/visualizar/:id",
                 element: <Visualizar/>
+            },
+            {
+                path: "visualizar_funcionario/:id",
+                element: <VisualizarFuncionario/>
             }
         ]
     }
