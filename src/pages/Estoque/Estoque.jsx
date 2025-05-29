@@ -10,7 +10,7 @@ const Estoque = () => {
   const navigate = useNavigate()
 
   useEffect(() => {
-    fetch('http://localhost:3000/produto') 
+    fetch('http://localhost:3000/insumos') 
       .then(res => res.json())
       .then(data => {
         const agrupados = data.reduce((acc, produto) => {
