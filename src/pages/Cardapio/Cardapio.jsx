@@ -40,6 +40,7 @@ const Cardapio = () => {
 
         <Pesquisa
           nomeDrop="Filtro"
+          navega="/Cadastro_produto"
           lista={[
             {
               lista: "Lanche",
@@ -71,7 +72,7 @@ const Cardapio = () => {
         /> */}
 
         <CardGeral
-          filtro="cardapio"
+          filtro=""
           card={cardapio}
           onCardClick={handleCardClick}
         />

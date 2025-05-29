@@ -1,10 +1,8 @@
-import { useState } from 'react';
 import '../Style/login.css'; // Importa o CSS
 import NavBar from '../../components/NavBar/NavBar';
 import { Button, Container, Dropdown, FloatingLabel, Form } from 'react-bootstrap';
-import Filtro from '../../components/Filtro/Filtro';
 
-const Cadastroprod = () => {
+const Insumos = () => {
 
   return (
     <div
@@ -88,7 +86,7 @@ const Cadastroprod = () => {
           <div
             className="d-flex m-2"
             style={{
-              alignContent:"center"
+              alignContent: "center"
             }}>
             <Dropdown
               className="d-flex shadow rounded-5 mt-2"
@@ -105,7 +103,7 @@ const Cadastroprod = () => {
                 Filtro
               </Dropdown.Toggle>
               <Dropdown.Menu
-              className='rounded-3'>
+                className='rounded-3'>
                 <Dropdown.Item
                   to=""
                   className="dropdown-item rounded-5"
@@ -138,6 +136,7 @@ const Cadastroprod = () => {
 
           <Button
             className="shadow mt-4"
+            href="/estoque"
             style={{
               padding: "15px",
               width: "90%",
@@ -165,4 +164,4 @@ const Cadastroprod = () => {
   )
 }
 
-export default Cadastroprod
+export default Insumos

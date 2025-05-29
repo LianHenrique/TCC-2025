@@ -61,15 +61,25 @@ const Funcionarios = () => {
       <Container>
         <Pesquisa
           nomeDrop="Cargo"
+          navega="/Cadastro_funcionario"
           lista={[
-            { texto: "ADM", link: "#ADM" },
-            { texto: "Gerente", link: "#gerente" },
-            { texto: "Funcionario", link: "#funcionario" }
+            { 
+              texto: "ADM", 
+              link: "#ADM" 
+            },
+            { 
+              texto: "Gerente", 
+              link: "#gerente" 
+            },
+            {
+              texto: "Funcionario", 
+              link: "#funcionario" 
+            }
           ]}
           onResultado={handleResultadoPesquisa}
         />
         <CardGeral
-          filtro="Funcionarios"
+          filtro=""
           card={funcionariosFiltrados}
         />
       </Container>

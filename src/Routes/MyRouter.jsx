@@ -7,9 +7,11 @@ import Funcionarios from "../pages/Funcionarios/Funcionarios"
 import Cadastro from "../pages/Cadastro/Cadastro"
 import Relatorios from "../pages/Relatorios/Relatorios"
 import Cardapio from "../pages/Cardapio/Cardapio"
-import Cadastroprod from "../pages/Cadastro/Cadastro_prod"
 import Visualizar from "../pages/Visualizacoes/visualizar"
-import VisualizarFuncionario from '../pages/VisualizarFuncionario/VisualizarFuncionario'
+import Relatorio_Funcionario from "../pages/Visualizacoes/Relatorio_Funcionario"
+import Funcionario from "../pages/Cadastro/Funcionario"
+import Insumos from "../pages/Cadastro/Insumos"
+import Produto from "../pages/Cadastro/Produto"
 
 const MyRouter = createBrowserRouter([
     {
@@ -41,12 +43,12 @@ const MyRouter = createBrowserRouter([
                 element: <Cadastro />
             },
             {
-                path: "/cadastro_produto",
-                element: <Cadastroprod />
+                path: "/cadastro_insumos",
+                element: <Insumos />
             },
             {
                 path: "/relatorio",
-                element: <Relatorios/>
+                element: <Relatorios />
             },
             {
                 path: "/cardapio",
@@ -54,12 +56,20 @@ const MyRouter = createBrowserRouter([
             },
             {
                 path: "/visualizar/:id",
-                element: <Visualizar/>
+                element: <Visualizar />
             },
             {
                 path: "visualizar_funcionario/:id",
-                element: <VisualizarFuncionario/>
-            }
+                element: <Relatorio_Funcionario />
+            },
+            {
+                path: "/Cadastro_funcionario",
+                element: <Funcionario />
+            },
+            {
+                path: "/Cadastro_produto",
+                element: <Produto />
+            },
         ]
     }
 ])

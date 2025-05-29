@@ -5,7 +5,7 @@ import CardGeral from '../../components/Cards/CardGeral';
 import NavBar from '../../components/NavBar/NavBar'
 import { Container } from 'react-bootstrap';
 
-const VisualizarFuncionario = () => {
+const Relatorio_Funcionario = () => {
     const { id } = useParams();
     const [funcionario, setFuncionario] = useState([])
     const [error, setError] = useState(null)
@@ -66,4 +66,4 @@ const VisualizarFuncionario = () => {
     )
 }
 
-export default VisualizarFuncionario
+export default Relatorio_Funcionario

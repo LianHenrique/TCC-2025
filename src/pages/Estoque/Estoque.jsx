@@ -1,6 +1,6 @@
 import NavBar from '../../components/NavBar/NavBar'
 import Pesquisa from '../../components/Pesquisa/Pesquisa'
-import { Button, Container } from 'react-bootstrap'
+import { Container } from 'react-bootstrap'
 import CardGeral from '../../components/Cards/CardGeral'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
@@ -9,9 +9,10 @@ const Estoque = () => {
   const [produtos, setprodutos] = useState([])
   const navigate = useNavigate()
 
+  // bebidas, carnes, oraânicos, molhos, vegetais
 
   useEffect(() => {
-    fetch('http://localhost:3000/produto')
+    fetch('http://localhost:3000/produtos')
       .then(res => res.json())
       .then(data => {
         const produtosComId = data.map(item => ({
@@ -40,6 +41,7 @@ const Estoque = () => {
       <Container>
         <Pesquisa 
         nomeDrop="Filtro" 
+        navega="/cadastro_produto"
         lista={[
           {
             texto: "Carnes",
@@ -55,9 +57,8 @@ const Estoque = () => {
           },
         ]}
         />
-        <Button className="shadow rounded-5">Cadastrar</Button>
         <CardGeral
-          filtro="produtos"
+          filtro=""
           card={produtos}
           onCardClick={handleCardClick}
         />
@@ -67,4 +68,4 @@ const Estoque = () => {
   )
 }
 
-export default Estoque
+export default Estoque
