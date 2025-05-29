@@ -51,31 +51,31 @@ const Pesquisa = ({ lista, nomeDrop, onResultado }) => {
   };
 
   return (
-    <div style={{ marginTop: "200px" }}>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <FloatingLabel controlId="floatingInput" label="Pesquisa" className="m-2 d-flex gap-3">
-          <Form.Control
-            type="text"
-            placeholder="Pesquisa"
-            className="rounded-5 shadow"
-            {...register("pesquisa")}
-            style={{ border: "none" }}
-          />
-          <Dropdown className="d-flex shadow rounded-5">
-            <Dropdown.Toggle variant="outline-primary rounded-5">
-              {nomeDrop}
-            </Dropdown.Toggle>
-            <Dropdown.Menu className="rounded-5">
-              {lista.map((item, index) => (
-                <Dropdown.Item key={index} to={item.link} className="dropdown-item">
-                  {item.texto}
-                </Dropdown.Item>
-              ))}
-            </Dropdown.Menu>
-          </Dropdown>
-          <Button className="shadow rounded-5">Cadastrar</Button>
-        </FloatingLabel>
-      </form>
+    <div style={{ 
+      marginTop: "150px",
+      position: "absolute"
+      }}>
+      <FloatingLabel controlId="floatingInput" label="Pesquisa" className="m-2 d-flex gap-3">
+        <Form.Control
+          type="text"
+          placeholder="Pesquisa"
+          className="rounded-5 shadow"
+          {...register("pesquisa")}
+          style={{ border: "none" }}
+        />
+        <Dropdown className="d-flex shadow rounded-5">
+          <Dropdown.Toggle variant="outline-primary rounded-5">
+            {nomeDrop}
+          </Dropdown.Toggle>
+          <Dropdown.Menu className="rounded-5">
+            {lista.map((item, index) => (
+              <Dropdown.Item key={index} to={item.link} className="dropdown-item">
+                {item.texto}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
+      </FloatingLabel>
     </div>
   );
 };

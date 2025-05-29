@@ -5,17 +5,17 @@ import { Button, Container, FloatingLabel } from 'react-bootstrap';
 import NavBar from '../../components/NavBar/NavBar';
 
 const Cadastro = () => {
-  
+
   return (
     <div
-    style={{
-      marginTop: "150px"
-    }}>
+      style={{
+        marginTop: "150px"
+      }}>
       <NavBar />
       <Container
-      style={{
-        width: "650px"
-      }}>
+        style={{
+          width: "650px"
+        }}>
         <Form
           className='shadow'
           style={{
