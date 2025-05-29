@@ -26,7 +26,7 @@ const Visualizar = () => {
             return;
         }
 
-        fetch(`http://localhost:3000/produto/${id}`)
+        fetch(`http://localhost:3000/insumos/${id}`)
             .then(response => {
                 if (!response.ok) throw new Error('Produto não encontrado');
                 return response.json();
