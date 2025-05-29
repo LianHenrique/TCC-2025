@@ -8,7 +8,10 @@ import Cadastro from "../pages/Cadastro/Cadastro"
 import Relatorios from "../pages/Relatorios/Relatorios"
 import Cardapio from "../pages/Cardapio/Cardapio"
 import Visualizar from "../pages/Visualizacoes/visualizar"
-import VisualizarFuncionario from '../pages/VisualizarFuncionario/VisualizarFuncionario'
+import Insumos from "../pages/Cadastro/Insumos"
+import Relatorio_Funcionario from "../pages/Visualizacoes/Relatorio_Funcionario"
+import Funcionario from "../pages/Cadastro/Funcionario"
+import Produto from "../pages/Cadastro/Produto" 
 
 const MyRouter = createBrowserRouter([
     {
@@ -39,10 +42,18 @@ const MyRouter = createBrowserRouter([
                 path: "/cadastro",
                 element: <Cadastro />
             },
-            // {
-            //     path: "/cadastro_insumos",
-            //     element: <Insumos />
-            // },
+            {
+                path: "/cadastro_insumos",
+                element: <Insumos />
+            },
+            {
+                path: "/cadastro_funcionario",
+                element: <Funcionario />
+            },
+            {
+                path: "/cadastro_produto",
+                element: <Produto />
+            },
             {
                 path: "/relatorio",
                 element: <Relatorios />
@@ -57,7 +68,7 @@ const MyRouter = createBrowserRouter([
             },
             {
                 path: "visualizar_funcionario/:id",
-                element: <VisualizarFuncionario/>
+                element: <Relatorio_Funcionario/>
             }
         ]
     }

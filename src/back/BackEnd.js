@@ -156,7 +156,7 @@ app.post("/funcionarios/insert", (req, res) => {
         return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
     }
 
-    const sql = `INSERT INTO funcionarios (nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario) VALUES (?, ?, ?, ?)`;
+    const sql = `INSERT INTO funcionarios (nome_funcionairo, cargo_funcionario, senha_funcionario, email_funcionario) VALUES (?, ?, ?, ?)`;
 
     connection.query(sql, [nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario], (erro, data) => {
         if (erro) {

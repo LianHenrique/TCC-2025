@@ -61,7 +61,7 @@ const Funcionarios = () => {
       <Container>
         <Pesquisa
           nomeDrop="Cargo"
-          navega="/Cadastro_funcionario"
+          navega="/cadastro_funcionario"
           lista={[
             { 
               texto: "ADM", 
