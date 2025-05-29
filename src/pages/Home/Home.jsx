@@ -29,25 +29,6 @@ function Home() {
             />
           </svg>
         </button>
-
-      {/* Descrição principal */}
-{/* <CardsDescPlanoGratuito 
-  titulo={(
-    <span className={styles.alexandria}>
-      Gerencie o <strong className={styles.destaque}>estoque</strong> do seu negócio de maneira ágil
-    </span>
-  )}
-  desc={(
-    <span className={styles.alexandria2}>
-      StoreBox facilita o gerenciamento de estoques com eficiência e recursos úteis.
-    </span>
-  )}
-  botaoTxt={<button className={styles.botaoTesteGratis}>Teste grátis</button>}
-  comBotão={true}
-  txtComBotao="Experimente grátis por 30 dias"
-/> */}
-
-
         {/* Benefícios rápidos */}
         <div className={styles.alexandria2}>
           <p>1 Acesso em tempo real</p>
@@ -55,50 +36,9 @@ function Home() {
           <p>3 Relatórios detalhados</p>
         </div>
 
-        {/* Planos */}
-        {/* <CardsCurso 
-          cards={[ 
-            {
-              titulo: "Grátis",
-              req1: "Experimente gratuito por 30 dias",
-              req2: "Uso limitado",
-              req3: "Sem recursos adicionais",
-              req4: "Sem imagem de reconhecimento",
-              req5: "Sem cadastro de funcionários",
-            },
-            {
-              titulo: "Plano 1",
-              req1: "Acesso completo",
-            },
-            {
-              titulo: "Plano 2",
-              req1: "Funcionalidades avançadas",
-            },
-          ]}
-        /> */}
       </div>
 
-      {/* Planos */}
-      {/* <CardsCurso 
-        cards={[ 
-          {
-            titulo: "Grátis",
-            req1: "Experimente gratuito por 30 dias",
-            req2: "Uso limitado",
-            req3: "Sem recursos adicionais",
-            req4: "Sem imagem de reconhecimento",
-            req5: "Sem cadastro de funcionários",
-          },
-          {
-            titulo: "Plano 1",
-            req1: "Acesso completo",
-          },
-          {
-            titulo: "Plano 2",
-            req1: "Funcionalidades avançadas",
-          },
-        ]}
-      /> */}
+      
     </div>
   );
 }

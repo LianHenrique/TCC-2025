@@ -4,6 +4,7 @@ import styles from './Relatorios.module.css'
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import CardGeral from '../../components/Cards/CardGeral';
+import { Col, Container, Figure } from 'react-bootstrap';
 
 const Relatorios = () => {
   const [funcionarios, setFuncionarios] = useState([])
@@ -49,44 +50,111 @@ const Relatorios = () => {
 
   return (
     <div>
-      <section style={{ paddingBottom: '8rem' }}>
-        <NavBar />
-      </section>
-
-      {/* Parte da descrição do relatório */}
-      <section className={styles.EscopoRelatorio}>
-        <img src="../src/public/Grafico.svg" className={styles.img} alt="Gráfico API" />
-        <h4 className="fs-6 fs-md-5 fs-lg-4">Descrição do relatório de ganhos semanais (15 a 21 de abril de 2025)</h4>
-
-        <p className="fs-6 fs-md-5 fs-lg-4">Durante a semana de 15 a 21 de abril de 2025, a hamburgueria apresentou variação nos ganhos diários. Na segunda-feira (15/04), os ganhos foram de R$800, subindo levemente na terça-feira (16/04) para R$950. Na quarta-feira (17/04), houve um aumento significativo, chegando a R$1.200. Quinta-feira (18/04) registrou um pequeno recuo para R$1.100.</p>
-
-        <p className="fs-6 fs-md-5 fs-lg-4">O maior volume de vendas foi observado no fim de semana. Na sexta-feira (19/04), os ganhos saltaram para R$2.300, seguidos por um pico no sábado (20/04) com R$2.800, o dia mais lucrativo da semana. No domingo (21/04), os ganhos fecharam em R$2.000, mantendo o alto desempenho do fim de semana.</p>
-
-        <p className="fs-6 fs-md-5 fs-lg-4">Esses dados mostram claramente o padrão de maior movimento nos últimos dias da semana, essencial para decisões estratégicas como reforço de equipe e aumento de estoque nesses períodos. </p>
-
-        <img src="../src/public/Grafico.svg" className={styles.img2} alt="Gráfico API" />
-        <h4 className={styles.h4_2}>Descrição do (mês X) dos pedidos com mais saídas</h4>
-        <p className={styles.Qtd_Saida_Insumo}>
-          Insumos com maiores taxas de saída: <br />
-          Insumo1-tantasSaídas <br />
-          insumo 2-tantasSaídas <br />
-          insumo 3-tantasSaídas <br />
-          insumo 4-tantasSaídas <br />
-          insumo 5-tantasSaídas <br />
-          insumo 6-tantasSaídas <br />
-        </p>
-      </section>
-
-      <section>
-
-      {/* Não tá bonito pq o foco primordial é fazer ele funcional */}
-        {/* <CardGeral
-          filtro="Funcionários"
-          card={funcionarios}
-        /> */}
-
-      </section>
-
+      <NavBar />
+      <Container
+        className='d-flex'
+        style={{
+          marginTop: "100px"
+        }}>
+        <Col
+          className='shadow rounded-5 m-2'
+          style={{
+            padding: "10px",
+            maxWidth: "500px"
+          }}>
+          <Figure>
+            <h1
+              style={{
+                paddingLeft: "30px",
+                paddingTop: "10px"
+              }}>
+              Mensal
+            </h1>
+            <Figure.Image
+              style={{
+                width: "100%"
+              }}
+              alt="Gráfico API"
+              src="../src/public/Grafico.svg"
+            />
+            <Figure.Caption
+              style={{
+                paddingLeft: "30px"
+              }}>
+              1. Faturamento Estimado
+              <br />
+              Faturamento médio mensal: R$ 50.000,00
+              <br />
+              Faturamento durante a alta temporada (dezembro a fevereiro): Aumento de até 30%
+              <br />
+              Faturamento durante o Carnaval: Aumento de até 20%
+              <br />
+              Folha Vitória
+              <br /><br />
+              2. Custos Operacionais
+              Custo médio de uma refeição por cliente: R$ 54,67
+              <br />
+              Custo médio de um almoço completo fora de casa: R$ 48,79
+              Folha Vitória
+              <br /><br />
+              3. Mão de Obra
+              Número de colaboradores: 7.603 profissionais contratados com carteira assinada no setor de restaurantes e similares em Vitória
+              <br />
+              Novas contratações previstas para o verão: 5.000 postos de trabalho
+              <br /><br />
+              4. Desempenho do Setor
+              Expectativa de crescimento do faturamento no verão: Até 30%
+              <br />
+              Expectativa de aumento no faturamento durante o Carnaval: Até 20%
+            </Figure.Caption>
+          </Figure>
+        </Col>
+        <Col
+          className='shadow rounded-5 m-2'
+          style={{
+            padding: "10px",
+            maxWidth: "500px"
+          }}>
+          <Figure>
+            <h1
+              style={{
+                paddingLeft: "30px",
+                paddingTop: "10px"
+              }}>
+              Diario
+            </h1>
+            <Figure.Image
+              style={{
+                width: "100%"
+              }}
+              alt="Gráfico API"
+              src="../src/public/Grafico.svg"
+            />
+            <Figure.Caption
+              style={{
+                paddingLeft: "30px"
+              }}>
+              1. Faturamento Estimado
+              <br />
+              Ticket médio por cliente: R$ 54,67
+              <br />
+              Número de clientes atendidos: 50 clientes
+              <br />
+              Faturamento diário estimado: R$ 2.733,50
+              <br /><br />
+              2. Custos Operacionais
+              <br />
+              Custo médio de uma refeição por cliente: R$ 48,79
+              <br />
+              Custo operacional diário estimado: R$ 2.439,50
+              <br /><br />
+              3. Lucro Bruto Estimado
+              <br />
+              Lucro bruto diário estimado: R$ 294,00
+            </Figure.Caption>
+          </Figure>
+        </Col>
+      </Container>
     </div>
   )
 }

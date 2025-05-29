@@ -9,9 +9,10 @@ const Estoque = () => {
   const [produtos, setprodutos] = useState([])
   const navigate = useNavigate()
 
+  // bebidas, carnes, oraânicos, molhos, vegetais
 
   useEffect(() => {
-    fetch('http://localhost:3000/produto')
+    fetch('http://localhost:3000/produtos')
       .then(res => res.json())
       .then(data => {
         const produtosComId = data.map(item => ({
@@ -57,13 +58,14 @@ const Estoque = () => {
         ]}
         />
         <CardGeral
-          filtro="produtos"
+          filtro=""
           card={produtos}
           onCardClick={handleCardClick}
         />
       </Container>
+      
     </div>
   )
 }
 
-export default Estoque
+export default Estoque

@@ -6,14 +6,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-
 // buscando funcionário por ID
 app.get('/funcionarios/:id_funcionario', (requisicao, resposta) => {
     const { id_funcionario } = requisicao.params;
     console.log("Buscando funcionário com ID", id_funcionario);
 
     connection.query(
-        'SELECT * FROM Funcionarios WHERE id_funcionario = ?',
+        'SELECT * FROM funcionario WHERE id_funcionario = ?',
         [id_funcionario],
         (error, resultados) => {
             if (error) {
@@ -32,7 +31,7 @@ app.get('/funcionarios/:nome_funcionario', (requisicao, resposta) => {
     console.log("Buscando funcionário com nome", nome_funcionario);
 
     connection.query(
-        'SELECT * FROM Funcionarios WHERE nome_funcionario = ?',
+        'SELECT * FROM funcionario WHERE nome_funcionario = ?',
         [nome_funcionario],
         (error, resultados) => {
             if (error) {
@@ -49,7 +48,7 @@ app.get('/funcionarios/:nome_funcionario', (requisicao, resposta) => {
 // buscando todos os funcionários
 app.get('/funcionarios', (requisicao, resposta) => {
     connection.query(
-        'SELECT * FROM Funcionarios',
+        'SELECT * FROM funcionario',
         (error, resultados) => {
             if (error) {
                 return resposta.status(500).json({ error: "Erro ao buscar funcionários" })
@@ -64,7 +63,7 @@ app.get('/produtos/:id_produto', (requisicao, resposta) => {
     const { id_produto } = requisicao.params;
 
     connection.query(
-        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM Produto WHERE id_produto = ?',
+        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM insumos WHERE id_produto = ?',
         [id_produto],
         (error, resultados) => {
             if (error) {
@@ -78,10 +77,24 @@ app.get('/produtos/:id_produto', (requisicao, resposta) => {
     );
 });
 
-// buscando todos os produtos
-app.get('/produto', (requisicao, resposta) => {
+app.get('/produtos', (req, res) => {
     connection.query(
-        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, imagem_url, data_vencimento_prod, descricao_produto FROM Produto',
+        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM insumos',
+        (error, resultados) => {
+            if (error) {
+                return res.status(500).json({ error: 'Erro ao buscar produtos' });
+            }
+            res.json(resultados);
+        }
+    );
+});
+
+// Buscando todos os itens do cardápio
+// No select eu só peguei o que importa pra a parte fake 
+
+app.get('/cardapio', (requisicao, resposta) => {
+    connection.query(
+        'SELECT * FROM cardapio',
         (error, resultados) => {
             if (error) {
                 return resposta.status(500).json({ error: 'Erro ao buscar produtos' });
@@ -90,6 +103,25 @@ app.get('/produto', (requisicao, resposta) => {
         }
     );
 });
+
+app.get('/estoque', (req, res) => {
+    res.json({ message: 'Página de estoque encontrada!' });
+});
+
+// cadastro adm
+app.post("/funcionario/insert", (req, res) => {
+    const email = req.body.email
+    const senha = req.body.senha
+
+    const sql = `INSERT INTO cliente (email_cliente, senha_cliente) VALUES (?, ?)`;
+    connection.query(sql, [email, senha], (erro, data) => {
+        if (erro) {
+            console.log(erro);
+            return res.status(500).json({ error: 'Erro ao cadastrar funcionário' });
+        }
+        res.status(201).json({ message: 'Funcionário cadastrado com sucesso' });
+    });
+})
 
 // Porta de entrada para o banco
 const PORTA = 3000;

@@ -6,7 +6,10 @@
 
 .corpo_card {
   margin-top: 60vh;
-  border: solid 5px blueviolet;
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border: solid 4px violet !important;
 }
 
 .img {
@@ -25,17 +28,16 @@
   left: 23vw;
 }
 
-
 /* Quantidade/ Entrada/ Vencimento/ Descrição */
 .desc {
   position: relative;
   left: 39vw;
   font-weight: bold;
   gap: 10%;
-  font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
   bottom: 46em;
 }
-
 
 /* Nome do insumo */
 .titulo {
@@ -43,10 +45,10 @@
   left: 40.2vw;
   top: -46.3vh;
   font-weight: bold;
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
   width: 14em;
 }
-
 
 /* Descrição do insumo: */
 .title {
@@ -54,8 +56,9 @@
   top: 20vh;
   left: 48vw;
   font-size: 30px;
-  font-family:'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-  font-weight:bold;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+  font-weight: bold;
 }
 
 @media (max-width: 600px) {
@@ -78,7 +81,7 @@
     font-size: 2.5vh;
   }
 
-  .desc{
+  .desc {
     gap: 1px !important;
     padding: 1px;
     position: relative;
