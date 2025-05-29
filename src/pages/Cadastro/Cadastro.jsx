@@ -23,7 +23,7 @@ const Cadastro = () => {
     }
 
     try {
-      const res = await fetch('http://localhost:3000/funcionario/insert', {
+      const res = await fetch('http://localhost:3000/cliente/insert', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

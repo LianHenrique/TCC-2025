@@ -143,6 +143,30 @@ app.post("/insumos/insert", (req, res) => {
     });
 });
 
+app.post("/funcionarios/insert", (req, res) => {
+    const { 
+        nome_funcionario,
+        cargo_funcionario,
+        senha_funcionario, 
+        email_funcionario
+    } = req.body;
+
+    // Verificar se todos os campos necessários foram fornecidos
+    if (!nome_funcionario || !cargo_funcionario || !senha_funcionario || !email_funcionario) {
+        return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+    }
+
+    const sql = `INSERT INTO funcionarios (nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario) VALUES (?, ?, ?, ?)`;
+
+    connection.query(sql, [nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario], (erro, data) => {
+        if (erro) {
+            console.log(erro);
+            return res.status(500).json({ error: 'Erro ao cadastrar funcionário' });
+        }
+        res.status(201).json({ message: 'Funcionário cadastrado com sucesso' });
+    });
+});
+
 // Porta de entrada para o banco
 const PORTA = 3000;
 app.listen(PORTA, () => {

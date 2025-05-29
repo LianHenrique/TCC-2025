@@ -1,167 +1,181 @@
+import { useState } from 'react';
 import '../Style/login.css'; // Importa o CSS
 import NavBar from '../../components/NavBar/NavBar';
 import { Button, Container, Dropdown, FloatingLabel, Form } from 'react-bootstrap';
+import { useNavigate } from 'react-router';
 
-const Funcionario = () => {
+const Funcionarios = () => {
+  const [nomeFuncionario, setNomeFuncionario] = useState('');
+  const [emailFuncionario, setEmailFuncionario] = useState('');
+  const [senhaFuncionario, setSenhaFuncionario] = useState('');
+  const [confSenhaFuncionario, setConfSenhaFuncionario] = useState('');
+  const [cargoFuncionario, setCargoFuncionario] = useState('Cargo'); // Valor padrão
+
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!nomeFuncionario || !emailFuncionario || !senhaFuncionario || !confSenhaFuncionario || cargoFuncionario === 'Cargo') {
+      alert('Por favor, preencha todos os campos e selecione um cargo.');
+      return;
+    }
+
+    if (senhaFuncionario !== confSenhaFuncionario) {
+      alert('As senhas não coincidem!');
+      return;
+    }
+
+    const dados = {
+      nome_funcionario: nomeFuncionario,
+      email_funcionario: emailFuncionario,
+      senha_funcionario: senhaFuncionario,
+      cargo_funcionario: cargoFuncionario,
+    };
+
+    try {
+      const res = await fetch("http://localhost:3000/funcionarios/insert", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(dados),
+      });
+
+      if (res.ok) {
+        alert('Funcionário cadastrado com sucesso!');
+        // Resetar o formulário
+        setNomeFuncionario('');
+        setEmailFuncionario('');
+        setSenhaFuncionario('');
+        setConfSenhaFuncionario('');
+        setCargoFuncionario('Cargo');
+        navigate('/funcionarios');
+      } else {
+        alert('Erro ao cadastrar funcionário.');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('Erro de rede ou servidor.');
+    }
+  };
 
   return (
-    <div
-      style={{
-        marginTop: "150px"
-      }}>
+    <div style={{ marginTop: '150px' }}>
       <NavBar />
-      <Container
-        style={{
-          width: "650px"
-        }}>
+      <Container style={{ width: '650px' }}>
         <Form
-          className='shadow'
+          onSubmit={handleSubmit}
+          className="shadow"
           style={{
-            padding: "30px",
-            margin: "100px",
-            borderRadius: "20px",
-            border: "1px blue solid"
-          }}>
-          <h1 style={{
-            textAlign: "center"
-          }}>
-            Cadastro
-          </h1>
-          <FloatingLabel
-            controlId="floatingInput"
-            label="Nome"
-            className="m-2">
+            padding: '30px',
+            margin: '100px',
+            borderRadius: '20px',
+            border: '1px blue solid',
+          }}
+        >
+          <h1 style={{ textAlign: 'center' }}>Cadastro</h1>
+
+          <FloatingLabel controlId="nomeFuncionario" label="Nome" className="m-2">
             <Form.Control
               type="text"
               placeholder="Nome"
+              value={nomeFuncionario}
+              onChange={(e) => setNomeFuncionario(e.target.value)}
               className="rounded-5 shadow mt-3"
-              style={{
-                border: "none"
-              }}
+              style={{ border: 'none' }}
             />
           </FloatingLabel>
 
-          <FloatingLabel
-            controlId="floatingInput"
-            label="E-mail"
-            className="m-2">
+          <FloatingLabel controlId="emailFuncionario" label="Email" className="m-2">
             <Form.Control
-              type="text"
-              placeholder="E-mail"
+              type="email"
+              placeholder="Email"
+              value={emailFuncionario}
+              onChange={(e) => setEmailFuncionario(e.target.value)}
               className="rounded-5 shadow mt-3"
-              style={{
-                border: "none"
-              }}
+              style={{ border: 'none' }}
             />
           </FloatingLabel>
 
-          <FloatingLabel
-            controlId="floatingInput"
-            label="Senha"
-            className="m-2">
+          <FloatingLabel controlId="senhaFuncionario" label="Senha" className="m-2">
             <Form.Control
               type="password"
               placeholder="Senha"
+              value={senhaFuncionario}
+              onChange={(e) => setSenhaFuncionario(e.target.value)}
               className="rounded-5 shadow mt-3"
-              style={{
-                border: "none"
-              }}
+              style={{ border: 'none' }}
             />
           </FloatingLabel>
 
-          <FloatingLabel
-            controlId="floatingInput"
-            label="Confirmar senha"
-            className="m-2">
+          <FloatingLabel controlId="confSenhaFuncionario" label="Confirmar senha" className="m-2">
             <Form.Control
               type="password"
               placeholder="Confirmar senha"
+              value={confSenhaFuncionario}
+              onChange={(e) => setConfSenhaFuncionario(e.target.value)}
               className="rounded-5 shadow mt-3"
-              style={{
-                border: "none"
-              }}
+              style={{ border: 'none' }}
             />
           </FloatingLabel>
 
-          <div
-            className="d-flex m-2"
-            style={{
-              alignContent: "center"
-            }}>
+          <div className="d-flex m-2" style={{ alignContent: 'center' }}>
             <Dropdown
               className="d-flex shadow rounded-5 mt-2"
-              style={{
-                width: "150px",
-                height: "60px"
-              }}>
+              style={{ width: '150px', height: '60px' }}
+            >
               <Dropdown.Toggle
                 variant="outline-primary rounded-5"
-                style={{
-                  width: "150px",
-                  height: "60px"
-                }}>
-                Cargo
+                style={{ width: '150px', height: '60px' }}
+              >
+                {cargoFuncionario}
               </Dropdown.Toggle>
-              <Dropdown.Menu
-                className='rounded-3'>
-                <Dropdown.Item
-                  to=""
-                  className="dropdown-item rounded-5"
-                >
-                  Gerente
-                </Dropdown.Item>
-                <Dropdown.Item
-                  to=""
-                  className="dropdown-item rounded-5"
-                >
-                  Estoquista
-                </Dropdown.Item>
-                <Dropdown.Item
-                  to=""
-                  className="dropdown-item rounded-5"
-                >
-                  Geral
-                </Dropdown.Item>
+              <Dropdown.Menu className="rounded-3">
+                {['Gerente', 'Estoquista', 'Geral'].map((cargo) => (
+                  <Dropdown.Item
+                    key={cargo}
+                    onClick={() => setCargoFuncionario(cargo)}
+                    className="dropdown-item rounded-5"
+                  >
+                    {cargo}
+                  </Dropdown.Item>
+                ))}
               </Dropdown.Menu>
             </Dropdown>
             <Button
               className="rounded-5 m-2 mt-2 fs-2"
-              style={{
-                width: "60px",
-                height: "60px"
-              }}>
+              style={{ width: '60px', height: '60px' }}
+              onClick={() => {
+                // Limpar formulário
+                setNomeFuncionario('');
+                setEmailFuncionario('');
+                setSenhaFuncionario('');
+                setConfSenhaFuncionario('');
+                setCargoFuncionario('Cargo');
+              }}
+            >
               +
             </Button>
           </div>
 
           <Button
+            type="submit"
             className="shadow mt-4"
-            href="/funcionarios"
-            style={{
-              padding: "15px",
-              width: "90%",
-              borderRadius: "30px",
-              marginLeft: "20px"
-            }}>
+            style={{ padding: '15px', width: '90%', borderRadius: '30px', marginLeft: '20px' }}
+          >
             Cadastrar
           </Button>
           <Button
             className="shadow mt-4"
-            variant='outline-primary'
-            href="/funcionarios"
-            style={{
-              padding: "15px",
-              width: "90%",
-              borderRadius: "30px",
-              marginLeft: "20px"
-            }}>
+            variant="outline-primary"
+            onClick={() => navigate('/funcionarios')}
+            style={{ padding: '15px', width: '90%', borderRadius: '30px', marginLeft: '20px' }}
+          >
             Cancelar
           </Button>
         </Form>
       </Container>
     </div>
+  );
+};
 
-  )
-}
-
-export default Funcionario
+export default Funcionarios;

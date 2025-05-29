@@ -2,7 +2,7 @@ import { useState } from 'react';
 import '../Style/login.css'; // Importa o CSS
 import NavBar from '../../components/NavBar/NavBar';
 import { Button, Container, Dropdown, FloatingLabel, Form } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 
 const Insumos = () => {
   const [nomeProduto, setNomeProduto] = useState('');
@@ -18,12 +18,12 @@ const Insumos = () => {
     e.preventDefault();
 
     if (!nomeProduto || !valorProduto || !dataValidade || !quantidade || filtro === 'Filtro') {
-      alert('Por favor, preencha todos os campos e escolha um filtro');
+      console.log('Por favor, preencha todos os campos e escolha um filtro');
       return;
     }
 
     if (new Date(dataValidade) < new Date(today)) {
-      alert('A data de validade deve ser hoje ou uma data futura.');
+      console.log('A data de validade deve ser hoje ou uma data futura.');
       return;
     }
 
@@ -44,7 +44,7 @@ const Insumos = () => {
       });
 
       if (res.ok) {
-        alert("Insumo cadastrado com sucesso!");
+        console.log("Insumo cadastrado com sucesso!");
         // Resetar o formulário, se quiser:
         setNomeProduto('');
         setValorProduto('');
@@ -54,10 +54,10 @@ const Insumos = () => {
         setDescricao('');
         navigate('/estoque'); // redireciona após sucesso
       } else {
-        alert("Erro ao cadastrar insumo");
+        console.log("Erro ao cadastrar insumo");
       }
     } catch (error) {
-      alert("Erro de rede ou servidor");
+      console.log("Erro de rede ou servidor");
       console.error(error);
     }
   };
