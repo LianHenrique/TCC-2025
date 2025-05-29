@@ -41,7 +41,7 @@ const Estoque = () => {
       <Container>
         <Pesquisa 
         nomeDrop="Filtro" 
-        navega="/cadastro_produto"
+        navega="/cadastro_insumos"
         lista={[
           {
             texto: "Carnes",

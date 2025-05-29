@@ -109,7 +109,7 @@ app.get('/estoque', (req, res) => {
 });
 
 // cadastro adm
-app.post("/funcionario/insert", (req, res) => {
+app.post("/cliente/insert", (req, res) => {
     const email = req.body.email
     const senha = req.body.senha
 
@@ -119,9 +119,29 @@ app.post("/funcionario/insert", (req, res) => {
             console.log(erro);
             return res.status(500).json({ error: 'Erro ao cadastrar funcionário' });
         }
-        res.status(201).json({ message: 'Funcionário cadastrado com sucesso' });
+        res.status(201).json({ message: 'Cliente cadastrado' });
     });
 })
+
+app.post("/insumos/insert", (req, res) => {
+    const { 
+        nome_produto,
+        valor_produto,
+        filtro, QTD_produto, 
+        data_vencimento, 
+        descricao_produto 
+    } = req.body;
+
+    const sql = `INSERT INTO insumos (nome_produto, valor_produto, filtro, QTD_produto, data_vencimento_prod, descricao_produto) VALUES (?, ?, ?, ?, ?, ?)`;
+    
+    connection.query(sql, [nome_produto, valor_produto, filtro, QTD_produto, data_vencimento, descricao_produto], (erro, data) => {
+        if (erro) {
+            console.log(erro);
+            return res.status(500).json({ error: 'Erro ao cadastrar insumo' });
+        }
+        res.status(201).json({ message: 'Insumo cadastrado' });
+    });
+});
 
 // Porta de entrada para o banco
 const PORTA = 3000;
