@@ -76,23 +76,11 @@ const Pesquisa = ({ lista, nomeDrop, onResultado, link }) => {
             ))}
           </Dropdown.Menu>
         </Dropdown>
-<<<<<<< HEAD
         <Button
           className="shadow rounded-5">
           Cadastrar
         </Button>
       </FloatingLabel>
-=======
-      </FloatingLabel>
-      <Button
-        href={navega}
-        style={{
-          padding: "15px"
-        }}
-        className="shadow rounded-5 m-2">
-        Cadastrar
-      </Button>
->>>>>>> main
     </div>
   );
 };
