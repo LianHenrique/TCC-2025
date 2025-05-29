@@ -1,7 +1,6 @@
-import { FaEdit, FaRegTrashAlt } from 'react-icons/fa'
 import NavBar from '../../components/NavBar/NavBar'
 import Pesquisa from '../../components/Pesquisa/Pesquisa'
-import { Button, Card, Container } from 'react-bootstrap'
+import { Button, Container } from 'react-bootstrap'
 import CardGeral from '../../components/Cards/CardGeral'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router'
@@ -39,29 +38,31 @@ const Estoque = () => {
     <div>
       <NavBar />
       <Container>
-        <Pesquisa
-          nomeDrop="Filtro"
-          lista={[
-            {
-              lista: "Carnes",
-              link: "#carnes"
-            },
-            {
-              lista: "Bebidas",
-              link: "#bebidas"
-            },
-            {
-              lista: "Saladas",
-              link: "#saladas"
-            },
-          ]}
+        <Pesquisa 
+        nomeDrop="Filtro" 
+        lista={[
+          {
+            texto: "Carnes",
+            link: "#carnes"  
+          },
+          {
+            texto: "Bebidas",
+            link: "#bebidas"  
+          },
+          {
+            texto: "Saladas",
+            link: "#saladas"  
+          },
+        ]}
         />
+        <Button className="shadow rounded-5">Cadastrar</Button>
         <CardGeral
           filtro="produtos"
           card={produtos}
           onCardClick={handleCardClick}
         />
       </Container>
+      
     </div>
   )
 }

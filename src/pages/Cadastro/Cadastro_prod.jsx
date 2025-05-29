@@ -1,80 +1,168 @@
 import { useState } from 'react';
-import Form from 'react-bootstrap/Form';
-import NavBar from '../../components/NavBar/NavBar';
 import '../Style/login.css'; // Importa o CSS
+import NavBar from '../../components/NavBar/NavBar';
+import { Button, Container, Dropdown, FloatingLabel, Form } from 'react-bootstrap';
+import Filtro from '../../components/Filtro/Filtro';
 
 const Cadastroprod = () => {
-    const [senha, setSenha] = useState(""); // alterado para numero de ingredientes
-    // const [confirmarSenha, setConfir] = useState(""); // posso tirar tbm
-    // const [email, setEmail] = useState(""); // posso tirar tbm 
-    const [nome, setNomeprod] = useState(""); // mantem e muda para nomeProd
 
-    // const validarEmail = (email) => {
-    //     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-    //     return regex.test(email);
-    // };
+  return (
+    <div
+      style={{
+        marginTop: "150px"
+      }}>
+      <NavBar />
+      <Container
+        style={{
+          width: "650px"
+        }}>
+        <Form
+          className='shadow'
+          style={{
+            padding: "30px",
+            margin: "100px",
+            borderRadius: "20px",
+            border: "1px blue solid"
+          }}>
+          <h1 style={{
+            textAlign: "center"
+          }}>
+            Cadastro
+          </h1>
+          <FloatingLabel
+            controlId="floatingInput"
+            label="Nome"
+            className="m-2">
+            <Form.Control
+              type="text"
+              placeholder="Nome"
+              className="rounded-5 shadow mt-3"
+              style={{
+                border: "none"
+              }}
+            />
+          </FloatingLabel>
 
-    const Cadastrosprod = () => {
-        const users = JSON.parse(localStorage.getItem("users")) || [];
+          <FloatingLabel
+            controlId="floatingInput"
+            label="Valor unidade"
+            className="m-2">
+            <Form.Control
+              type="text"
+              placeholder="Valor unidade"
+              className="rounded-5 shadow mt-3"
+              style={{
+                border: "none"
+              }}
+            />
+          </FloatingLabel>
 
-        // const usuarioExistente = users.find((user) => user.email === email);
+          <FloatingLabel
+            controlId="floatingInput"
+            label="Data de validade"
+            className="m-2">
+            <Form.Control
+              type="Senha"
+              placeholder="Data de validade"
+              className="rounded-5 shadow mt-3"
+              style={{
+                border: "none"
+              }}
+            />
+          </FloatingLabel>
 
-        if (senha === "" || nome === "") {
-            alert("Os campos não podem ser vazios")
-            setNomeprod("");
-            setSenha("");
-            return;
-        } // mantem mudando as validações
-        if (senha.length >= 0) {
-            alert("A Quantidade/preço deve ter no mínimo 1 numero")
-            setNomeprod("");
-            setSenha("");
-            return;
-        }
+          <FloatingLabel
+            controlId="floatingInput"
+            label="Quantidade"
+            className="m-2">
+            <Form.Control
+              type="Senha"
+              placeholder="Quantidade"
+              className="rounded-5 shadow mt-3"
+              style={{
+                border: "none"
+              }}
+            />
+          </FloatingLabel>
 
-        const novoUsuario = {
-            nome: nome,
-            senha: senha,
-        };
+          <div
+            className="d-flex m-2"
+            style={{
+              alignContent:"center"
+            }}>
+            <Dropdown
+              className="d-flex shadow rounded-5 mt-2"
+              style={{
+                width: "150px",
+                height: "60px"
+              }}>
+              <Dropdown.Toggle
+                variant="outline-primary rounded-5"
+                style={{
+                  width: "150px",
+                  height: "60px"
+                }}>
+                Filtro
+              </Dropdown.Toggle>
+              <Dropdown.Menu
+              className='rounded-3'>
+                <Dropdown.Item
+                  to=""
+                  className="dropdown-item rounded-5"
+                >
+                  Carnes
+                </Dropdown.Item>
+                <Dropdown.Item
+                  to=""
+                  className="dropdown-item rounded-5"
+                >
+                  Bebidas
+                </Dropdown.Item>
+                <Dropdown.Item
+                  to=""
+                  className="dropdown-item rounded-5"
+                >
+                  Saladas
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+            <Button
+              className="rounded-5 m-2 mt-2 fs-2"
+              style={{
+                width: "60px",
+                height: "60px"
+              }}>
+              +
+            </Button>
+          </div>
 
-        users.push(novoUsuario);
+          <Button
+            className="shadow mt-4"
+            style={{
+              padding: "15px",
+              width: "90%",
+              borderRadius: "30px",
+              marginLeft: "20px"
+            }}>
+            Cadastrar
+          </Button>
+          <Button
+            className="shadow mt-4"
+            variant='outline-primary'
+            href="/estoque"
+            style={{
+              padding: "15px",
+              width: "90%",
+              borderRadius: "30px",
+              marginLeft: "20px"
+            }}>
+            Cancelar
+          </Button>
+        </Form>
+      </Container>
+    </div>
 
-        localStorage.setItem("users", JSON.stringify(users));
-
-        alert("Cadastro realizado com sucesso!");
-        setNomeprod("");
-        setSenha("");
-    }
-
-    return (
-        <div className="login-bg">
-            <div className="login-box">
-                <h2>Cadastro</h2>
-
-                <Lay />
-                <Form>
-                    <Form.Group className="mb-3" controlId="formGroupEmail">
-                        <Form.Label>NomeProd</Form.Label>
-                        <Form.Control type="text" placeholder='Nome do produto' value={nome} onChange={(e) => setEmail(e.target.value)} />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formGroupPassword">
-                        <Form.Label>QtdProd</Form.Label>
-                        <Form.Control type="text" placeholder='Quantidade do produto' value={senha} onChange={(e) => setSenha(e.target.value)} />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formGroupPassword">
-                        <Form.Label>Descrica</Form.Label>
-                        <Form.Control type="text" placeholder='Descreva o produto(opcional)' value={nome} onChange={(e) => setSenha(e.target.value)} />
-                    </Form.Group>
-                    <Form.Group className="mb-3" controlId="formGroupPassword">
-                        <Form.Label>ValorProd</Form.Label>
-                        <Form.Control type="text" placeholder='Valor produto' value={senha} onChange={(e) => setSenha(e.target.value)} />
-                    </Form.Group>
-                </Form>
-                <button variant="primary" style={{ width: '100%', backgroundColor: '#3840BA' }} onClick={Cadastrosprod} onClickCapture={() => navigate('/')}>Entrar</button>
-            </div>
-        </div>
-
-    )
+  )
 }
 
 export default Cadastroprod

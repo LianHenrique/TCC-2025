@@ -13,7 +13,7 @@ app.get('/funcionarios/:id_funcionario', (requisicao, resposta) => {
     console.log("Buscando funcionário com ID", id_funcionario);
 
     connection.query(
-        'SELECT * FROM Funcionarios WHERE id_funcionario = ?',
+        'SELECT * FROM funcionario WHERE id_funcionario = ?',
         [id_funcionario],
         (error, resultados) => {
             if (error) {
@@ -27,11 +27,29 @@ app.get('/funcionarios/:id_funcionario', (requisicao, resposta) => {
     );
 });
 
+app.get('/funcionarios/:nome_funcionario', (requisicao, resposta) => {
+    const { nome_funcionario } = requisicao.params;
+    console.log("Buscando funcionário com nome", nome_funcionario);
+
+    connection.query(
+        'SELECT * FROM funcionario WHERE nome_funcionario = ?',
+        [nome_funcionario],
+        (error, resultados) => {
+            if (error) {
+                return resposta.status(500).json({ error: 'Erro ao buscar funcionário' });
+            }
+            if (resultados.length === 0) {
+                return resposta.status(404).json({ error: 'Funcionário não encontrado' });
+            }
+            resposta.json(resultados[0]);
+        }
+    );
+});
 
 // buscando todos os funcionários
 app.get('/funcionarios', (requisicao, resposta) => {
     connection.query(
-        'SELECT * FROM Funcionarios',
+        'SELECT * FROM funcionario',
         (error, resultados) => {
             if (error) {
                 return resposta.status(500).json({ error: "Erro ao buscar funcionários" })
@@ -41,38 +59,20 @@ app.get('/funcionarios', (requisicao, resposta) => {
     )
 })
 
-
-// buscando todos os produtos
-app.get('/produto', (requisicao, resposta) => {
-    connection.query(
-        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, imagem_url, data_vencimento_prod, descricao_produto FROM Produto',
-        (error, resultados) => {
-            if (error) {
-                return resposta.status(500).json({ error: 'Erro ao buscar produtos' });
-            }
-            resposta.json(resultados);
-        }
-    );
-});
-
-
 //  buscando produto por ID
-app.get('/produto/:id', (requisicao, resposta) => {
-    const { id } = requisicao.params;
+app.get('/produtos/:id_produto', (requisicao, resposta) => {
+    const { id_produto } = requisicao.params;
 
     connection.query(
-        'SELECT * FROM produto WHERE id_produto = ?',
-        [id],
+        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM insumos WHERE id_produto = ?',
+        [id_produto],
         (error, resultados) => {
             if (error) {
-                console.log("Erro na query:", error)
                 return resposta.status(500).json({ error: 'Erro ao buscar produto' });
             }
             if (resultados.length === 0) {
                 return resposta.status(404).json({ error: 'Produto não encontrado' });
             }
-            console.log("Resultado encontrado:", resultados[0])
-            console.log("Produto retornado do MySQL:", resultados[0]);
             resposta.json(resultados[0]);
         }
     );
@@ -86,15 +86,15 @@ app.get('/cardapio', (requisicao, resposta) => {
     connection.query(
         'SELECT * FROM cardapio',
         (error, resultados) => {
-            if(error){
+            if (error) {
                 return resposta.status(500).json({ error: 'Erro ao buscar produtos' });
             }
             resposta.json(resultados);
         }
-    )
-})
+    );
+});
 
-
+// Porta de entrada para o banco
 const PORTA = 3000;
 app.listen(PORTA, () => {
     console.log(`Servidor rodando na porta ${PORTA}`);

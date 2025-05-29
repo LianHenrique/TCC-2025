@@ -7,6 +7,7 @@ import Funcionarios from "../pages/Funcionarios/Funcionarios"
 import Cadastro from "../pages/Cadastro/Cadastro"
 import Relatorios from "../pages/Relatorios/Relatorios"
 import Cardapio from "../pages/Cardapio/Cardapio"
+import Cadastroprod from "../pages/Cadastro/Cadastro_prod"
 import Visualizar from "../pages/Visualizacoes/visualizar"
 import VisualizarFuncionario from '../pages/VisualizarFuncionario/VisualizarFuncionario'
 
@@ -40,7 +41,11 @@ const MyRouter = createBrowserRouter([
                 element: <Cadastro />
             },
             {
-                path: "/relatorios",
+                path: "/cadastro_produto",
+                element: <Cadastroprod />
+            },
+            {
+                path: "/relatorio",
                 element: <Relatorios/>
             },
             {

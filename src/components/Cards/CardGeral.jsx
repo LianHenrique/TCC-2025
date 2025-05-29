@@ -13,11 +13,10 @@ const CardGeral = ({ filtro, card, ClassNameCard, ClassTitulo , ClassImg, enable
           card.map((item, index) => (
             <Card
               key={index}
-              className={`shadow`}
-              onClick={() => onCardClick && onCardClick(item.id)}
-              style={{
-                minWidth: '15rem',
-                maxWidth: "15rem",
+              className='shadow'  
+              style={{ 
+                minWidth: '17rem',
+                maxWidth: "20rem", 
                 border: "none",
                 borderRadius: "15px",
                 margin: "6px",
