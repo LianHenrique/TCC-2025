@@ -3,7 +3,7 @@ import Navbar from '../../components/NavBar/NavBar'
 import CardGeral from '../../components/Cards/CardGeral'
 import { Container } from 'react-bootstrap'
 import style from './visualizar.module.css'
-import { useParams } from 'react-router'
+import { useParams } from 'react-router-dom'
 
 // tem que pegar o id da tela de cardápio, props.
 const Visualizar = () => {
@@ -16,9 +16,10 @@ const Visualizar = () => {
     const [produtos, setProdutos] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+    console.log('params:', useParams)
 
     useEffect(() => {
-        console.log("Use effect disparou. id igual a:", id);
+        console.log(`UseEffect disparou. id: ${id}`);
 
         if (!id) {
             setProdutos([]);
@@ -26,7 +27,7 @@ const Visualizar = () => {
             return;
         }
 
-        fetch(`http://localhost:3000/insumos/${id}`)
+        fetch(`http://localhost:3000/produto/${id}`)
             .then(response => {
                 if (!response.ok) throw new Error('Produto não encontrado');
                 return response.json();
