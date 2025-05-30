@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import NavBar from "../../components/NavBar/NavBar";
 import styles from './Home.module.css'; // Usando CSS Modules
 
-
 function Home() {
   const [temaEscuro, setTemaEscuro] = useState(false);
 
@@ -15,9 +14,8 @@ function Home() {
   return (
     <div>
       <NavBar />
-      <div className={styles.App}>
-      {/* Navegação */}
 
+      <div className={styles.App}>
         {/* Botão de alternância de tema */}
         <button className={styles['theme-toggle-button']} onClick={alternarTema}>
           <svg viewBox="0 0 24 24" width="24" height="24">
@@ -29,16 +27,51 @@ function Home() {
             />
           </svg>
         </button>
-        {/* Benefícios rápidos */}
-        <div className={styles.alexandria2}>
-          <p>1 Acesso em tempo real</p>
-          <p>2 Redução de erros</p>
-          <p>3 Relatórios detalhados</p>
+
+        {/* Título e descrição */}
+        <div className={styles.header}>
+          <h1>
+            Gerencie o <span className={styles.destaque}>estoque</span> do seu negócio de maneira ágil
+          </h1>
+          <p>StoreBox facilita o gerenciamento de estoques com eficiência e recursos úteis.</p>
         </div>
 
-      </div>
+        {/* Botão de Teste Grátis + Frase */}
+        <div className={styles.testeGratisContainer}>
+          <button className={styles.botaoTesteGratis}>Teste Grátis</button>
+          <span className={styles.bold}>Experimente grátis por 30 dias</span>
+        </div>
 
-      
+        {/* Benefícios rápidos */}
+        <div className={styles.beneficios}>
+          <div><strong>1</strong> Acesso em tempo real</div>
+          <div><strong>2</strong> Redução de erros</div>
+          <div><strong>3</strong> Relatórios detalhados</div>
+        </div>
+
+        {/* Cartões de Planos */}
+        <div className={styles.planos}>
+          <div className={styles.card}>
+            <h3>Plano 2</h3>
+            <button className={styles.botaoTesteGratis}>Começar</button>
+          </div>
+          <div className={styles.card}>
+            <h3>Plano 1</h3>
+            <button className={styles.botaoTesteGratis}>Começar</button>
+          </div>
+          <div className={styles.card}>
+            <h3>Gratis</h3>
+            <p className={styles.cardText}>
+              Experimente gratuitamente por 30 dias<br />
+              • Uso limitado<br />
+              • Sem recursos avançados<br />
+              • Sem registro em reconhecimento<br />
+              • Sem obrigação de faturamento
+            </p>
+            <button className={styles.botaoTesteGratis}>Começar</button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
