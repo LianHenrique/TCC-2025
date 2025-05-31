@@ -32,6 +32,7 @@ const Estoque = () => {
 
 
   function handleCardClick(id) {
+    console.log(`id passado para o componente de visualização: ${id}`)
     navigate(`/visualizar/${id}`)
   }
 
