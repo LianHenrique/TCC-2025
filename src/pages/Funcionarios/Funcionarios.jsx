@@ -69,7 +69,7 @@ const Funcionarios = () => {
         /> */}
 
         <CardGeral
-          filtro="funcionarios"
+          filtro=""
           card={funcionario}
           onCardClick={handleCardClick}
         />
