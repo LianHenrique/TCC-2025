@@ -97,7 +97,7 @@ app.get('/produtos', (req, res) => {
 // Notificação de quantidade do estoque
 app.get('/produtos', (req, res) => {
     connection.query(
-        'SELECT QTD_produto, nome_produto FROM insumos',
+        'SELECT QTD_produto, id_produto, nome_produto FROM insumos WHERE QTD_produto <= 10',
         (error, resultados) => {
             if (error) {
                 console.log('Deu erro aqui ó', error)
@@ -106,6 +106,8 @@ app.get('/produtos', (req, res) => {
             const qtd = resultados[0]?.QTD_produto ?? 0;
             if (qtd <= 10) {
                 res.json(resultados);
+            } else{
+                res.status(204).send("Estoque ok.")
             }
         }
     )
