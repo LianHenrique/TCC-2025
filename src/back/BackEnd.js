@@ -9,7 +9,7 @@ app.use(express.json());
 // --- ROTAS FUNCIONÁRIOS ---
 
 // Buscar funcionário por ID
-app.get('/funcionarios/:id_funcionario', (req, res) => {
+app.get('/funcionarios/id/:id_funcionario', (req, res) => {
   const { id_funcionario } = req.params;
   connection.query(
     'SELECT * FROM funcionario WHERE id_funcionario = ?',
@@ -22,7 +22,7 @@ app.get('/funcionarios/:id_funcionario', (req, res) => {
   );
 });
 
-// Buscar funcionário por nome (melhor usar query param para não conflitar com a rota acima)
+// Buscar funcionário por nome via query param
 app.get('/funcionarios', (req, res) => {
   const { nome_funcionario } = req.query;
 
@@ -37,16 +37,19 @@ app.get('/funcionarios', (req, res) => {
       }
     );
   } else {
-    // Se não passar nome, retorna todos os funcionários
-    connection.query('SELECT * FROM funcionario', (error, results) => {
-      if (error) return res.status(500).json({ error: 'Erro ao buscar funcionários' });
-      res.json(results);
-    });
+    // Se não houver query param nome_funcionario, lista todos os funcionários
+    connection.query(
+      'SELECT * FROM funcionario',
+      (error, results) => {
+        if (error) return res.status(500).json({ error: 'Erro ao buscar funcionários' });
+        res.json(results);
+      }
+    );
   }
 });
 
-// Inserir funcionário
-app.post('/funcionarios/insert', (req, res) => {
+// Cadastro funcionário
+app.post("/funcionarios/insert", (req, res) => {
   const { nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario } = req.body;
 
   if (!nome_funcionario || !cargo_funcionario || !senha_funcionario || !email_funcionario) {
@@ -69,7 +72,7 @@ app.post('/funcionarios/insert', (req, res) => {
 // Buscar todos insumos
 app.get('/insumos', (req, res) => {
   connection.query(
-    'SELECT id_produto, nome_produto, valor_produto, filtro, QTD_produto, data_vencimento_prod, descricao_produto FROM insumos',
+    `SELECT id_produto, nome_produto, valor_produto, filtro, QTD_produto, data_vencimento_prod, descricao_produto FROM insumos`,
     (error, results) => {
       if (error) return res.status(500).json({ error: 'Erro ao buscar insumos' });
       res.json(results);
@@ -81,7 +84,7 @@ app.get('/insumos', (req, res) => {
 app.get('/insumos/:id_produto', (req, res) => {
   const { id_produto } = req.params;
   connection.query(
-    'SELECT id_produto, nome_produto, valor_produto, filtro, QTD_produto, data_vencimento_prod, descricao_produto FROM insumos WHERE id_produto = ?',
+    `SELECT id_produto, nome_produto, valor_produto, filtro, QTD_produto, data_vencimento_prod, descricao_produto FROM insumos WHERE id_produto = ?`,
     [id_produto],
     (error, results) => {
       if (error) return res.status(500).json({ error: 'Erro ao buscar insumo' });
@@ -110,9 +113,54 @@ app.post('/insumos/insert', (req, res) => {
   });
 });
 
+// --- ROTAS PRODUTOS ---
+
+// Buscar produto por ID
+app.get('/produtos/:id_produto', (req, res) => {
+  const { id_produto } = req.params;
+
+  connection.query(
+    `SELECT id_produto, imagem_url, categoria, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM insumos WHERE id_produto = ?`,
+    [id_produto],
+    (error, results) => {
+      if (error) return res.status(500).json({ error: 'Erro ao buscar produto' });
+      if (results.length === 0) return res.status(404).json({ error: 'Produto não encontrado' });
+      res.json(results[0]);
+    }
+  );
+});
+
+// Notificação de quantidade do estoque (todos produtos com QTD <= 10)
+app.get('/produtos', (req, res) => {
+  connection.query(
+    'SELECT QTD_produto, nome_produto FROM insumos WHERE QTD_produto <= 10',
+    (error, results) => {
+      if (error) {
+        console.error('Erro ao buscar produtos:', error);
+        return res.status(500).json({ error: 'Erro ao buscar produtos' });
+      }
+      if (results.length === 0) {
+        return res.json({ message: 'Estoque está ok, sem produtos com quantidade baixa' });
+      }
+      res.json(results);
+    }
+  );
+});
+
 // --- ROTAS CARDÁPIO ---
 
-// Buscar todos produtos do cardápio
+// Buscar todos os itens do cardápio
+app.get('/cardapio', (req, res) => {
+  connection.query(
+    'SELECT * FROM cardapio',
+    (error, results) => {
+      if (error) return res.status(500).json({ error: 'Erro ao buscar cardápio' });
+      res.json(results);
+    }
+  );
+});
+
+// Inserir item no cardápio com insumos relacionados
 app.post('/cardapio/insert', (req, res) => {
   const { nome_produto, descricao_produto, valor_produto, filtro, insumos } = req.body;
 
@@ -132,8 +180,6 @@ app.post('/cardapio/insert', (req, res) => {
     }
 
     const id_item = result.insertId;
-
-    // Agora insere as relações com os insumos
     const values = insumos.map((id_insumo) => [id_item, id_insumo]);
 
     const insertInsumosQuery = `
@@ -152,12 +198,8 @@ app.post('/cardapio/insert', (req, res) => {
   });
 });
 
-// --- ROTA TESTE ESTOQUE ---
-app.get('/estoque', (req, res) => {
-  res.json({ message: 'Página de estoque encontrada!' });
-});
+// --- ROTA CLIENTE ---
 
-// --- ROTA CLIENTE (exemplo cadastro) ---
 app.post('/cliente/insert', (req, res) => {
   const { email, senha } = req.body;
 
@@ -176,8 +218,12 @@ app.post('/cliente/insert', (req, res) => {
   });
 });
 
-// --- INICIANDO SERVIDOR ---
+// --- ROTA TESTE ESTOQUE ---
+app.get('/estoque', (req, res) => {
+  res.json({ message: 'Página de estoque encontrada!' });
+});
 
+// --- INICIANDO SERVIDOR ---
 const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
