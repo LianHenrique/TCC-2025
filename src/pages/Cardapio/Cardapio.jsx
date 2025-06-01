@@ -58,7 +58,7 @@ const Cardapio = () => {
         />
 
         <CardGeral
-          filtro="cardapio"
+          filtro=""
           card={cardapio}
           onCardClick={handleCardClick}
         />
