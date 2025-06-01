@@ -36,13 +36,37 @@ const Funcionarios = () => {
       <NavBar />
 
       <Container>
-        <Pesquisa
-          nomeDrop="Cargo"
-          lista={[
-            { lista: "Gerente", link: "#gerente" },
-            { lista: "Estoquista", link: "#estoquista" }
-          ]}
-        />
+      <Pesquisa 
+      nomeDrop="Cargo" 
+      navega="/cadastro_funcionario"
+      lista={[
+        {
+          lista: "Gerente",
+          link: "#gerente"  
+        },
+        {
+          lista: "Estoquista",
+          link: "#estoquista"  
+        }
+      ]}
+      />
+      {/* <CardGeral 
+        filtro="Gerente"
+        card={[
+          {
+            nome:"Nome",
+            link:"https://cdn-icons-png.flaticon.com/512/1077/1077114.png",
+            descricao:[
+              {
+                texto:"Cargo: X",
+              },
+              {
+                texto:"Salario: R$ XXXX,XX",
+              },
+            ]
+          }
+        ]}
+        /> */}
 
         <CardGeral
           filtro=""

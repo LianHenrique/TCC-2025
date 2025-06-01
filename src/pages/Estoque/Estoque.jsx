@@ -1,72 +1,84 @@
-import NavBar from '../../components/NavBar/NavBar'
-import Pesquisa from '../../components/Pesquisa/Pesquisa'
-import { Container } from 'react-bootstrap'
-import CardGeral from '../../components/Cards/CardGeral'
-import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router'
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router';
+import NavBar from '../../components/NavBar/NavBar';
+import Pesquisa from '../../components/Pesquisa/Pesquisa';
+import { Button, Container } from 'react-bootstrap';
+import CardGeral from '../../components/Cards/CardGeral';
 
 const Estoque = () => {
-  const [produtos, setprodutos] = useState([])
-  const navigate = useNavigate()
-
-  // bebidas, carnes, oraânicos, molhos, vegetais
+  const [produtos, setProdutos] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch('http://localhost:3000/insumos')
       .then(res => res.json())
       .then(data => {
-        const produtosComId = data.map(item => ({
-          id: item.id_produto,
-          nome: item.nome_produto,
-          link: item.imagem_url || 'https://via.placeholder.com/150',
-          descricao: [
-            { texto: `Data de entrada: ${new Date(item.QTD_entrada_produto).toLocaleDateString()}` },
-            { texto: `Quantidade: ${item.QTD_produto}` },
-          ],
-        }))
-        setprodutos(produtosComId)
+        if (!Array.isArray(data)) {
+          throw new Error("Resposta inesperada da API");
+        }
+
+        const agrupados = data.reduce((acc, produto) => {
+          const cat = produto.categoria || 'Outros';
+
+          if (!acc[cat]) {
+            acc[cat] = [];
+          }
+
+          const entradaFormatada = produto.QTD_entrada_produto
+            ? new Date(produto.QTD_entrada_produto).toLocaleDateString()
+            : 'Data desconhecida';
+
+          acc[cat].push({
+            id: produto.id_produto,
+            nome: produto.nome_produto,
+            link: produto.imagem_url || 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
+            descricao: [
+              { texto: `Quantidade: ${produto.QTD_produto}` },
+              { texto: `Entrada: ${entradaFormatada}` }
+            ]
+          });
+
+          return acc;
+        }, {});
+
+        setProdutos(agrupados);
       })
+      .catch(err => console.error('Erro ao buscar produtos:', err));
+  }, []);
 
-      .catch(err => console.error(err))
-  }, [])
-
-
-  function handleCardClick(id) {
-    console.log(`id passado para o componente de visualização: ${id}`)
-    navigate(`/visualizar/${id}`)
-  }
+  const handleCardClick = (id) => {
+    navigate(`/visualizar/${id}`);
+  };
 
   return (
     <div>
       <NavBar />
-      <Container>
-        <Pesquisa 
-        nomeDrop="Filtro" 
-        navega="/cadastro_insumos"
-        lista={[
-          {
-            texto: "Carnes",
-            link: "#carnes"  
-          },
-          {
-            texto: "Bebidas",
-            link: "#bebidas"  
-          },
-          {
-            texto: "Saladas",
-            link: "#saladas"  
-          },
-        ]}
+      <Container className="my-4">
+        <Pesquisa
+          nomeDrop="Filtro"
+          lista={[
+            { texto: "Carnes", link: "#carnes" },
+            { texto: "Bebidas", link: "#bebidas" },
+            { texto: "Saladas", link: "#saladas" },
+          ]}
         />
-        <CardGeral
-          filtro=""
-          card={produtos}
-          onCardClick={handleCardClick}
-        />
-      </Container>
-      
-    </div>
-  )
-}
 
-export default Estoque
+        <div className="d-flex justify-content-end my-3">
+          <Button className="shadow rounded-5">Cadastrar</Button>
+        </div>
+
+        {Object.entries(produtos).map(([categoria, produtosDaCategoria]) => (
+          <div key={categoria} id={categoria.toLowerCase()} className="mb-5">
+            <h2 className="mb-3">{categoria}</h2>
+            <CardGeral
+              card={produtosDaCategoria}
+              onCardClick={handleCardClick}
+            />
+          </div>
+        ))}
+      </Container>
+    </div>
+  );
+};
+
+export default Estoque;
