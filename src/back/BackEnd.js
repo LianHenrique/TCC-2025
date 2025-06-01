@@ -58,12 +58,13 @@ app.get('/funcionarios', (requisicao, resposta) => {
     )
 })
 
+
 //  buscando produto por ID
 app.get('/produtos/:id_produto', (requisicao, resposta) => {
     const { id_produto } = requisicao.params;
 
     connection.query(
-        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM insumos WHERE id_produto = ?',
+        'SELECT id_produto, imagem_url, categoria, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM insumos WHERE id_produto = ?',
         [id_produto],
         (error, resultados) => {
             if (error) {
@@ -77,9 +78,10 @@ app.get('/produtos/:id_produto', (requisicao, resposta) => {
     );
 });
 
+
 app.get('/produtos', (req, res) => {
     connection.query(
-        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM insumos',
+        'SELECT id_produto, nome_produto, imagem_url, categoria, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM insumos',
         (error, resultados) => {
             if (error) {
                 return res.status(500).json({ error: 'Erro ao buscar produtos' });
@@ -88,6 +90,28 @@ app.get('/produtos', (req, res) => {
         }
     );
 });
+
+
+
+
+// Notificação de quantidade do estoque
+app.get('/produtos', (req, res) => {
+    connection.query(
+        'SELECT QTD_produto, nome_produto FROM insumos',
+        (error, resultados) => {
+            if (error) {
+                console.log('Deu erro aqui ó', error)
+            }
+
+            const qtd = resultados[0]?.QTD_produto ?? 0;
+            if (qtd <= 10) {
+                res.json(resultados);
+            }
+        }
+    )
+});
+
+
 
 // Buscando todos os itens do cardápio
 // No select eu só peguei o que importa pra a parte fake 
@@ -108,6 +132,8 @@ app.get('/estoque', (req, res) => {
     res.json({ message: 'Página de estoque encontrada!' });
 });
 
+
+
 // cadastro adm
 app.post("/cliente/insert", (req, res) => {
     const email = req.body.email
@@ -124,16 +150,16 @@ app.post("/cliente/insert", (req, res) => {
 })
 
 app.post("/insumos/insert", (req, res) => {
-    const { 
+    const {
         nome_produto,
         valor_produto,
-        filtro, QTD_produto, 
-        data_vencimento, 
-        descricao_produto 
+        filtro, QTD_produto,
+        data_vencimento,
+        descricao_produto
     } = req.body;
 
     const sql = `INSERT INTO insumos (nome_produto, valor_produto, filtro, QTD_produto, data_vencimento_prod, descricao_produto) VALUES (?, ?, ?, ?, ?, ?)`;
-    
+
     connection.query(sql, [nome_produto, valor_produto, filtro, QTD_produto, data_vencimento, descricao_produto], (erro, data) => {
         if (erro) {
             console.log(erro);
@@ -144,10 +170,10 @@ app.post("/insumos/insert", (req, res) => {
 });
 
 app.post("/funcionarios/insert", (req, res) => {
-    const { 
+    const {
         nome_funcionario,
         cargo_funcionario,
-        senha_funcionario, 
+        senha_funcionario,
         email_funcionario
     } = req.body;
 
