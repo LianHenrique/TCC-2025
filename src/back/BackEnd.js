@@ -1,176 +1,186 @@
 import express from 'express';
 import connection from './db.js';
-import cors from 'cors'; //se não instalar isso aqui, ele dá erro quando roda pq o backend tá em  uma porta diferente da porta do front
+import cors from 'cors';
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
-// buscando funcionário por ID
-app.get('/funcionarios/:id_funcionario', (requisicao, resposta) => {
-    const { id_funcionario } = requisicao.params;
-    console.log("Buscando funcionário com ID", id_funcionario);
+// --- ROTAS FUNCIONÁRIOS ---
 
+// Buscar funcionário por ID
+app.get('/funcionarios/:id_funcionario', (req, res) => {
+  const { id_funcionario } = req.params;
+  connection.query(
+    'SELECT * FROM funcionario WHERE id_funcionario = ?',
+    [id_funcionario],
+    (error, results) => {
+      if (error) return res.status(500).json({ error: 'Erro ao buscar funcionário' });
+      if (results.length === 0) return res.status(404).json({ error: 'Funcionário não encontrado' });
+      res.json(results[0]);
+    }
+  );
+});
+
+// Buscar funcionário por nome (melhor usar query param para não conflitar com a rota acima)
+app.get('/funcionarios', (req, res) => {
+  const { nome_funcionario } = req.query;
+
+  if (nome_funcionario) {
     connection.query(
-        'SELECT * FROM funcionario WHERE id_funcionario = ?',
-        [id_funcionario],
-        (error, resultados) => {
-            if (error) {
-                return resposta.status(500).json({ error: 'Erro ao buscar funcionário' });
-            }
-            if (resultados.length === 0) {
-                return resposta.status(404).json({ error: 'Funcionário não encontrado' });
-            }
-            resposta.json(resultados[0]);
-        }
+      'SELECT * FROM funcionario WHERE nome_funcionario = ?',
+      [nome_funcionario],
+      (error, results) => {
+        if (error) return res.status(500).json({ error: 'Erro ao buscar funcionário' });
+        if (results.length === 0) return res.status(404).json({ error: 'Funcionário não encontrado' });
+        return res.json(results[0]);
+      }
     );
-});
-
-app.get('/funcionarios/:nome_funcionario', (requisicao, resposta) => {
-    const { nome_funcionario } = requisicao.params;
-    console.log("Buscando funcionário com nome", nome_funcionario);
-
-    connection.query(
-        'SELECT * FROM funcionario WHERE nome_funcionario = ?',
-        [nome_funcionario],
-        (error, resultados) => {
-            if (error) {
-                return resposta.status(500).json({ error: 'Erro ao buscar funcionário' });
-            }
-            if (resultados.length === 0) {
-                return resposta.status(404).json({ error: 'Funcionário não encontrado' });
-            }
-            resposta.json(resultados[0]);
-        }
-    );
-});
-
-// buscando todos os funcionários
-app.get('/funcionarios', (requisicao, resposta) => {
-    connection.query(
-        'SELECT * FROM funcionario',
-        (error, resultados) => {
-            if (error) {
-                return resposta.status(500).json({ error: "Erro ao buscar funcionários" })
-            }
-            resposta.json(resultados);
-        }
-    )
-})
-
-//  buscando produto por ID
-app.get('/produtos/:id_produto', (requisicao, resposta) => {
-    const { id_produto } = requisicao.params;
-
-    connection.query(
-        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM insumos WHERE id_produto = ?',
-        [id_produto],
-        (error, resultados) => {
-            if (error) {
-                return resposta.status(500).json({ error: 'Erro ao buscar produto' });
-            }
-            if (resultados.length === 0) {
-                return resposta.status(404).json({ error: 'Produto não encontrado' });
-            }
-            resposta.json(resultados[0]);
-        }
-    );
-});
-
-app.get('/produtos', (req, res) => {
-    connection.query(
-        'SELECT id_produto, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM insumos',
-        (error, resultados) => {
-            if (error) {
-                return res.status(500).json({ error: 'Erro ao buscar produtos' });
-            }
-            res.json(resultados);
-        }
-    );
-});
-
-// Buscando todos os itens do cardápio
-// No select eu só peguei o que importa pra a parte fake 
-
-app.get('/cardapio', (requisicao, resposta) => {
-    connection.query(
-        'SELECT * FROM cardapio',
-        (error, resultados) => {
-            if (error) {
-                return resposta.status(500).json({ error: 'Erro ao buscar produtos' });
-            }
-            resposta.json(resultados);
-        }
-    );
-});
-
-app.get('/estoque', (req, res) => {
-    res.json({ message: 'Página de estoque encontrada!' });
-});
-
-// cadastro adm
-app.post("/cliente/insert", (req, res) => {
-    const email = req.body.email
-    const senha = req.body.senha
-
-    const sql = `INSERT INTO cliente (email_cliente, senha_cliente) VALUES (?, ?)`;
-    connection.query(sql, [email, senha], (erro, data) => {
-        if (erro) {
-            console.log(erro);
-            return res.status(500).json({ error: 'Erro ao cadastrar funcionário' });
-        }
-        res.status(201).json({ message: 'Cliente cadastrado' });
+  } else {
+    // Se não passar nome, retorna todos os funcionários
+    connection.query('SELECT * FROM funcionario', (error, results) => {
+      if (error) return res.status(500).json({ error: 'Erro ao buscar funcionários' });
+      res.json(results);
     });
-})
-
-app.post("/insumos/insert", (req, res) => {
-    const { 
-        nome_produto,
-        valor_produto,
-        filtro, QTD_produto, 
-        data_vencimento, 
-        descricao_produto 
-    } = req.body;
-
-    const sql = `INSERT INTO insumos (nome_produto, valor_produto, filtro, QTD_produto, data_vencimento_prod, descricao_produto) VALUES (?, ?, ?, ?, ?, ?)`;
-    
-    connection.query(sql, [nome_produto, valor_produto, filtro, QTD_produto, data_vencimento, descricao_produto], (erro, data) => {
-        if (erro) {
-            console.log(erro);
-            return res.status(500).json({ error: 'Erro ao cadastrar insumo' });
-        }
-        res.status(201).json({ message: 'Insumo cadastrado' });
-    });
+  }
 });
 
-app.post("/funcionarios/insert", (req, res) => {
-    const { 
-        nome_funcionario,
-        cargo_funcionario,
-        senha_funcionario, 
-        email_funcionario
-    } = req.body;
+// Inserir funcionário
+app.post('/funcionarios/insert', (req, res) => {
+  const { nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario } = req.body;
 
-    // Verificar se todos os campos necessários foram fornecidos
-    if (!nome_funcionario || !cargo_funcionario || !senha_funcionario || !email_funcionario) {
-        return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+  if (!nome_funcionario || !cargo_funcionario || !senha_funcionario || !email_funcionario) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+  }
+
+  const sql = `INSERT INTO funcionario (nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario) VALUES (?, ?, ?, ?)`;
+
+  connection.query(sql, [nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario], (error) => {
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Erro ao cadastrar funcionário' });
+    }
+    res.status(201).json({ message: 'Funcionário cadastrado com sucesso' });
+  });
+});
+
+// --- ROTAS INSUMOS ---
+
+// Buscar todos insumos
+app.get('/insumos', (req, res) => {
+  connection.query(
+    'SELECT id_produto, nome_produto, valor_produto, filtro, QTD_produto, data_vencimento_prod, descricao_produto FROM insumos',
+    (error, results) => {
+      if (error) return res.status(500).json({ error: 'Erro ao buscar insumos' });
+      res.json(results);
+    }
+  );
+});
+
+// Buscar insumo por id
+app.get('/insumos/:id_produto', (req, res) => {
+  const { id_produto } = req.params;
+  connection.query(
+    'SELECT id_produto, nome_produto, valor_produto, filtro, QTD_produto, data_vencimento_prod, descricao_produto FROM insumos WHERE id_produto = ?',
+    [id_produto],
+    (error, results) => {
+      if (error) return res.status(500).json({ error: 'Erro ao buscar insumo' });
+      if (results.length === 0) return res.status(404).json({ error: 'Insumo não encontrado' });
+      res.json(results[0]);
+    }
+  );
+});
+
+// Inserir insumo
+app.post('/insumos/insert', (req, res) => {
+  const { nome_produto, valor_produto, filtro, QTD_produto, data_vencimento, descricao_produto } = req.body;
+
+  if (!nome_produto || !valor_produto || !filtro || !QTD_produto || !data_vencimento || !descricao_produto) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+  }
+
+  const sql = `INSERT INTO insumos (nome_produto, valor_produto, filtro, QTD_produto, data_vencimento_prod, descricao_produto) VALUES (?, ?, ?, ?, ?, ?)`;
+
+  connection.query(sql, [nome_produto, valor_produto, filtro, QTD_produto, data_vencimento, descricao_produto], (error) => {
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Erro ao cadastrar insumo' });
+    }
+    res.status(201).json({ message: 'Insumo cadastrado com sucesso' });
+  });
+});
+
+// --- ROTAS CARDÁPIO ---
+
+// Buscar todos produtos do cardápio
+app.post('/cardapio/insert', (req, res) => {
+  const { nome_produto, descricao_produto, valor_produto, filtro, insumos } = req.body;
+
+  if (!nome_produto || !descricao_produto || !valor_produto || !filtro || !Array.isArray(insumos) || insumos.length === 0) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios e ao menos um insumo deve ser selecionado.' });
+  }
+
+  const insertProdutoQuery = `
+    INSERT INTO cardapio (nome_item, descricao_item, valor_item, filtro)
+    VALUES (?, ?, ?, ?)
+  `;
+
+  connection.query(insertProdutoQuery, [nome_produto, descricao_produto, valor_produto, filtro], (err, result) => {
+    if (err) {
+      console.error('Erro ao inserir produto:', err);
+      return res.status(500).json({ error: 'Erro ao cadastrar o produto' });
     }
 
-    const sql = `INSERT INTO funcionarios (nome_funcionairo, cargo_funcionario, senha_funcionario, email_funcionario) VALUES (?, ?, ?, ?)`;
+    const id_item = result.insertId;
 
-    connection.query(sql, [nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario], (erro, data) => {
-        if (erro) {
-            console.log(erro);
-            return res.status(500).json({ error: 'Erro ao cadastrar funcionário' });
-        }
-        res.status(201).json({ message: 'Funcionário cadastrado com sucesso' });
+    // Agora insere as relações com os insumos
+    const values = insumos.map((id_insumo) => [id_item, id_insumo]);
+
+    const insertInsumosQuery = `
+      INSERT INTO cardapio_insumos (id_item, id_insumo)
+      VALUES ?
+    `;
+
+    connection.query(insertInsumosQuery, [values], (errRelacao) => {
+      if (errRelacao) {
+        console.error('Erro ao associar insumos:', errRelacao);
+        return res.status(500).json({ error: 'Produto criado, mas erro ao associar insumos.' });
+      }
+
+      return res.status(201).json({ message: 'Produto e insumos cadastrados com sucesso!' });
     });
+  });
 });
 
-// Porta de entrada para o banco
-const PORTA = 3000;
-app.listen(PORTA, () => {
-    console.log(`Servidor rodando na porta ${PORTA}`);
+// --- ROTA TESTE ESTOQUE ---
+app.get('/estoque', (req, res) => {
+  res.json({ message: 'Página de estoque encontrada!' });
+});
+
+// --- ROTA CLIENTE (exemplo cadastro) ---
+app.post('/cliente/insert', (req, res) => {
+  const { email, senha } = req.body;
+
+  if (!email || !senha) {
+    return res.status(400).json({ error: 'Email e senha são obrigatórios' });
+  }
+
+  const sql = `INSERT INTO cliente (email_cliente, senha_cliente) VALUES (?, ?)`;
+
+  connection.query(sql, [email, senha], (error) => {
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Erro ao cadastrar cliente' });
+    }
+    res.status(201).json({ message: 'Cliente cadastrado com sucesso' });
+  });
+});
+
+// --- INICIANDO SERVIDOR ---
+
+const PORT = 3000;
+app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
 });
 
 export default app;
