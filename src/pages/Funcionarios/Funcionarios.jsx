@@ -20,7 +20,8 @@ const Funcionarios = () => {
           nome: func.nome_funcionario,
           link: func.imagem_url || 'https://via.placeholder.com/150',
           descricao: [
-            { texto: `Email: ${func.email_funcionario}`}
+            { texto: `Email: ${func.email_funcionario}`},
+            { texto: `Cargo: ${func.cargo_funcionario}`}
           ],
         }))
         setFuncionario(FuncionariosFormatados)

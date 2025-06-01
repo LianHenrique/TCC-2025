@@ -28,7 +28,8 @@ const Relatorio_Funcionario = () => {
                     link: funcionario.imagem_url,
                     descricao: [
                         { texto: `Nome: ${funcionario.nome_funcionario}` },
-                        { texto: `Email de contato: ${funcionario.email_funcionario}` }
+                        { texto: `Email de contato: ${funcionario.email_funcionario}` },
+                        { texto: `Cargo: ${funcionario.cargo_funcionario}` }
                     ]
                 };
                 setFuncionario([funcionarioFormatado])
