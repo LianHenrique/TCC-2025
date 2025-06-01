@@ -12,7 +12,7 @@ app.use(express.json());
 app.get('/funcionarios/:id_funcionario', (req, res) => {
   const { id_funcionario } = req.params;
   connection.query(
-    'SELECT * FROM funcionario WHERE id_funcionario = ?',
+    'SELECT * FROM funcionarios WHERE id_funcionario = ?',
     [id_funcionario],
     (error, results) => {
       if (error) return res.status(500).json({ error: 'Erro ao buscar funcionário' });
@@ -28,7 +28,7 @@ app.get('/funcionarios', (req, res) => {
 
   if (nome_funcionario) {
     connection.query(
-      'SELECT * FROM funcionario WHERE nome_funcionario = ?',
+      'SELECT * FROM funcionarios WHERE nome_funcionario = ?',
       [nome_funcionario],
       (error, results) => {
         if (error) return res.status(500).json({ error: 'Erro ao buscar funcionário' });
@@ -38,7 +38,7 @@ app.get('/funcionarios', (req, res) => {
     );
   } else {
     // Se não passar nome, retorna todos os funcionários
-    connection.query('SELECT * FROM funcionario', (error, results) => {
+    connection.query('SELECT * FROM funcionarios', (error, results) => {
       if (error) return res.status(500).json({ error: 'Erro ao buscar funcionários' });
       res.json(results);
     });

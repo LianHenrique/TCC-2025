@@ -12,7 +12,7 @@ const Estoque = () => {
   // bebidas, carnes, oraânicos, molhos, vegetais
 
   useEffect(() => {
-    fetch('http://localhost:3000/produtos')
+    fetch('http://localhost:3000/insumos')
       .then(res => res.json())
       .then(data => {
         const produtosComId = data.map(item => ({

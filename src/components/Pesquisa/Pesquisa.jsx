@@ -1,14 +1,26 @@
 import { Button, Dropdown, FloatingLabel, Form } from "react-bootstrap";
 import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { FaSearch } from "react-icons/fa";
 
-const Pesquisa = ({ lista, nomeDrop, navega }) => {
-  const { register } = useForm();
+const Pesquisa = ({ lista, nomeDrop, navega, onFilterChange }) => {
+  const { register, handleSubmit } = useForm();
+  const [filtroSelecionado, setFiltroSelecionado] = useState("");
+
+  const onSubmit = (data) => {
+    onFilterChange({
+      texto: data.pesquisa || "",
+      filtro: filtroSelecionado
+    });
+  };
 
   return (
-    <div style={{
-      marginTop: "150px"
-    }}>
-      <FloatingLabel controlId="floatingInput" label="Pesquisa" className="m-2 d-flex gap-3">
+    <Form onSubmit={handleSubmit(onSubmit)} style={{ marginTop: "150px" }}>
+      <FloatingLabel
+        controlId="floatingInput"
+        label="Pesquisa"
+        className="m-2 d-flex gap-3"
+      >
         <Form.Control
           type="text"
           placeholder="Pesquisa"
@@ -18,34 +30,49 @@ const Pesquisa = ({ lista, nomeDrop, navega }) => {
         />
         <Dropdown
           className="d-flex shadow rounded-5"
-          style={{
-            width: "160px"
-          }}>
+          style={{ width: "160px" }}
+        >
           <Dropdown.Toggle
             variant="outline-primary rounded-5"
-            style={{
-              width: "160px"
-            }}>
-            {nomeDrop}
+            style={{ width: "160px" }}
+          >
+            {filtroSelecionado || nomeDrop}
           </Dropdown.Toggle>
           <Dropdown.Menu className="rounded-3">
             {lista.map((item, index) => (
-              <Dropdown.Item key={index} to={item.link} className="dropdown-item">
+              <Dropdown.Item
+                key={index}
+                onClick={() => {
+                  setFiltroSelecionado(item.texto);
+                }}
+              >
                 {item.texto}
               </Dropdown.Item>
             ))}
           </Dropdown.Menu>
         </Dropdown>
+        <Button
+          type="submit"
+          className="shadow rounded-5"
+          style={{ 
+            padding: "15px",
+            width: "70px"
+          }}
+        >
+          <FaSearch />
+        </Button>
       </FloatingLabel>
-      <Button
-        href={navega}
-        style={{
-          padding: "15px"
-        }}
-        className="shadow rounded-5 m-2">
-        Cadastrar
-      </Button>
-    </div>
+
+      <div className="d-flex gap-3 m-2">
+        <Button
+          href={navega}
+          className="shadow rounded-5"
+          style={{ padding: "15px" }}
+        >
+          Cadastrar
+        </Button>
+      </div>
+    </Form>
   );
 };
 
