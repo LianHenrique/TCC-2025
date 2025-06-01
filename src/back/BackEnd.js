@@ -22,6 +22,8 @@ app.get('/funcionarios/id/:id_funcionario', (req, res) => {
   );
 });
 
+
+
 // Buscar funcionário por nome via query param
 app.get('/funcionarios', (req, res) => {
   const { nome_funcionario } = req.query;
@@ -48,6 +50,8 @@ app.get('/funcionarios', (req, res) => {
   }
 });
 
+
+
 // buscando todos os funcionários
 app.get('/funcionarios', (requisicao, resposta) => {
     connection.query(
@@ -60,6 +64,7 @@ app.get('/funcionarios', (requisicao, resposta) => {
         }
     )
 })
+
 
 
 //  buscando produto por ID
@@ -80,6 +85,7 @@ app.get('/produtos/:id_produto', (requisicao, resposta) => {
         }
     );
 });
+
 
 
 app.get('/produtos', (req, res) => {
@@ -240,13 +246,16 @@ app.post('/insumos/insert', (req, res) => {
 
 // --- ROTAS PRODUTOS ---
 
-// Buscar produto por ID
-app.get('/produtos/:id_produto', (req, res) => {
-  const { id_produto } = req.params;
 
+
+
+// Buscar itens do cardapio por ID
+app.get('/cardapio/:id_cardapio', (req, res) => {
+  const { id_cardapio } = req.params;
+ 
   connection.query(
-    `SELECT id_produto, imagem_url, categoria, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM insumos WHERE id_produto = ?`,
-    [id_produto],
+    `SELECT id_cardapio, imagem_url, categoria, nome_item, valor_item, data_cadastro, descricao_item FROM cardapio WHERE id_cardapio = ?`,
+    [id_cardapio],
     (error, results) => {
       if (error) return res.status(500).json({ error: 'Erro ao buscar produto' });
       if (results.length === 0) return res.status(404).json({ error: 'Produto não encontrado' });
@@ -254,6 +263,9 @@ app.get('/produtos/:id_produto', (req, res) => {
     }
   );
 });
+
+
+
 
 // Notificação de quantidade do estoque (todos produtos com QTD <= 10)
 app.get('/produtos', (req, res) => {

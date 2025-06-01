@@ -17,8 +17,8 @@ const Funcionarios = () => {
       .then(data => {
         const FuncionariosFormatados = data.map(func => ({
           id: func.id_funcionario,
-          nome: func.nome_funcionairo,
-          link: func.link || 'https://via.placeholder.com/150',
+          nome: func.nome_funcionario,
+          link: func.imagem_url || 'https://via.placeholder.com/150',
           descricao: [
             { texto: `Email: ${func.email_funcionario}`}
           ],

@@ -10,7 +10,7 @@ const Estoque = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('http://localhost:3000/produtos')
+    fetch('http://localhost:3000/cardapio')
       .then(res => res.json())
       .then(data => {
         if (!Array.isArray(data)) {
@@ -29,12 +29,12 @@ const Estoque = () => {
             : 'Data desconhecida';
 
           acc[cat].push({
-            id: produto.id_produto,
-            nome: produto.nome_produto,
+            id: produto.id_cardapio,
+            nome: produto.nome_item,
             link: produto.imagem_url || 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
-            descricao: [
-              { texto: `Quantidade: ${produto.QTD_produto}` },
-              { texto: `Entrada: ${entradaFormatada}` }
+            descricao: [ 
+              { texto: `Nome: ${entradaFormatada}` },
+              { texto: `Nome: ${produtos.nome_item}` }
             ]
           });
 
