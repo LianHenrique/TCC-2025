@@ -23,6 +23,7 @@ const CardGeral = ({ filtro, card, ClassNameCard, ClassTitulo , ClassImg, enable
                 margin: "6px",
                 padding: "5px"
               }}>
+              {console.log('Item sendo passado:', item)}
               <div>
                 <Card.Img
                   className={ClassImg}

@@ -100,7 +100,7 @@ app.get('/produtos', (req, res) => {
         'SELECT QTD_produto, id_produto, nome_produto FROM insumos WHERE QTD_produto <= 10',
         (error, resultados) => {
             if (error) {
-                console.log('Deu erro aqui ó', error)
+                console.log('Erro', error)
             }
 
             const qtd = resultados[0]?.QTD_produto ?? 0;
