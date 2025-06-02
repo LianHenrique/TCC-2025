@@ -14,9 +14,9 @@ const Funcionarios = () => {
       .then(response => response.json())
       .then(data => {
         const funcionariosFormatados = data.map(func => ({
-          id: func.id_funcionario,
-          nome: func.nome_funcionario,
-          link: func.link || 'https://via.placeholder.com/150',
+          id: func.id_funcionairo,
+          nome: func.nome_funcionairo,
+          link: func.link || 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
           descricao: [
             { texto: `Email: ${func.email_funcionario}` },
             { texto: `Cargo: ${func.cargo_funcionario}` }
@@ -50,23 +50,6 @@ const Funcionarios = () => {
         }
       ]}
       />
-      {/* <CardGeral 
-        filtro="Gerente"
-        card={[
-          {
-            nome:"Nome",
-            link:"https://cdn-icons-png.flaticon.com/512/1077/1077114.png",
-            descricao:[
-              {
-                texto:"Cargo: X",
-              },
-              {
-                texto:"Salario: R$ XXXX,XX",
-              },
-            ]
-          }
-        ]}
-        /> */}
 
         <CardGeral
           filtro=""

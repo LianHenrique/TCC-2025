@@ -14,23 +14,29 @@ const Cardapio = () => {
     fetch('http://localhost:3000/cardapio')
       .then(resposta => resposta.json())
       .then(data => {
+        // Verifique se data é array
+        if (!Array.isArray(data)) {
+          console.error('Dados retornados não são um array:', data);
+          return;
+        }
+
         const cardapioFormatado = data.map(item => ({
-          id: item.id_item,
-          nome: item.nome_c_produto || 'Produto sem nome',
-          link: item.link_prod_cardapio || 'https://via.placeholder.com/150',
+          id: item.id_cardapio,
+          nome: item.nome_item || 'Produto sem nome',
+          link: item.imagem_url || 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
           descricao: [
-            { texto: `Descrição: ${item.descricao_item}` },
-            { texto: `Componentes: ${item.descri_prod_insumos || 'Não informado'}` },
+            { texto: `Descrição: ${item.descricao_item || 'Sem descrição'}` },
+            { texto: `Componentes: ${item.insumos || 'Não informado'}` },
             { texto: `Preço: R$ ${Number(item.valor_item).toFixed(2)}` }
           ],
           acoes: [
             {
               icone: <FaEdit />,
-              onClick: () => navigate(`/editar_produto/${item.id_item}`)
+              onClick: () => navigate(`/editar_produto/${item.id_cardapio}`)
             },
             {
               icone: <FaRegTrashAlt />,
-              onClick: () => handleDelete(item.id_item)
+              onClick: () => handleDelete(item.id_cardapio)
             }
           ]
         }));

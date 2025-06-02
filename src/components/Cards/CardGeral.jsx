@@ -16,7 +16,8 @@ const CardGeral = ({
       <h2>{filtro}</h2>
       <div className='d-flex' style={{
         overflowX: enableOverflow ? "auto" : "visible",
-        borderRadius: "20px"
+        borderRadius: "20px",
+        padding:"5px"
       }}>
         {
           card.map((item, index) => (

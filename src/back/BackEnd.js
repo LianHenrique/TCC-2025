@@ -39,7 +39,7 @@ app.get('/funcionarios', (req, res) => {
   } else {
     // Se não houver query param nome_funcionario, lista todos os funcionários
     connection.query(
-      'SELECT * FROM funcionario',
+      'SELECT * FROM funcionarios',
       (error, results) => {
         if (error) return res.status(500).json({ error: 'Erro ao buscar funcionários' });
         res.json(results);
@@ -47,20 +47,6 @@ app.get('/funcionarios', (req, res) => {
     );
   }
 });
-
-// buscando todos os funcionários
-app.get('/funcionarios', (requisicao, resposta) => {
-    connection.query(
-        'SELECT * FROM funcionario',
-        (error, resultados) => {
-            if (error) {
-                return resposta.status(500).json({ error: "Erro ao buscar funcionários" })
-            }
-            resposta.json(resultados);
-        }
-    )
-})
-
 
 //  buscando produto por ID
 app.get('/produtos/:id_produto', (requisicao, resposta) => {
@@ -81,7 +67,6 @@ app.get('/produtos/:id_produto', (requisicao, resposta) => {
     );
 });
 
-
 app.get('/produtos', (req, res) => {
     connection.query(
         'SELECT id_produto, nome_produto, imagem_url, categoria, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM insumos',
@@ -93,9 +78,6 @@ app.get('/produtos', (req, res) => {
         }
     );
 });
-
-
-
 
 // Notificação de quantidade do estoque
 app.get('/produtos', (req, res) => {
@@ -114,23 +96,6 @@ app.get('/produtos', (req, res) => {
             }
         }
     )
-});
-
-
-
-// Buscando todos os itens do cardápio
-// No select eu só peguei o que importa pra a parte fake 
-
-app.get('/cardapio', (requisicao, resposta) => {
-    connection.query(
-        'SELECT * FROM cardapio',
-        (error, resultados) => {
-            if (error) {
-                return resposta.status(500).json({ error: 'Erro ao buscar produtos' });
-            }
-            resposta.json(resultados);
-        }
-    );
 });
 
 app.get('/estoque', (req, res) => {
@@ -181,7 +146,7 @@ app.post("/funcionarios/insert", (req, res) => {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
   }
 
-  const sql = `INSERT INTO funcionario (nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario) VALUES (?, ?, ?, ?)`;
+  const sql = `INSERT INTO funcionarios (nome_funcionairo, cargo_funcionario, senha_funcionario, email_funcionario) VALUES (?, ?, ?, ?)`;
 
   connection.query(sql, [nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario], (error) => {
     if (error) {
@@ -276,13 +241,54 @@ app.get('/produtos', (req, res) => {
 
 // Buscar todos os itens do cardápio
 app.get('/cardapio', (req, res) => {
-  connection.query(
-    'SELECT * FROM cardapio',
-    (error, results) => {
-      if (error) return res.status(500).json({ error: 'Erro ao buscar cardápio' });
-      res.json(results);
+  const query = `
+    SELECT 
+      c.id_cardapio,
+      c.nome_item,
+      c.descricao_item,
+      c.valor_item,
+      c.imagem_url,
+      c.filtro,
+      GROUP_CONCAT(p.nome_produto SEPARATOR ', ') AS insumos
+    FROM cardapio c
+    LEFT JOIN cardapio_insumos ci ON c.id_cardapio = ci.id_item
+    LEFT JOIN insumos p ON ci.id_insumo = p.id_produto
+    GROUP BY c.id_cardapio;
+  `;
+
+  connection.query(query, (error, results) => {
+    if (error) {
+      return res.status(500).json({ error: 'Erro ao buscar cardápio com insumos' });
     }
-  );
+    res.json(results);
+  });
+});
+
+// Deletar item do cardápio
+app.delete('/cardapio/:id', (req, res) => {
+  const { id } = req.params;
+
+  // Primeiro, remove os insumos relacionados
+  connection.query('DELETE FROM cardapio_insumos WHERE id_item = ?', [id], (erro1) => {
+    if (erro1) {
+      console.error('Erro ao remover insumos relacionados:', erro1);
+      return res.status(500).json({ error: 'Erro ao remover insumos do cardápio' });
+    }
+
+    // Em seguida, remove o item do cardápio
+    connection.query('DELETE FROM cardapio WHERE id_item = ?', [id], (erro2, resultados) => {
+      if (erro2) {
+        console.error('Erro ao deletar item do cardápio:', erro2);
+        return res.status(500).json({ error: 'Erro ao deletar item do cardápio' });
+      }
+
+      if (resultados.affectedRows === 0) {
+        return res.status(404).json({ error: 'Item não encontrado' });
+      }
+
+      res.json({ message: 'Item excluído com sucesso' });
+    });
+  });
 });
 
 // Inserir item no cardápio com insumos relacionados
@@ -341,11 +347,6 @@ app.post('/cliente/insert', (req, res) => {
     }
     res.status(201).json({ message: 'Cliente cadastrado com sucesso' });
   });
-});
-
-// --- ROTA TESTE ESTOQUE ---
-app.get('/estoque', (req, res) => {
-  res.json({ message: 'Página de estoque encontrada!' });
 });
 
 // --- INICIANDO SERVIDOR ---

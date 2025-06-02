@@ -56,16 +56,13 @@ const Estoque = () => {
       <Container className="my-4">
         <Pesquisa
           nomeDrop="Filtro"
+          navega="/cadastro_insumos"
           lista={[
             { texto: "Carnes", link: "#carnes" },
             { texto: "Bebidas", link: "#bebidas" },
             { texto: "Saladas", link: "#saladas" },
           ]}
         />
-
-        <div className="d-flex justify-content-end my-3">
-          <Button className="shadow rounded-5">Cadastrar</Button>
-        </div>
 
         {Object.entries(produtos).map(([categoria, produtosDaCategoria]) => (
           <div key={categoria} id={categoria.toLowerCase()} className="mb-5">

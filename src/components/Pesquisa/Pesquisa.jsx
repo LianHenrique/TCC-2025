@@ -15,7 +15,8 @@ const Pesquisa = ({ lista, nomeDrop, navega, onFilterChange }) => {
   };
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit)} style={{ marginTop: "150px" }}>
+    <Form onSubmit={handleSubmit(onSubmit)} 
+    style={{ marginTop: "90px" }}>
       <FloatingLabel
         controlId="floatingInput"
         label="Pesquisa"
@@ -30,11 +31,9 @@ const Pesquisa = ({ lista, nomeDrop, navega, onFilterChange }) => {
         />
         <Dropdown
           className="d-flex shadow rounded-5"
-          style={{ width: "160px" }}
         >
           <Dropdown.Toggle
             variant="outline-primary rounded-5"
-            style={{ width: "160px" }}
           >
             {filtroSelecionado || nomeDrop}
           </Dropdown.Toggle>
