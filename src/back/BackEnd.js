@@ -162,7 +162,7 @@ app.post("/funcionarios/insert", (req, res) => {
 // Buscar todos insumos
 app.get('/insumos', (req, res) => {
   connection.query(
-    `SELECT id_produto, nome_produto, valor_produto, filtro, QTD_produto, data_vencimento_prod, descricao_produto FROM insumos`,
+    `SELECT id_produto, nome_produto, valor_produto, filtro, QTD_produto, data_vencimento_prod, descricao_produto, imagem_url FROM insumos`,
     (error, results) => {
       if (error) return res.status(500).json({ error: 'Erro ao buscar insumos' });
       res.json(results);
