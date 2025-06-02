@@ -24,9 +24,7 @@ const Estoque = () => {
             acc[cat] = [];
           }
 
-          const entradaFormatada = produto.QTD_entrada_produto
-            ? new Date(produto.QTD_entrada_produto).toLocaleDateString()
-            : 'Data desconhecida';
+          const entradaFormatada = new Date(produto.data_vencimento_prod).toLocaleDateString()
 
           acc[cat].push({
             id: produto.id_produto,
