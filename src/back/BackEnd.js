@@ -50,93 +50,74 @@ app.get('/funcionarios', (req, res) => {
 
 //  buscando produto por ID
 app.get('/produtos/:id_produto', (requisicao, resposta) => {
-    const { id_produto } = requisicao.params;
+  const { id_produto } = requisicao.params;
 
-    connection.query(
-        'SELECT id_produto, imagem_url, categoria, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM insumos WHERE id_produto = ?',
-        [id_produto],
-        (error, resultados) => {
-            if (error) {
-                return resposta.status(500).json({ error: 'Erro ao buscar produto' });
-            }
-            if (resultados.length === 0) {
-                return resposta.status(404).json({ error: 'Produto não encontrado' });
-            }
-            resposta.json(resultados[0]);
-        }
-    );
+  connection.query(
+    'SELECT id_produto, imagem_url, categoria, nome_produto, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM insumos WHERE id_produto = ?',
+    [id_produto],
+    (error, resultados) => {
+      if (error) {
+        return resposta.status(500).json({ error: 'Erro ao buscar produto' });
+      }
+      if (resultados.length === 0) {
+        return resposta.status(404).json({ error: 'Produto não encontrado' });
+      }
+      resposta.json(resultados[0]);
+    }
+  );
 });
 
 app.get('/produtos', (req, res) => {
-    connection.query(
-        'SELECT id_produto, nome_produto, imagem_url, categoria, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM insumos',
-        (error, resultados) => {
-            if (error) {
-                return res.status(500).json({ error: 'Erro ao buscar produtos' });
-            }
-            res.json(resultados);
-        }
-    );
-});
-
-// Notificação de quantidade do estoque
-app.get('/produtos', (req, res) => {
-    connection.query(
-        'SELECT QTD_produto, id_produto, nome_produto FROM insumos WHERE QTD_produto <= 10',
-        (error, resultados) => {
-            if (error) {
-                console.log('Erro', error)
-            }
-
-            const qtd = resultados[0]?.QTD_produto ?? 0;
-            if (qtd <= 10) {
-                res.json(resultados);
-            } else{
-                res.status(204).send("Estoque ok.")
-            }
-        }
-    )
+  connection.query(
+    'SELECT id_produto, nome_produto, imagem_url, categoria, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM insumos',
+    (error, resultados) => {
+      if (error) {
+        return res.status(500).json({ error: 'Erro ao buscar produtos' });
+      }
+      res.json(resultados);
+    }
+  );
 });
 
 app.get('/estoque', (req, res) => {
-    res.json({ message: 'Página de estoque encontrada!' });
+  res.json({ message: 'Página de estoque encontrada!' });
 });
 
 
 
 // cadastro adm
 app.post("/cliente/insert", (req, res) => {
-    const email = req.body.email
-    const senha = req.body.senha
+  const email = req.body.email
+  const senha = req.body.senha
 
-    const sql = `INSERT INTO cliente (email_cliente, senha_cliente) VALUES (?, ?)`;
-    connection.query(sql, [email, senha], (erro, data) => {
-        if (erro) {
-            console.log(erro);
-            return res.status(500).json({ error: 'Erro ao cadastrar funcionário' });
-        }
-        res.status(201).json({ message: 'Cliente cadastrado' });
-    });
+  const sql = `INSERT INTO cliente (email_cliente, senha_cliente) VALUES (?, ?)`;
+  connection.query(sql, [email, senha], (erro, data) => {
+    if (erro) {
+      console.log(erro);
+      return res.status(500).json({ error: 'Erro ao cadastrar funcionário' });
+    }
+    res.status(201).json({ message: 'Cliente cadastrado' });
+  });
 })
 
 app.post("/insumos/insert", (req, res) => {
-    const {
-        nome_produto,
-        valor_produto,
-        filtro, QTD_produto,
-        data_vencimento,
-        descricao_produto
-    } = req.body;
+  const {
+    nome_produto,
+    valor_produto,
+    filtro, QTD_produto,
+    data_vencimento,
+    descricao_produto
+  } = req.body;
 
-    const sql = `INSERT INTO insumos (nome_produto, valor_produto, filtro, QTD_produto, data_vencimento_prod, descricao_produto) VALUES (?, ?, ?, ?, ?, ?)`;
+  const sql = `INSERT INTO insumos (nome_produto, valor_produto, filtro, QTD_produto, data_vencimento_prod, descricao_produto) VALUES (?, ?, ?, ?, ?, ?)`;
 
-    connection.query(sql, [nome_produto, valor_produto, filtro, QTD_produto, data_vencimento, descricao_produto], (erro, data) => {
-        if (erro) {
-            console.log(erro);
-            return res.status(500).json({ error: 'Erro ao cadastrar insumo' });
-        }
-        res.status(201).json({ message: 'Insumo cadastrado' });
-    });
+  connection.query(sql, [nome_produto, valor_produto, filtro, QTD_produto, data_vencimento, descricao_produto], (erro, data) => {
+    if (erro) {
+      console.log(erro);
+      return res.status(500).json({ error: 'Erro ao cadastrar insumo' });
+    }
+    res.status(201).json({ message: 'Insumo cadastrado' });
+  });
 });
 
 app.post("/funcionarios/insert", (req, res) => {
@@ -220,19 +201,21 @@ app.get('/produtos/:id_produto', (req, res) => {
   );
 });
 
-// Notificação de quantidade do estoque (todos produtos com QTD <= 10)
-app.get('/produtos', (req, res) => {
+// Rota para notificação de estoque baixo
+app.get('/produtos/estoque-baixo', (req, res) => {
   connection.query(
-    'SELECT QTD_produto, nome_produto FROM insumos WHERE QTD_produto <= 10',
-    (error, results) => {
+    'SELECT QTD_produto, id_produto, nome_produto FROM insumos WHERE QTD_produto <= 10',
+    (error, resultados) => {
       if (error) {
-        console.error('Erro ao buscar produtos:', error);
+        console.error('Erro', error);
         return res.status(500).json({ error: 'Erro ao buscar produtos' });
       }
-      if (results.length === 0) {
-        return res.json({ message: 'Estoque está ok, sem produtos com quantidade baixa' });
+
+      if (resultados.length === 0) {
+        res.status(204).send("Estoque ok.");
+      } else {
+        res.json(resultados);
       }
-      res.json(results);
     }
   );
 });
@@ -244,20 +227,20 @@ app.get('/cardapio', (req, res) => {
   const query = `
     SELECT 
       c.id_cardapio,
-      c.nome_item,
-      c.descricao_item,
-      c.valor_item,
+      c.nome_c_produto,
+      c.descri_prod_insumos,
+      c.valor_produto,
       c.imagem_url,
-      c.filtro,
       GROUP_CONCAT(p.nome_produto SEPARATOR ', ') AS insumos
     FROM cardapio c
     LEFT JOIN cardapio_insumos ci ON c.id_cardapio = ci.id_item
     LEFT JOIN insumos p ON ci.id_insumo = p.id_produto
-    GROUP BY c.id_cardapio;
+    GROUP BY c.id_cardapio, c.nome_c_produto, c.descri_prod_insumos, c.valor_produto, c.imagem_url;
   `;
 
   connection.query(query, (error, results) => {
     if (error) {
+      console.error(error);
       return res.status(500).json({ error: 'Erro ao buscar cardápio com insumos' });
     }
     res.json(results);
@@ -268,15 +251,13 @@ app.get('/cardapio', (req, res) => {
 app.delete('/cardapio/:id', (req, res) => {
   const { id } = req.params;
 
-  // Primeiro, remove os insumos relacionados
   connection.query('DELETE FROM cardapio_insumos WHERE id_item = ?', [id], (erro1) => {
     if (erro1) {
       console.error('Erro ao remover insumos relacionados:', erro1);
       return res.status(500).json({ error: 'Erro ao remover insumos do cardápio' });
     }
 
-    // Em seguida, remove o item do cardápio
-    connection.query('DELETE FROM cardapio WHERE id_item = ?', [id], (erro2, resultados) => {
+    connection.query('DELETE FROM cardapio WHERE id_cardapio = ?', [id], (erro2, resultados) => {
       if (erro2) {
         console.error('Erro ao deletar item do cardápio:', erro2);
         return res.status(500).json({ error: 'Erro ao deletar item do cardápio' });
@@ -293,18 +274,18 @@ app.delete('/cardapio/:id', (req, res) => {
 
 // Inserir item no cardápio com insumos relacionados
 app.post('/cardapio/insert', (req, res) => {
-  const { nome_produto, descricao_produto, valor_produto, filtro, insumos } = req.body;
+  const { nome_c_produto, descri_prod_insumos, valor_produto, insumos } = req.body;
 
-  if (!nome_produto || !descricao_produto || !valor_produto || !filtro || !Array.isArray(insumos) || insumos.length === 0) {
+  if (!nome_c_produto || !descri_prod_insumos || !valor_produto || !Array.isArray(insumos) || insumos.length === 0) {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios e ao menos um insumo deve ser selecionado.' });
   }
 
   const insertProdutoQuery = `
-    INSERT INTO cardapio (nome_item, descricao_item, valor_item, filtro)
+    INSERT INTO cardapio (nome_c_produto, descri_prod_insumos, valor_produto)
     VALUES (?, ?, ?, ?)
   `;
 
-  connection.query(insertProdutoQuery, [nome_produto, descricao_produto, valor_produto, filtro], (err, result) => {
+  connection.query(insertProdutoQuery, [nome_c_produto, descri_prod_insumos, valor_produto], (err, result) => {
     if (err) {
       console.error('Erro ao inserir produto:', err);
       return res.status(500).json({ error: 'Erro ao cadastrar o produto' });

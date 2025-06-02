@@ -14,7 +14,6 @@ const Cardapio = () => {
     fetch('http://localhost:3000/cardapio')
       .then(resposta => resposta.json())
       .then(data => {
-        // Verifique se data é array
         if (!Array.isArray(data)) {
           console.error('Dados retornados não são um array:', data);
           return;
