@@ -87,7 +87,41 @@ html, body {
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
+.botaoTesteGratis1 {
+  background-color: #3858FF;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-top: 21.5vh;
+}
+
+.botaoTesteGratis2 {
+  background-color: #3858FF;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-top: 21.5vh;
+}
+
 .botaoTesteGratis:hover {
+  background-color: #1a42d1;
+  transform: scale(1.05);
+}
+
+.botaoTesteGratis1:hover {
+  background-color: #1a42d1;
+  transform: scale(1.05);
+}
+
+.botaoTesteGratis2:hover {
   background-color: #1a42d1;
   transform: scale(1.05);
 }

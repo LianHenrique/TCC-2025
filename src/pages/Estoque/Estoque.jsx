@@ -39,7 +39,6 @@ const Estoque = () => {
   }, [])
 
   function handleCardClick(id) {
-    console.log(`id passado para o componente de visualização: ${id}`)
     navigate(`/visualizar/${id}`)
   }
 
@@ -61,6 +60,7 @@ const Estoque = () => {
           <div key={categoria} style={{ marginBottom: '2rem' }}>
             <h2>{categoria}</h2>
             <CardGeral
+              filtro="produtos"
               card={produtosDaCategoria}
               onCardClick={handleCardClick}
             />
