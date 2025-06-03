@@ -119,10 +119,16 @@ const Login = () => {
             }}>
             Voltar
           </Button>
-          <p
-          className="m-2"
+          <Button
           href="/cadastro"
-          >Cadastrar-se</p>
+          className="m-3"
+          style={{
+            background:"none",
+            color:"black",
+            border:"none"
+          }}>
+            Cadastre-se
+          </Button>
         </Form>
       </Container>
     </div>

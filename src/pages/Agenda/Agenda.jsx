@@ -1,5 +1,4 @@
 import styles from './Agenda.module.css';
-import calendarioIcone from '../../assets/calendar-icon.png'; // Substitua pelo caminho real da imagem
 
 function Agenda() {
   return (
@@ -7,11 +6,6 @@ function Agenda() {
       <div className={styles.container}>
         {/* Ícone de calendário */}
         <div className={styles.card}>
-          <img
-            src={calendarioIcone}
-            alt="Ícone de calendário"
-            className={styles.icone}
-          />
         </div>
 
         {/* Texto de desempenho */}

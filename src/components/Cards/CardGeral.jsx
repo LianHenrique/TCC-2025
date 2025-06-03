@@ -1,13 +1,23 @@
-import { Button, Card } from 'react-bootstrap'
-import { FaEdit, FaRegTrashAlt } from 'react-icons/fa'
+import { Button, Card } from 'react-bootstrap';
+import { FaEdit, FaRegTrashAlt } from 'react-icons/fa';
 
-const CardGeral = ({ filtro, card, ClassNameCard, ClassTitulo , ClassImg, enableOverflow = true, Desc, onCardClick }) => {
+const CardGeral = ({
+  filtro,
+  card,
+  ClassNameCard,
+  ClassTitulo,
+  ClassImg,
+  enableOverflow = true,
+  Desc,
+  onCardClick
+}) => {
   return (
     <div className={ClassNameCard}>
       <h2>{filtro}</h2>
       <div className='d-flex' style={{
         overflowX: enableOverflow ? "auto" : "visible",
-        borderRadius: "20px"
+        borderRadius: "20px",
+        padding:"5px"
       }}>
         {
           card.map((item, index) => (
@@ -23,6 +33,7 @@ const CardGeral = ({ filtro, card, ClassNameCard, ClassTitulo , ClassImg, enable
                 margin: "6px",
                 padding: "5px"
               }}>
+              {console.log('Item sendo passado:', item)}
               <div>
                 <Card.Img
                   className={ClassImg}
@@ -55,7 +66,7 @@ const CardGeral = ({ filtro, card, ClassNameCard, ClassTitulo , ClassImg, enable
         }
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default CardGeral
+export default CardGeral;

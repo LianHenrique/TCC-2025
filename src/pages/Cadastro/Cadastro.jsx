@@ -23,7 +23,7 @@ const Cadastro = () => {
     }
 
     try {
-      const res = await fetch('http://localhost:3000/funcionario/insert', {
+      const res = await fetch('http://localhost:3000/cliente/insert', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -112,8 +112,10 @@ const Cadastro = () => {
 
           <Button
             type="submit"
+            onClick={() => {
+              navigate("/estoque")
+            }}
             className="shadow mt-4"
-            onClick={() => navigate("/estoque")}
             style={{ padding: '15px', width: '90%', borderRadius: '30px', marginLeft: '20px' }}>
             Cadastrar
           </Button>

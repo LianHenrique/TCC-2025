@@ -52,15 +52,16 @@ const Relatorios = () => {
     <div>
       <NavBar />
       <Container
-        className='d-flex'
+        className='d-flex flex-wrap'
         style={{
-          marginTop: "100px"
+          marginTop: "90px"
         }}>
         <Col
           className='shadow rounded-5 m-2'
           style={{
             padding: "10px",
-            maxWidth: "500px"
+            maxWidth: "500px",
+            minWidth: "300px"
           }}>
           <Figure>
             <h1
