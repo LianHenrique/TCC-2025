@@ -5,7 +5,7 @@ const Notficacao = () => {
     const [resultados, setresultados] = useState([]);
 
     useEffect(() => {
-        fetch('http://localhost:3000/produtos')
+        fetch('http://localhost:3000/insumos/alerta')
             .then(res => {
                 if (res.status === 204) {
                     return null;
@@ -31,8 +31,8 @@ const Notficacao = () => {
                     <h1>ATENÇÃO, INSUMOS COM POUCO ESTOQUE:</h1>
                     <ul>
                         {resultados.map((produto) => (
-                            <li key={produto.id_produto}>
-                                <p>{produto.nome_produto} {produto.QTD_produto}</p>
+                            <li key={produto.id_insumos}>
+                                <p>{produto.nome_insumos} {produto.quantidade_insumos}</p>
                             </li>
                         ))}
                     </ul>
