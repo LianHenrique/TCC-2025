@@ -33,6 +33,7 @@ const NavBar = () => {
                   <Nav.Link href="/funcionarios"> Funcionarios </Nav.Link>
                   <Nav.Link href="/agenda"> Agenda </Nav.Link>
                   <Nav.Link href="/cardapio"> Cardapio </Nav.Link>
+                  <Nav.Link href="/alertas"> Alertas </Nav.Link>
                 </Nav>
               )
             }

@@ -206,6 +206,22 @@ app.get('/insumos', (req, res) => {
   );
 });
 
+
+
+// Notificação de quantidade do estoque (todos produtos com QTD <= 10)
+app.get('/insumos/alerta', (req, res) => {
+  connection.query('SELECT * FROM insumos WHERE quantidade_insumos <= 20', (error, results) => {
+    if(error){
+      console.error('Erro ao buscar insumos', error.message);
+      console.error(error);
+      return res.status(500).json({error: 'Erro ao buscar insumos:'})
+    }
+    return res.json(results);
+  })
+})
+
+
+
 // Buscar insumo por id
 app.get('/insumos/:id_produto', (req, res) => {
   const { id_produto } = req.params;
@@ -219,6 +235,8 @@ app.get('/insumos/:id_produto', (req, res) => {
     }
   );
 });
+
+
 
 // Inserir insumo
 app.post('/insumos/insert', (req, res) => {
@@ -260,24 +278,6 @@ app.get('/cardapio/:id_cardapio', (req, res) => {
 });
 
 
-
-
-// Notificação de quantidade do estoque (todos produtos com QTD <= 10)
-app.get('/produtos', (req, res) => {
-  connection.query(
-    'SELECT QTD_produto, nome_produto FROM insumos WHERE QTD_produto <= 10',
-    (error, results) => {
-      if (error) {
-        console.error('Erro ao buscar produtos:', error);
-        return res.status(500).json({ error: 'Erro ao buscar produtos' });
-      }
-      if (results.length === 0) {
-        return res.json({ message: 'Estoque está ok, sem produtos com quantidade baixa' });
-      }
-      res.json(results);
-    }
-  );
-});
 
 // --- ROTAS CARDÁPIO ---
 
