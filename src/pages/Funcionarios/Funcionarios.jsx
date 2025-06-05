@@ -22,7 +22,7 @@ const Funcionarios = () => {
             { texto: `Cargo: ${func.cargo_funcionario}`}
           ],
         }))
-        setFuncionario(FuncionariosFormatados)
+        setFuncionarios(FuncionariosFormatados)
       })
       .catch(error => console.error('Erro ao buscar funcionários:', error));
   }, []);
