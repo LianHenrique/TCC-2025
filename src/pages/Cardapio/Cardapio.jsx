@@ -5,6 +5,7 @@ import { FaEdit, FaRegTrashAlt } from 'react-icons/fa';
 import CardGeral from '../../components/Cards/CardGeral';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { Button } from 'react-bootstrap';
 
 const Cardapio = () => {
   const [cardapio, setCardapio] = useState([]);
@@ -14,7 +15,8 @@ const Cardapio = () => {
     fetch('http://localhost:3000/cardapio')
       .then(resposta => resposta.json())
       .then(data => {
-        // Verifique se data é array
+        
+
         if (!Array.isArray(data)) {
           console.error('Dados retornados não são um array:', data);
           return;
@@ -83,6 +85,15 @@ const Cardapio = () => {
           filtro=""
           card={cardapio}
           onCardClick={handleCardClick}
+          showButtons={false}
+          customButton={item => (
+            <Button
+              variant="success"
+              className="h-10 fs-5 text-center shadow alert-success align-center bg-success text-white" 
+            >
+              Pedir
+            </Button>
+          )}
         />
       </Container>
     </div>

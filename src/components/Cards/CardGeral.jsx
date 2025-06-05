@@ -9,7 +9,9 @@ const CardGeral = ({
   ClassImg,
   enableOverflow = true,
   Desc,
-  onCardClick
+  onCardClick,
+  showButtons = true,
+  customButton 
 }) => {
   return (
     <div className={ClassNameCard}>
@@ -17,7 +19,7 @@ const CardGeral = ({
       <div className='d-flex' style={{
         overflowX: enableOverflow ? "auto" : "visible",
         borderRadius: "20px",
-        padding:"5px"
+        padding: "5px"
       }}>
         {
           card.map((item, index) => (
@@ -33,7 +35,6 @@ const CardGeral = ({
                 margin: "6px",
                 padding: "5px"
               }}>
-              {console.log('Item sendo passado:', item)}
               <div>
                 <Card.Img
                   className={ClassImg}
@@ -49,16 +50,23 @@ const CardGeral = ({
                       </Card.Text>
                     ))
                   }
-                  <Button
-                    variant="warning"
-                    className="rounded-circle fs-5 text-center shadow m-1">
-                    <FaEdit />
-                  </Button>
-                  <Button
-                    variant="danger"
-                    className="rounded-circle fs-5 text-center shadow">
-                    <FaRegTrashAlt />
-                  </Button>
+                  {customButton
+                    ? customButton(item)
+                    : (showButtons && (
+                        <>
+                          <Button
+                            variant="warning"
+                            className="rounded-circle fs-5 text-center shadow m-1">
+                            <FaEdit />
+                          </Button>
+                          <Button
+                            variant="danger"
+                            className="rounded-circle fs-5 text-center shadow">
+                            <FaRegTrashAlt />
+                          </Button>
+                        </>
+                      ))
+                  }
                 </Card.Body>
               </div>
             </Card>
