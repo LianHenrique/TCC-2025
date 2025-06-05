@@ -10,6 +10,7 @@ const Estoque = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    fetch('http://localhost:3000/insumos')
     fetch('http://localhost:3000/cardapio')
       .then(res => res.json())
       .then(data => {
@@ -24,9 +25,7 @@ const Estoque = () => {
             acc[cat] = [];
           }
 
-          const entradaFormatada = produto.QTD_entrada_produto
-            ? new Date(produto.QTD_entrada_produto).toLocaleDateString()
-            : 'Data desconhecida';
+          const entradaFormatada = new Date(produto.data_vencimento_prod).toLocaleDateString()
 
           acc[cat].push({
             id: produto.id_cardapio,
@@ -56,6 +55,7 @@ const Estoque = () => {
       <Container className="my-4">
         <Pesquisa
           nomeDrop="Filtro"
+          navega="/cadastro_insumos"
           lista={[
             { texto: "Carnes", link: "#carnes" },
             { texto: "Bebidas", link: "#bebidas" },
@@ -63,14 +63,11 @@ const Estoque = () => {
           ]}
         />
 
-        <div className="d-flex justify-content-end my-3">
-          <Button className="shadow rounded-5">Cadastrar</Button>
-        </div>
-
         {Object.entries(produtos).map(([categoria, produtosDaCategoria]) => (
           <div key={categoria} id={categoria.toLowerCase()} className="mb-5">
             <h2 className="mb-3">{categoria}</h2>
             <CardGeral
+              filtro="produtos"
               card={produtosDaCategoria}
               onCardClick={handleCardClick}
             />

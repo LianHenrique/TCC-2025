@@ -17,12 +17,12 @@ const Funcionarios = () => {
     e.preventDefault();
 
     if (!nomeFuncionario || !emailFuncionario || !senhaFuncionario || !confSenhaFuncionario || cargoFuncionario === 'Cargo') {
-      alert('Por favor, preencha todos os campos e selecione um cargo.');
+      console.log('Por favor, preencha todos os campos e selecione um cargo.');
       return;
     }
 
     if (senhaFuncionario !== confSenhaFuncionario) {
-      alert('As senhas não coincidem!');
+      console.log('As senhas não coincidem!');
       return;
     }
 
@@ -41,7 +41,7 @@ const Funcionarios = () => {
       });
 
       if (res.ok) {
-        alert('Funcionário cadastrado com sucesso!');
+        console.log('Funcionário cadastrado com sucesso!');
         // Resetar o formulário
         setNomeFuncionario('');
         setEmailFuncionario('');
@@ -50,24 +50,23 @@ const Funcionarios = () => {
         setCargoFuncionario('Cargo');
         navigate('/funcionarios');
       } else {
-        alert('Erro ao cadastrar funcionário.');
+        console.log('Erro ao cadastrar funcionário.');
       }
     } catch (error) {
       console.error(error);
-      alert('Erro de rede ou servidor.');
+      console.log('Erro de rede ou servidor.');
     }
   };
 
   return (
-    <div style={{ marginTop: '150px' }}>
+    <div style={{ marginTop: '90px' }}>
       <NavBar />
-      <Container style={{ width: '650px' }}>
+      <Container>
         <Form
           onSubmit={handleSubmit}
           className="shadow"
           style={{
             padding: '30px',
-            margin: '100px',
             borderRadius: '20px',
             border: '1px blue solid',
           }}

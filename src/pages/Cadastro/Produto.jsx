@@ -40,7 +40,7 @@ const Produto = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!nome || !descricao || !filtro || insumosSelecionados.length === 0 || !valor) {
-      alert('Preencha todos os campos e adicione pelo menos um insumo.');
+      console.log('Preencha todos os campos e adicione pelo menos um insumo.');
       return;
     }
 
@@ -60,26 +60,31 @@ const Produto = () => {
       });
 
       if (res.ok) {
-        alert('Produto cadastrado com sucesso!');
+        console.log('Produto cadastrado com sucesso!');
         navigate('/cardapio');
       } else {
         const data = await res.json();
-        alert('Erro: ' + (data.error || 'Não foi possível cadastrar o produto.'));
+        console.log('Erro: ' + (data.error || 'Não foi possível cadastrar o produto.'));
       }
     } catch (error) {
-      alert('Erro ao conectar ao servidor.');
+      console.log('Erro ao conectar ao servidor.');
       console.error(error);
     }
   };
 
   return (
-    <div style={{ marginTop: '150px' }}>
+    <div style={{ marginTop: '90px' }}>
       <NavBar />
-      <Container style={{ width: '700px' }}>
+      <Container>
         <Form
           onSubmit={handleSubmit}
           className="shadow"
-          style={{ padding: '30px', margin: '100px auto', borderRadius: '20px', border: '1px solid blue' }}
+          style={{ 
+            padding: '30px',
+            borderRadius: '20px', 
+            border: '1px solid blue',
+            marginBottom: "10px"  
+          }}
         >
           <h1 style={{ textAlign: 'center' }}>Cadastro</h1>
 
