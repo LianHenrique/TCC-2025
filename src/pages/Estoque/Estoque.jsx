@@ -9,7 +9,7 @@ const Estoque = () => {
   const [produtos, setProdutos] = useState({});
   const navigate = useNavigate();
 
-  useEffect(() => { 
+  useEffect(() => {
     fetch('http://localhost:3000/cardapio')
       .then(res => res.json())
       .then(data => {
@@ -24,13 +24,18 @@ const Estoque = () => {
             acc[cat] = [];
           }
 
+          const entradaFormatada = produto.QTD_entrada_produto
+            ? new Date(produto.QTD_entrada_produto).toLocaleDateString()
+            : 'Data desconhecida';
+
           acc[cat].push({
             id: produto.id_cardapio,
             nome: produto.nome_item,
+            data: produto.data_cadastro,
             link: produto.imagem_url || 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
             descricao: [ 
-              { texto: `Entrada: ${produtos.data_cadastro}` },
-              { texto: `Nome: ${produtos.nome_item}` }
+              { texto: `Data de cadastro: ${produto.data_cadastro}` },
+              { texto: `Nome: ${produto.nome_item}` }
             ]
           });
 
@@ -52,13 +57,16 @@ const Estoque = () => {
       <Container className="my-4">
         <Pesquisa
           nomeDrop="Filtro"
-          navega="/cadastro_insumos"
           lista={[
             { texto: "Carnes", link: "#carnes" },
             { texto: "Bebidas", link: "#bebidas" },
             { texto: "Saladas", link: "#saladas" },
           ]}
         />
+
+        <div className="d-flex justify-content-end my-3">
+          <Button className="shadow rounded-5">Cadastrar</Button>
+        </div>
 
         {Object.entries(produtos).map(([categoria, produtosDaCategoria]) => (
           <div key={categoria} id={categoria.toLowerCase()} className="mb-5">
