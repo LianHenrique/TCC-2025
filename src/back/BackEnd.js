@@ -7,28 +7,13 @@ app.use(cors());
 app.use(express.json());
 
 // --- ROTAS FUNCIONÁRIOS ---
-
-// Buscar funcionário por ID
-app.get('/funcionarios/id/:id_funcionario', (req, res) => {
-  const { id_funcionario } = req.params;
-  connection.query(
-    'SELECT * FROM funcionarios WHERE id_funcionario = ?',
-    [id_funcionario],
-    (error, results) => {
-      if (error) return res.status(500).json({ error: 'Erro ao buscar funcionário' });
-      if (results.length === 0) return res.status(404).json({ error: 'Funcionário não encontrado' });
-      res.json(results[0]);
-    }
-  );
-});
-
 // Buscar funcionário por nome via query param
 app.get('/funcionarios', (req, res) => {
   const { nome_funcionario } = req.query;
 
   if (nome_funcionario) {
     connection.query(
-      'SELECT * FROM funcionarios WHERE nome_funcionario = ?',
+      'SELECT * FROM funcionario WHERE nome_funcionario = ?',
       [nome_funcionario],
       (error, results) => {
         if (error) return res.status(500).json({ error: 'Erro ao buscar funcionário' });
@@ -39,7 +24,7 @@ app.get('/funcionarios', (req, res) => {
   } else {
     // Se não houver query param nome_funcionario, lista todos os funcionários
     connection.query(
-      'SELECT * FROM funcionarios',
+      'SELECT * FROM funcionario',
       (error, results) => {
         if (error) return res.status(500).json({ error: 'Erro ao buscar funcionários' });
         res.json(results);
@@ -47,6 +32,36 @@ app.get('/funcionarios', (req, res) => {
     );
   }
 });
+
+
+
+// buscando todos os funcionários por id
+app.get('/funcionarios/:id_funcionario', (req, res) => {
+  const { id_funcionario } = req.params; //coloco com req.params por que estou passando como parametro
+
+  connection.query(
+    'SELECT * FROM funcionario where id_funcionario = ?',
+    // Agora passo o parametro falando o que é o ?
+    [id_funcionario],
+
+    // se der erro, retornar o erro
+    (error, resultados) => {
+      if (error) { 
+        // Retorno o status no console
+        return res.status(500).json({ erro: 'Erro ao buscar funcionário'})
+      }
+      
+      if(resultados.length === 0){
+        // Se não tiver nada:
+        return res.status(404).json({erro :'Funcionário não encontrado'})
+      }
+
+      // Se chegou aqui, deu tudo certo
+      res.json(resultados[0]);
+
+      }
+  )
+})
 
 //  buscando produto por ID
 app.get('/produtos/:id_produto', (requisicao, resposta) => {
@@ -67,6 +82,7 @@ app.get('/produtos/:id_produto', (requisicao, resposta) => {
   );
 });
 
+
 app.get('/produtos', (req, res) => {
   connection.query(
     'SELECT id_produto, nome_produto, imagem_url, categoria, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM insumos',
@@ -78,6 +94,9 @@ app.get('/produtos', (req, res) => {
     }
   );
 });
+
+
+
 
 // Notificação de quantidade do estoque
 app.get('/produtos', (req, res) => {
@@ -96,6 +115,23 @@ app.get('/produtos', (req, res) => {
       }
     }
   )
+});
+
+
+
+// Buscando todos os itens do cardápio
+// No select eu só peguei o que importa pra a parte fake 
+
+app.get('/cardapio', (requisicao, resposta) => {
+  connection.query(
+    'SELECT * FROM cardapio',
+    (error, resultados) => {
+      if (error) {
+        return resposta.status(500).json({ error: 'Erro ao buscar produtos' });
+      }
+      resposta.json(resultados);
+    }
+  );
 });
 
 app.get('/estoque', (req, res) => {
@@ -146,7 +182,7 @@ app.post("/funcionarios/insert", (req, res) => {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
   }
 
-  const sql = `INSERT INTO funcionarios (nome_funcionairo, cargo_funcionario, senha_funcionario, email_funcionario) VALUES (?, ?, ?, ?)`;
+  const sql = `INSERT INTO funcionario (nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario) VALUES (?, ?, ?, ?)`;
 
   connection.query(sql, [nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario], (error) => {
     if (error) {
@@ -247,54 +283,13 @@ app.get('/cardapio/:id_cardapio', (req, res) => {
 
 // Buscar todos os itens do cardápio
 app.get('/cardapio', (req, res) => {
-  const query = `
-    SELECT 
-      c.id_cardapio,
-      c.nome_item,
-      c.descricao_item,
-      c.valor_item,
-      c.imagem_url,
-      c.filtro,
-      GROUP_CONCAT(p.nome_produto SEPARATOR ', ') AS insumos
-    FROM cardapio c
-    LEFT JOIN cardapio_insumos ci ON c.id_cardapio = ci.id_item
-    LEFT JOIN insumos p ON ci.id_insumo = p.id_produto
-    GROUP BY c.id_cardapio;
-  `;
-
-  connection.query(query, (error, results) => {
-    if (error) {
-      return res.status(500).json({ error: 'Erro ao buscar cardápio com insumos' });
+  connection.query(
+    'SELECT * FROM cardapio',
+    (error, results) => {
+      if (error) return res.status(500).json({ error: 'Erro ao buscar cardápio' });
+      res.json(results);
     }
-    res.json(results);
-  });
-});
-
-// Deletar item do cardápio
-app.delete('/cardapio/:id', (req, res) => {
-  const { id } = req.params;
-
-  // Primeiro, remove os insumos relacionados
-  connection.query('DELETE FROM cardapio_insumos WHERE id_item = ?', [id], (erro1) => {
-    if (erro1) {
-      console.error('Erro ao remover insumos relacionados:', erro1);
-      return res.status(500).json({ error: 'Erro ao remover insumos do cardápio' });
-    }
-
-    // Em seguida, remove o item do cardápio
-    connection.query('DELETE FROM cardapio WHERE id_item = ?', [id], (erro2, resultados) => {
-      if (erro2) {
-        console.error('Erro ao deletar item do cardápio:', erro2);
-        return res.status(500).json({ error: 'Erro ao deletar item do cardápio' });
-      }
-
-      if (resultados.affectedRows === 0) {
-        return res.status(404).json({ error: 'Item não encontrado' });
-      }
-
-      res.json({ message: 'Item excluído com sucesso' });
-    });
-  });
+  );
 });
 
 // Inserir item no cardápio com insumos relacionados
@@ -353,6 +348,11 @@ app.post('/cliente/insert', (req, res) => {
     }
     res.status(201).json({ message: 'Cliente cadastrado com sucesso' });
   });
+});
+
+// --- ROTA TESTE ESTOQUE ---
+app.get('/estoque', (req, res) => {
+  res.json({ message: 'Página de estoque encontrada!' });
 });
 
 // --- INICIANDO SERVIDOR ---

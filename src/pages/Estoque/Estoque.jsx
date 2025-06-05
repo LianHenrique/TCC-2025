@@ -9,8 +9,7 @@ const Estoque = () => {
   const [produtos, setProdutos] = useState({});
   const navigate = useNavigate();
 
-  useEffect(() => {
-    fetch('http://localhost:3000/insumos')
+  useEffect(() => { 
     fetch('http://localhost:3000/cardapio')
       .then(res => res.json())
       .then(data => {
@@ -25,14 +24,12 @@ const Estoque = () => {
             acc[cat] = [];
           }
 
-          const entradaFormatada = new Date(produto.data_vencimento_prod).toLocaleDateString()
-
           acc[cat].push({
             id: produto.id_cardapio,
             nome: produto.nome_item,
             link: produto.imagem_url || 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
             descricao: [ 
-              { texto: `Nome: ${entradaFormatada}` },
+              { texto: `Entrada: ${produtos.data_cadastro}` },
               { texto: `Nome: ${produtos.nome_item}` }
             ]
           });
@@ -67,7 +64,6 @@ const Estoque = () => {
           <div key={categoria} id={categoria.toLowerCase()} className="mb-5">
             <h2 className="mb-3">{categoria}</h2>
             <CardGeral
-              filtro="produtos"
               card={produtosDaCategoria}
               onCardClick={handleCardClick}
             />
