@@ -1,39 +1,42 @@
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useRef, useEffect } from 'react'
 import { Container } from 'react-bootstrap';
-import Alert from 'react-bootstrap/Alert';
 import { ToastContainer, toast, Zoom } from 'react-toastify';
 
 const Notficacao = () => {
-    const [resultados, setresultados] = useState([]);
-    const [visivel, setVisivel] = useState(false);
-    const prevResultados = useRef([]);
+    // Carrega os ids já notificados do localStorage
+    const prevIds = useRef(
+        JSON.parse(localStorage.getItem('idsNotificados') || '[]')
+    );
 
     useEffect(() => {
         const fetchAlerta = () => {
             fetch('http://localhost:3000/insumos/alerta')
                 .then(res => res.status === 204 ? [] : res.json())
                 .then(data => {
-                    if (JSON.stringify(data) !== JSON.stringify(prevResultados.current)) {
-                        if (data && data.length > 0) {
-                            setresultados(data);
-                            setVisivel(true);
-                            toast.warn('Atenção: Estoque reduzindo!', {
-                                position: "bottom-left",
-                                autoClose: 5000,
-                                hideProgressBar: false,
-                                closeOnClick: false,
-                                pauseOnHover: true,
-                                draggable: true,
-                                progress: undefined,
-                                theme: "colored",
-                                transition: Zoom,
-                            });
-                            setTimeout(() => setVisivel(false), 5000);
-                        }
-                        prevResultados.current = data;
+                    const idsAtuais = (data || []).map(item => item.id_insumos);
+                    const idsAnteriores = prevIds.current;
+
+                    const novoInsumo = idsAtuais.find(id => !idsAnteriores.includes(id));
+
+                    if (novoInsumo) {
+                        toast.warn('Atenção: Estoque reduzindo', {
+                            position: "bottom-left",
+                            autoClose: 5000,
+                            hideProgressBar: false,
+                            closeOnClick: false,
+                            pauseOnHover: true,
+                            draggable: true,
+                            progress: undefined,
+                            theme: "colored",
+                            transition: Zoom,
+                        });
                     }
+
+                    // Atualiza prevIds e salva no localStorage
+                    prevIds.current = idsAtuais;
+                    localStorage.setItem('idsNotificados', JSON.stringify(idsAtuais));
                 })
-                .catch(error => console.log(error));
+                .catch(error => console.log('Erro ao buscar insumos:', error));
         };
 
         fetchAlerta();
@@ -42,8 +45,8 @@ const Notficacao = () => {
     }, []);
 
     return (
-        <Container> 
-            <ToastContainer/>
+        <Container>
+            <ToastContainer />
         </Container>
     )
 }
