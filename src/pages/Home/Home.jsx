@@ -53,24 +53,26 @@ function Home() {
         <div className={styles.planos}>
           <div className={styles.card}>
             <h3>Plano 2</h3>
-             {/* <p className={styles.cardText}>
-              Experimente gratuitamente por 30 dias<br />
-              • Uso limitado<br />
-              • Sem recursos avançados<br />
+             <p className={styles.cardText}>
+              Experimente o primeiro plano <br />
+              • Uso ilimitado<br />
+              • inicio dos reursos avançados<br />
               • Sem registro em reconhecimento<br />
-              • Sem obrigação de faturamento
-            </p> */}
+              • Sem obrigação de faturamento<br />
+              (mudar dps)
+            </p>
             <button className={styles.botaoTesteGratis2}>Começar</button>
           </div>
           <div className={styles.card}>
             <h3>Plano 1</h3>
-             {/* <p className={styles.cardText}>
-              Experimente gratuitamente por 30 dias<br />
-              • Uso limitado<br />
-              • Sem recursos avançados<br />
-              • Sem registro em reconhecimento<br />
-              • Sem obrigação de faturamento
-            </p> */}
+             <p className={styles.cardText}>
+              Experimente o melhor plano<br />
+              • Uso ilimitado<br />
+              • Com recursos avançados<br />
+              • Com registro em reconhecimento<br />
+              • Com obrigação de faturamento<br />
+              (mudar dps)
+            </p>
             <button className={styles.botaoTesteGratis1}>Começar</button>
           </div>
           <div className={styles.card}>
