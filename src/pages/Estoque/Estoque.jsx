@@ -10,32 +10,33 @@ const Estoque = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('http://localhost:3000/cardapio')
+    fetch('http://localhost:3000/estoque')
       .then(res => res.json())
       .then(data => {
         if (!Array.isArray(data)) {
           throw new Error("Resposta inesperada da API");
         }
 
-        const agrupados = data.reduce((acc, produto) => {
-          const cat = produto.categoria || 'Outros';
+        const agrupados = data.reduce((acc, insumos) => {
+          const cat = insumos.categoria || 'Outros';
 
           if (!acc[cat]) {
             acc[cat] = [];
           }
 
-          const entradaFormatada = produto.QTD_entrada_produto
-            ? new Date(produto.QTD_entrada_produto).toLocaleDateString()
+          const entradaFormatada = insumos.data_entrada_insumos
+            ? new Date(insumos.data_entrada_insumos).toLocaleDateString()
             : 'Data desconhecida';
 
           acc[cat].push({
-            id: produto.id_cardapio,
-            nome: produto.nome_item,
-            data: produto.data_cadastro,
-            link: produto.imagem_url || 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
+            id: insumos.id_insumos,
+            nome: insumos.nome_insumos,
+            data: entradaFormatada,
+            quantidade: insumos.quantidade_insumos,
+            link: insumos.imagem_url || 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
             descricao: [ 
-              { texto: `Data de cadastro: ${produto.data_cadastro}` },
-              { texto: `Nome: ${produto.nome_item}` }
+              { texto: `Quantidade: ${insumos.quantidade_insumos}` },
+              { texto: `Nome: ${insumos.nome_insumos}` }
             ]
           });
 

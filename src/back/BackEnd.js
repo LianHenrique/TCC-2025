@@ -134,10 +134,6 @@ app.get('/cardapio', (requisicao, resposta) => {
   );
 });
 
-app.get('/estoque', (req, res) => {
-  res.json({ message: 'Página de estoque encontrada!' });
-});
-
 
 
 // cadastro adm
@@ -350,10 +346,43 @@ app.post('/cliente/insert', (req, res) => {
   });
 });
 
-// --- ROTA TESTE ESTOQUE ---
+
+
+
+
+
+// --- ROTA ESTOQUE ---
+// Pegando todos os itend de estoque
 app.get('/estoque', (req, res) => {
-  res.json({ message: 'Página de estoque encontrada!' });
+  connection.query(
+      'select * from insumos',
+      (error, results) => {
+          if (error) return res.status(500).json({ error: 'Erro ao buscar estoque' });
+          res.json(results);
+      }
+  );
 });
+
+
+
+
+
+// ROTAS PARA RELATÓRIOS
+app.get('relatorio', (req, res) => {
+    connection.query(
+
+      // Faturamento médio mensal
+      
+
+      // Custo médio de uma refeição por cliente
+
+    )
+})
+
+
+
+
+
 
 // --- INICIANDO SERVIDOR ---
 const PORT = 3000;
