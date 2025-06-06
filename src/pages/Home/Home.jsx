@@ -33,7 +33,7 @@ function Home() {
           <h1>
             Gerencie o <span className={styles.destaque}>estoque</span> do seu negócio de maneira ágil
           </h1>
-          <p>StoreBox facilita o gerenciamento de estoques com eficiência e recursos úteis.</p>
+          <p>StoryBox facilita o gerenciamento de estoques com eficiência e recursos úteis.</p>
         </div>
 
         {/* Botão de Teste Grátis + Frase */}
@@ -53,11 +53,27 @@ function Home() {
         <div className={styles.planos}>
           <div className={styles.card}>
             <h3>Plano 2</h3>
-            <button className={styles.botaoTesteGratis}>Começar</button>
+             <p className={styles.cardText}>
+              Experimente o primeiro plano <br />
+              • Uso ilimitado<br />
+              • inicio dos reursos avançados<br />
+              • Sem registro em reconhecimento<br />
+              • Sem obrigação de faturamento<br />
+              (mudar dps)
+            </p>
+            <button className={styles.botaoTesteGratis2}>Começar</button>
           </div>
           <div className={styles.card}>
             <h3>Plano 1</h3>
-            <button className={styles.botaoTesteGratis}>Começar</button>
+             <p className={styles.cardText}>
+              Experimente o melhor plano<br />
+              • Uso ilimitado<br />
+              • Com recursos avançados<br />
+              • Com registro em reconhecimento<br />
+              • Com obrigação de faturamento<br />
+              (mudar dps)
+            </p>
+            <button className={styles.botaoTesteGratis1}>Começar</button>
           </div>
           <div className={styles.card}>
             <h3>Gratis</h3>

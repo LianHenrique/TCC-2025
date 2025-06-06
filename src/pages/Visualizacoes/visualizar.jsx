@@ -27,7 +27,7 @@ const Visualizar = () => {
             return;
         }
 
-        fetch(`http://localhost:3000/produtos/${id}`)
+        fetch(`http://localhost:3000/cardapio/${id}`)
             .then(response => {
                 if (!response.ok) throw new Error('Produto não encontrado');
                 return response.json();
@@ -43,13 +43,14 @@ const Visualizar = () => {
                     : 'https://www.valuehost.com.br/blog/wp-content/uploads/2022/01/post_thumbnail-77d8f2a95f2f41b5863f3fba5a261d7e.jpeg.webp';
 
                 const produtoFormatado = {
-                    nome: produto.nome_produto || 'Sem nome',
+                    nome: produto.nome_item || 'Sem nome',
                     link: imagemValida,
                     descricao: [
-                        { texto: `Quantidade: ${produto.QTD_produto ?? 'N/A'}` },
-                        { texto: `Entrada: ${produto.QTD_entrada_produto ? new Date(produto.QTD_entrada_produto).toLocaleDateString() : 'N/A'}` },
-                        { texto: `Vencimento: ${produto.data_vencimento_prod ? new Date(produto.data_vencimento_prod).toLocaleDateString() : 'N/A'}` },
-                        { texto: `Descrição: ${produto.descricao_produto ?? 'N/A'}` }
+                        { texto: `Categoria: ${produto.categoria ?? 'N/A'}` },
+
+                        { texto: `Data de entrada: ${produto.data_cadastro ?? 'N/A'}`},
+
+                        { texto: `Descrição: ${produto.descricao_item ?? 'N/A'}` }
                     ]
                 };
 

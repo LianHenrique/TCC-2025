@@ -2,8 +2,6 @@ import Container from "react-bootstrap/Container";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import Button from "react-bootstrap/Button";
-
-
 import { useContext } from "react";
 import { AuthContext } from "../../Contexts/UserContext";
 
@@ -33,6 +31,7 @@ const NavBar = () => {
                   <Nav.Link href="/funcionarios"> Funcionarios </Nav.Link>
                   <Nav.Link href="/agenda"> Agenda </Nav.Link>
                   <Nav.Link href="/cardapio"> Cardapio </Nav.Link>
+                  <Nav.Link href="/alertas"> Alertas </Nav.Link>
                 </Nav>
               )
             }
