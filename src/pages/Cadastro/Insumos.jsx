@@ -65,9 +65,12 @@ const Insumos = () => {
   const today = new Date().toISOString().split('T')[0];
 
   return (
-    <div style={{ marginTop: '90px' }}>
+    <div style={{ marginTop: '100px' }}>
       <NavBar />
-      <Container>
+      <Container
+      style={{
+        maxWidth:"800px"
+      }}>
         <Form
           onSubmit={handleSubmit}
           className="shadow"
