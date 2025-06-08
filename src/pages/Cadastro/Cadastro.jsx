@@ -123,6 +123,7 @@ const Cadastro = () => {
           <Button
             className="shadow mt-4"
             variant="outline-primary"
+            href="/"
             style={{ padding: '15px', width: '90%', borderRadius: '30px', marginLeft: '20px' }}>
             Voltar
           </Button>
