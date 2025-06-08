@@ -60,7 +60,7 @@ const Relatorios = () => {
           className='shadow rounded-5 m-2'
           style={{
             padding: "10px",
-            maxWidth: "500px",
+            maxWidth: "600px",
             minWidth: "300px"
           }}>
           <Figure>
@@ -114,7 +114,7 @@ const Relatorios = () => {
           className='shadow rounded-5 m-2'
           style={{
             padding: "10px",
-            maxWidth: "500px"
+            maxWidth: "600px"
           }}>
           <Figure>
             <h1

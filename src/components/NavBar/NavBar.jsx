@@ -33,10 +33,10 @@ const NavBar = () => {
                   className={styles.button}> Estoque </Nav.Link>
                   <Nav.Link href="/funcionarios"
                   className={styles.button}> Funcionarios </Nav.Link>
-                  <Nav.Link href="/agenda"
-                  className={styles.button}> Agenda </Nav.Link>
                   <Nav.Link href="/cardapio"
                   className={styles.button}> Cardapio </Nav.Link>
+                  <Nav.Link href="/agenda"
+                  className={styles.button}> Agenda </Nav.Link>
                   <Nav.Link href="/alertas"
                   className={styles.button}> Alertas </Nav.Link>
                 </Nav>
