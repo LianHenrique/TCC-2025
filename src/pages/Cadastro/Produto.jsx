@@ -76,17 +76,17 @@ const Produto = () => {
     <div style={{ marginTop: '100px' }}>
       <NavBar />
       <Container
-      style={{
-        maxWidth:"800px"
-      }}>
+        style={{
+          maxWidth: "800px"
+        }}>
         <Form
           onSubmit={handleSubmit}
           className="shadow"
-          style={{ 
+          style={{
             padding: '30px',
-            borderRadius: '20px', 
+            borderRadius: '20px',
             border: '1px solid blue',
-            marginBottom: "10px"  
+            marginBottom: "10px"
           }}
         >
           <h1 style={{ textAlign: 'center' }}>Cadastro</h1>

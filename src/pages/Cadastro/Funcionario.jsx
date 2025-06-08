@@ -62,9 +62,9 @@ const Funcionarios = () => {
     <div style={{ marginTop: '100px' }}>
       <NavBar />
       <Container
-      style={{
-        maxWidth:"800px"
-      }}>
+        style={{
+          maxWidth: "800px"
+        }}>
         <Form
           onSubmit={handleSubmit}
           className="shadow"

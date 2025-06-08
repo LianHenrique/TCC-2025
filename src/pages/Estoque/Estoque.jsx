@@ -34,7 +34,7 @@ const Estoque = () => {
             data: entradaFormatada,
             quantidade: insumos.quantidade_insumos,
             link: insumos.imagem_url || 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
-            descricao: [ 
+            descricao: [
               { texto: `Quantidade: ${insumos.quantidade_insumos}` },
               { texto: `Nome: ${insumos.nome_insumos}` }
             ]
@@ -56,6 +56,10 @@ const Estoque = () => {
     <div>
       <NavBar />
       <Container className="my-4">
+        <h1
+          style={{
+            marginTop: "100px"
+          }}>Estoque</h1>
         <Pesquisa
           nomeDrop="Filtro"
           navega="/cadastro_insumos"

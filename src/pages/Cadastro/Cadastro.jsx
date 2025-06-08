@@ -126,6 +126,18 @@ const Cadastro = () => {
             style={{ padding: '15px', width: '90%', borderRadius: '30px', marginLeft: '20px' }}>
             Voltar
           </Button>
+
+          <Button
+            href="/login"
+            className="m-3"
+            style={{
+              background: "none",
+              color: "black",
+              border: "none"
+            }}>
+            ja tem uma conta? log-in
+          </Button>
+
         </Form>
       </Container>
     </div>
