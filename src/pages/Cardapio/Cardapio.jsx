@@ -13,7 +13,7 @@ const Cardapio = () => {
 
   useEffect(() => {
     fetch('http://localhost:3000/cardapio')
-      .then(resposta => resposta.json())
+      .then(res => res.json())
       .then(data => {
         if (!Array.isArray(data)) {
           console.error('Dados retornados não são um array:', data);
@@ -21,31 +21,42 @@ const Cardapio = () => {
         }
 
         const cardapioFormatado = data.map(item => {
-          let componentes = [];
+          let insumosArray = [];
 
-          try {
-            const insumosArray =
-              typeof item.insumos === 'string'
-                ? JSON.parse(item.insumos)
-                : item.insumos;
-
-            componentes =
-              Array.isArray(insumosArray) && insumosArray.length > 0
-                ? insumosArray.map(insumo => ({
-                    texto: `• ${insumo.nome_insumo} - ${insumo.quantidade} ${insumo.unidade_medida || ''}`
-                  }))
-                : [{ texto: 'Componentes: Não informado' }];
-          } catch (e) {
-            componentes = [{ texto: 'Componentes: Não informado' }];
+          if (Array.isArray(item.insumos)) {
+            insumosArray = item.insumos;
+          } else if (
+            typeof item.insumos === 'object' &&
+            item.insumos !== null &&
+            Object.keys(item.insumos).length > 0
+          ) {
+            insumosArray = [item.insumos];
+          } else if (typeof item.insumos === 'string') {
+            try {
+              const parsed = JSON.parse(item.insumos);
+              insumosArray = Array.isArray(parsed) ? parsed : [parsed];
+            } catch {
+              insumosArray = [];
+            }
           }
+
+          const ingredientesTexto =
+            insumosArray.length > 0 && insumosArray.some(i => i.nome_insumo)
+              ? `Ingredientes: ${insumosArray
+                .map(insumo => insumo.nome_insumo)
+                .filter(nome => !!nome)
+                .join(', ')}`
+              : 'Ingredientes: Não informado';
 
           return {
             id: item.id_cardapio,
             nome: item.nome_item || 'Produto sem nome',
-            link: item.imagem_url || 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
+            link:
+              item.imagem_url ||
+              'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
             descricao: [
               { texto: `Descrição: ${item.descricao_item || 'Sem descrição'}` },
-              ...componentes,
+              { texto: ingredientesTexto },
               { texto: `Preço: R$ ${Number(item.valor_item || 0).toFixed(2)}` },
               { texto: `Categoria: ${item.categoria || 'Não informada'}` }
             ],
