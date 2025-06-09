@@ -15,7 +15,7 @@ const Cardapio = () => {
     fetch('http://localhost:3000/cardapio')
       .then(resposta => resposta.json())
       .then(data => {
-        
+
 
         if (!Array.isArray(data)) {
           console.error('Dados retornados não são um array:', data);
@@ -67,6 +67,28 @@ const Cardapio = () => {
     }
   }
 
+  function handlePedir(id_cardapio) {
+    fetch('http://localhost:3000/saida-venda', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id_cardapio })
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.error) {
+          alert('Erro ao registrar pedido: ' + data.error);
+        } else {
+          alert('Pedido registrado com sucesso!');
+        }
+      })
+      .catch(error => {
+        console.error('Erro ao registrar pedido:', error);
+        alert('Erro na comunicação com o servidor');
+      });
+  }
+
   return (
     <div>
       <NavBar />
@@ -89,7 +111,8 @@ const Cardapio = () => {
           customButton={item => (
             <Button
               variant="success"
-              className="h-10 fs-5 text-center shadow alert-success align-center bg-success text-white" 
+              className="h-10 fs-5 text-center shadow alert-success align-center bg-success text-white"
+              onClick={() => handlePedir(item.id)}
             >
               Pedir
             </Button>

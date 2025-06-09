@@ -99,7 +99,7 @@ app.get('/produtos', (req, res) => {
 
 
 // Notificação de quantidade do estoque
-app.get('/produtos', (req, res) => {
+app.get('/produtos/notificacao', (req, res) => {
   connection.query(
     'SELECT QTD_produto, id_produto, nome_produto FROM insumos WHERE QTD_produto <= 10',
     (error, resultados) => {
@@ -189,12 +189,13 @@ app.post("/funcionarios/insert", (req, res) => {
   });
 });
 
-// --- ROTAS INSUMOS ---
 
+
+// --- ROTAS INSUMOS ---
 // Buscar todos insumos
 app.get('/insumos', (req, res) => {
   connection.query(
-    `SELECT id_produto, nome_produto, valor_produto, filtro, QTD_produto, data_vencimento_prod, descricao_produto FROM insumos`,
+    `SELECT * FROM insumos`,
     (error, results) => {
       if (error) return res.status(500).json({ error: 'Erro ao buscar insumos' });
       res.json(results);
@@ -288,6 +289,8 @@ app.get('/cardapio', (req, res) => {
   );
 });
 
+
+
 // Inserir item no cardápio com insumos relacionados
 app.post('/cardapio/insert', (req, res) => {
   const { nome_produto, descricao_produto, valor_produto, filtro, insumos } = req.body;
@@ -365,23 +368,57 @@ app.get('/estoque', (req, res) => {
 
 
 
+// Rota para saída de venda
+app.post('/saida-venda', (req, res) => {
+  const { id_cardapio } = req.body;
+
+  if (!id_cardapio) {
+    return res.status(400).json({ error: 'ID do item do cardápio não fornecido' });
+  }
+
+  const data_saida = new Date().toISOString().slice(0, 10);
 
 
-// ROTAS PARA RELATÓRIOS
-app.get('relatorio', (req, res) => {
-    connection.query(
+  const buscarInsumosQuery = `
+    SELECT id_insumo, quantidade_necessaria
+    FROM itemcardapioinsumo
+    WHERE id_item_cardapio = ?
+  `;
 
-      // Faturamento médio mensal
-      
+  connection.query(buscarInsumosQuery, [id_cardapio], (err, insumos) => {
+    if (err) {
+      console.error('Erro ao buscar insumos do item:', err);
+      return res.status(500).json({ error: 'Erro ao buscar insumos' });
+    }
 
-      // Custo médio de uma refeição por cliente
-
-    )
-})
-
+    if (insumos.length === 0) {
+      return res.status(404).json({ error: 'Nenhum insumo relacionado a este item' });
+    }
 
 
+    const registros = insumos.map(insumo => [
+      insumo.id_insumo,
+      insumo.quantidade_necessaria,
+      data_saida,
+      'Venda'
+    ]);
 
+    const insertSaidaQuery = `
+      INSERT INTO registrosaidaproduto
+      (id_insumos_registroSaidaProduto, quantidade_saida, data_saida, motivo_saida)
+      VALUES ?
+    `;
+
+    connection.query(insertSaidaQuery, [registros], (errInsert) => {
+      if (errInsert) {
+        console.error('Erro ao registrar saída:', errInsert);
+        return res.status(500).json({ error: 'Erro ao registrar saída' });
+      }
+
+      return res.status(201).json({ message: 'Saída registrada com sucesso!' });
+    });
+  });
+});
 
 
 // --- INICIANDO SERVIDOR ---
