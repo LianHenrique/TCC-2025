@@ -15,33 +15,53 @@ const Cardapio = () => {
     fetch('http://localhost:3000/cardapio')
       .then(resposta => resposta.json())
       .then(data => {
-
-
         if (!Array.isArray(data)) {
           console.error('Dados retornados não são um array:', data);
           return;
         }
 
-        const cardapioFormatado = data.map(item => ({
-          id: item.id_cardapio,
-          nome: item.nome_item || 'Produto sem nome',
-          link: item.imagem_url || 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
-          descricao: [
-            { texto: `Descrição: ${item.descricao_item || 'Sem descrição'}` },
-            { texto: `Componentes: ${item.insumos || 'Não informado'}` },
-            { texto: `Preço: R$ ${Number(item.valor_item).toFixed(2)}` }
-          ],
-          acoes: [
-            {
-              icone: <FaEdit />,
-              onClick: () => navigate(`/editar_produto/${item.id_cardapio}`)
-            },
-            {
-              icone: <FaRegTrashAlt />,
-              onClick: () => handleDelete(item.id_cardapio)
-            }
-          ]
-        }));
+        const cardapioFormatado = data.map(item => {
+          let componentes = [];
+
+          try {
+            const insumosArray =
+              typeof item.insumos === 'string'
+                ? JSON.parse(item.insumos)
+                : item.insumos;
+
+            componentes =
+              Array.isArray(insumosArray) && insumosArray.length > 0
+                ? insumosArray.map(insumo => ({
+                    texto: `• ${insumo.nome_insumo} - ${insumo.quantidade} ${insumo.unidade_medida || ''}`
+                  }))
+                : [{ texto: 'Componentes: Não informado' }];
+          } catch (e) {
+            componentes = [{ texto: 'Componentes: Não informado' }];
+          }
+
+          return {
+            id: item.id_cardapio,
+            nome: item.nome_item || 'Produto sem nome',
+            link: item.imagem_url || 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
+            descricao: [
+              { texto: `Descrição: ${item.descricao_item || 'Sem descrição'}` },
+              ...componentes,
+              { texto: `Preço: R$ ${Number(item.valor_item || 0).toFixed(2)}` },
+              { texto: `Categoria: ${item.categoria || 'Não informada'}` }
+            ],
+            acoes: [
+              {
+                icone: <FaEdit />,
+                onClick: () => navigate(`/editar_produto/${item.id_cardapio}`)
+              },
+              {
+                icone: <FaRegTrashAlt />,
+                onClick: () => handleDelete(item.id_cardapio)
+              }
+            ]
+          };
+        });
+
         setCardapio(cardapioFormatado);
       })
       .catch(error => console.error('Erro ao buscar cardápio:', error));
@@ -97,9 +117,9 @@ const Cardapio = () => {
           nomeDrop="Filtro"
           navega="/cadastro_produto"
           lista={[
-            { lista: "Lanche", link: "#lanche" },
-            { lista: "Bebida", link: "#bebida" },
-            { lista: "Sobremesa", link: "#sobremesa" }
+            { lista: 'Lanche', link: '#lanche' },
+            { lista: 'Bebida', link: '#bebida' },
+            { lista: 'Sobremesa', link: '#sobremesa' }
           ]}
         />
 

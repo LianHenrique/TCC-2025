@@ -121,18 +121,17 @@ app.get('/produtos/notificacao', (req, res) => {
 
 // Buscando todos os itens do cardápio
 // No select eu só peguei o que importa pra a parte fake 
-
-app.get('/cardapio', (requisicao, resposta) => {
-  connection.query(
-    'SELECT * FROM cardapio',
-    (error, resultados) => {
-      if (error) {
-        return resposta.status(500).json({ error: 'Erro ao buscar produtos' });
-      }
-      resposta.json(resultados);
-    }
-  );
-});
+// app.get('/cardapio', (requisicao, resposta) => {
+//   connection.query(
+//     'SELECT * FROM cardapio',
+//     (error, resultados) => {
+//       if (error) {
+//         return resposta.status(500).json({ error: 'Erro ao buscar produtos' });
+//       }
+//       resposta.json(resultados);
+//     }
+//   );
+// });
 
 
 
@@ -278,15 +277,50 @@ app.get('/cardapio/:id_cardapio', (req, res) => {
 
 // --- ROTAS CARDÁPIO ---
 
-// Buscar todos os itens do cardápio
+// Buscar todos os itens do cardápio 
 app.get('/cardapio', (req, res) => {
-  connection.query(
-    'SELECT * FROM cardapio',
-    (error, results) => {
-      if (error) return res.status(500).json({ error: 'Erro ao buscar cardápio' });
-      res.json(results);
+  const sql = `
+    SELECT 
+  c.id_cardapio,
+  c.nome_item,
+  c.descricao_item,
+  c.valor_item,
+  c.imagem_url,
+  c.ativo,
+  c.data_cadastro,
+  c.categoria,
+  GROUP_CONCAT(
+    CONCAT(
+      '{"nome_insumo":"', IFNULL(i.nome_insumos, ''), '",',
+      '"quantidade":"', IFNULL(ici.quantidade_necessaria, ''), '",',
+      '"unidade_medida":"', IFNULL(ici.unidade_medida_receita, ''), '"}'
+    )
+  ) AS insumos
+FROM cardapio c
+LEFT JOIN itemcardapioinsumo ici ON ici.id_item_cardapio = c.id_cardapio
+LEFT JOIN insumos i ON i.id_insumos = ici.id_insumo
+GROUP BY c.id_cardapio
+  `;
+
+  connection.query(sql, (error, results) => {
+    if (error) {
+      console.error('Erro ao buscar cardápio:', error);
+      return res.status(500).json({ error: 'Erro ao buscar cardápio' });
     }
-  );
+
+    const formattedResults = results.map(item => ({
+      ...item,
+      insumos: (() => {
+        try {
+          return typeof item.insumos === 'string' ? JSON.parse(item.insumos) : item.insumos;
+        } catch {
+          return [];
+        }
+      })()
+    }));
+
+    res.json(formattedResults);
+  });
 });
 
 
