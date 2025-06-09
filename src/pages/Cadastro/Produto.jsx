@@ -9,6 +9,7 @@ const Produto = () => {
   const [descricao, setDescricao] = useState('');
   const [filtro, setFiltro] = useState('');
   const [valor, setValor] = useState('');
+  const [imagemUrl, setImagemUrl] = useState('');
   const [insumos, setInsumos] = useState([]);
   const [insumoSelecionado, setInsumoSelecionado] = useState({
     id: null,
@@ -24,55 +25,22 @@ const Produto = () => {
     fetch('http://localhost:3000/insumos')
       .then(res => res.json())
       .then(data => {
-        if (Array.isArray(data)) {
-          setInsumos(data);
-        } else {
-          console.error('API retornou algo inesperado:', data);
-          setInsumos([]); // evita travar o componente
-        }
+        if (Array.isArray(data)) setInsumos(data);
+        else setInsumos([]);
       })
-      .catch((error) => {
-        console.error('Erro ao buscar insumos:', error);
-        setInsumos([]); // fallback em caso de erro
-      });
+      .catch(() => setInsumos([]));
   }, []);
-
 
   const adicionarInsumo = () => {
     const { id, nome, quantidade_necessaria, unidade_medida_receita } = insumoSelecionado;
-
-    if (!id || !quantidade_necessaria || !unidade_medida_receita) {
-      alert('Preencha todos os campos do insumo.');
-      return;
-    }
-
+    if (!id || !quantidade_necessaria || !unidade_medida_receita) return alert('Preencha todos os campos do insumo.');
     const jaExiste = insumosSelecionados.find((i) => i.id === id);
-    if (jaExiste) {
-      alert('Insumo já adicionado!');
-      return;
-    }
-
-    setInsumosSelecionados([
-      ...insumosSelecionados,
-      {
-        id,
-        nome,
-        quantidade_necessaria,
-        unidade_medida_receita
-      }
-    ]);
-
-    setInsumoSelecionado({
-      id: null,
-      nome: '',
-      quantidade_necessaria: '',
-      unidade_medida_receita: ''
-    });
+    if (jaExiste) return alert('Insumo já adicionado!');
+    setInsumosSelecionados([...insumosSelecionados, { id, nome, quantidade_necessaria, unidade_medida_receita }]);
+    setInsumoSelecionado({ id: null, nome: '', quantidade_necessaria: '', unidade_medida_receita: '' });
   };
 
-  const removerInsumo = (id) => {
-    setInsumosSelecionados(insumosSelecionados.filter((i) => i.id !== id));
-  };
+  const removerInsumo = (id) => setInsumosSelecionados(insumosSelecionados.filter((i) => i.id !== id));
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -86,6 +54,7 @@ const Produto = () => {
       descricao_produto: descricao,
       filtro,
       valor_produto: parseFloat(valor),
+      imagem_url: imagemUrl,
       insumos: insumosSelecionados.map((i) => ({
         id_insumo: i.id,
         quantidade_necessaria: parseFloat(i.quantidade_necessaria),
@@ -108,7 +77,6 @@ const Produto = () => {
         alert('Erro: ' + (data.error || 'Não foi possível cadastrar o produto.'));
       }
     } catch (error) {
-      console.error('Erro ao conectar ao servidor.', error);
       alert('Erro ao conectar ao servidor.');
     }
   };
@@ -130,34 +98,21 @@ const Produto = () => {
                 {insumoSelecionado.nome || 'Insumos'}
               </Dropdown.Toggle>
               <Dropdown.Menu style={{ maxHeight: '200px', overflowY: 'auto' }}>
-                {insumos.map(({ nome_produto, id_produto }) => (
-                  <Dropdown.Item
-                    key={id_produto}
-                    onClick={() => setInsumoSelecionado((prev) => ({ ...prev, id: id_produto, nome: nome_produto }))}>
-                    {nome_produto}
+                {insumos.map(({ nome_insumos, id_insumos }) => (
+                  <Dropdown.Item key={id_insumos} onClick={() => setInsumoSelecionado((prev) => ({ ...prev, id: id_insumos, nome: nome_insumos }))}>
+                    {nome_insumos}
                   </Dropdown.Item>
                 ))}
               </Dropdown.Menu>
             </Dropdown>
 
-            <Form.Control
-              type="number"
-              placeholder="Qtd"
-              value={insumoSelecionado.quantidade_necessaria}
+            <Form.Control type="number" placeholder="Qtd" value={insumoSelecionado.quantidade_necessaria}
               onChange={(e) => setInsumoSelecionado((prev) => ({ ...prev, quantidade_necessaria: e.target.value }))}
-              className="shadow"
-              style={{ width: '100px' }}
-              min="0"
-            />
+              className="shadow" style={{ width: '100px' }} min="0" />
 
-            <Form.Control
-              type="text"
-              placeholder="Unidade"
-              value={insumoSelecionado.unidade_medida_receita}
+            <Form.Control type="text" placeholder="Unidade" value={insumoSelecionado.unidade_medida_receita}
               onChange={(e) => setInsumoSelecionado((prev) => ({ ...prev, unidade_medida_receita: e.target.value }))}
-              className="shadow"
-              style={{ width: '100px' }}
-            />
+              className="shadow" style={{ width: '100px' }} />
 
             <Button variant="success" onClick={adicionarInsumo}>+</Button>
           </div>
@@ -165,12 +120,7 @@ const Produto = () => {
           <div className="m-2">
             {insumosSelecionados.length > 0 ? (
               insumosSelecionados.map((i) => (
-                <Badge
-                  key={i.id}
-                  pill
-                  bg="primary"
-                  className="m-1"
-                  style={{ cursor: 'pointer', padding: '10px' }}
+                <Badge key={i.id} pill bg="primary" className="m-1" style={{ cursor: 'pointer', padding: '10px' }}
                   onClick={() => removerInsumo(i.id)}>
                   {i.nome} — {i.quantidade_necessaria} {i.unidade_medida_receita} ✕
                 </Badge>
@@ -179,6 +129,10 @@ const Produto = () => {
               <p className="text-muted m-2">Nenhum insumo adicionado</p>
             )}
           </div>
+
+           <FloatingLabel controlId="floatingImagem" label="URL da Imagem" className="m-2">
+              <Form.Control type="text" placeholder="URL da imagem" value={imagemUrl} onChange={(e) => setImagemUrl(e.target.value)} />
+            </FloatingLabel>
 
           <FloatingLabel controlId="floatingValor" label="Valor" className="m-2">
             <Form.Control type="number" placeholder="Valor" value={valor} onChange={(e) => setValor(e.target.value)} required min="0" step="0.01" />

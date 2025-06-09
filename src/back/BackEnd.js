@@ -46,20 +46,20 @@ app.get('/funcionarios/:id_funcionario', (req, res) => {
 
     // se der erro, retornar o erro
     (error, resultados) => {
-      if (error) { 
+      if (error) {
         // Retorno o status no console
-        return res.status(500).json({ erro: 'Erro ao buscar funcionário'})
+        return res.status(500).json({ erro: 'Erro ao buscar funcionário' })
       }
-      
-      if(resultados.length === 0){
+
+      if (resultados.length === 0) {
         // Se não tiver nada:
-        return res.status(404).json({erro :'Funcionário não encontrado'})
+        return res.status(404).json({ erro: 'Funcionário não encontrado' })
       }
 
       // Se chegou aqui, deu tudo certo
       res.json(resultados[0]);
 
-      }
+    }
   )
 })
 
@@ -208,10 +208,10 @@ app.get('/insumos', (req, res) => {
 // Notificação de quantidade do estoque (todos produtos com QTD <= 10)
 app.get('/insumos/alerta', (req, res) => {
   connection.query('SELECT * FROM insumos WHERE quantidade_insumos <= 20', (error, results) => {
-    if(error){
+    if (error) {
       console.error('Erro ao buscar insumos', error.message);
       console.error(error);
-      return res.status(500).json({error: 'Erro ao buscar insumos:'})
+      return res.status(500).json({ error: 'Erro ao buscar insumos:' })
     }
     return res.json(results);
   })
@@ -293,28 +293,32 @@ app.get('/cardapio', (req, res) => {
 
 // Inserir item no cardápio com insumos relacionados
 app.post('/cardapio/insert', (req, res) => {
-  const { nome_produto, descricao_produto, valor_produto, filtro, insumos } = req.body;
+  const { nome_produto, descricao_produto, valor_produto, imagem_url, filtro: categoria, insumos } = req.body;
 
-  if (!nome_produto || !descricao_produto || !valor_produto || !filtro || !Array.isArray(insumos) || insumos.length === 0) {
+  if (!nome_produto || !descricao_produto || !valor_produto || !imagem_url || !categoria || !Array.isArray(insumos) || insumos.length === 0) {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios e ao menos um insumo deve ser selecionado.' });
   }
 
   const insertProdutoQuery = `
-    INSERT INTO cardapio (nome_item, descricao_item, valor_item, filtro)
-    VALUES (?, ?, ?, ?)
+    INSERT INTO cardapio (nome_item, descricao_item, valor_item, imagem_url, categoria)
+    VALUES (?, ?, ?, ?, ?)
   `;
 
-  connection.query(insertProdutoQuery, [nome_produto, descricao_produto, valor_produto, filtro], (err, result) => {
+  connection.query(insertProdutoQuery, [nome_produto, descricao_produto, valor_produto, imagem_url, categoria], (err, result) => {
     if (err) {
       console.error('Erro ao inserir produto:', err);
       return res.status(500).json({ error: 'Erro ao cadastrar o produto' });
     }
 
-    const id_item = result.insertId;
-    const values = insumos.map((id_insumo) => [id_item, id_insumo]);
+    const id_item_cardapio = result.insertId;
+
+    const values = insumos.map(insumo => {
+      const idInsumo = insumo.id_insumo || insumo.id_insumos;
+      return [id_item_cardapio, idInsumo, parseFloat(insumo.quantidade_necessaria), insumo.unidade_medida_receita];
+    });
 
     const insertInsumosQuery = `
-      INSERT INTO cardapio_insumos (id_item, id_insumo)
+      INSERT INTO itemcardapioinsumo (id_item_cardapio, id_insumo, quantidade_necessaria, unidade_medida_receita)
       VALUES ?
     `;
 
@@ -328,6 +332,10 @@ app.post('/cardapio/insert', (req, res) => {
     });
   });
 });
+
+
+
+
 
 // --- ROTA CLIENTE ---
 
@@ -358,11 +366,11 @@ app.post('/cliente/insert', (req, res) => {
 // Pegando todos os itend de estoque
 app.get('/estoque', (req, res) => {
   connection.query(
-      'select * from insumos',
-      (error, results) => {
-          if (error) return res.status(500).json({ error: 'Erro ao buscar estoque' });
-          res.json(results);
-      }
+    'select * from insumos',
+    (error, results) => {
+      if (error) return res.status(500).json({ error: 'Erro ao buscar estoque' });
+      res.json(results);
+    }
   );
 });
 
@@ -419,6 +427,19 @@ app.post('/saida-venda', (req, res) => {
     });
   });
 });
+
+
+
+
+// ENDPOINTS API DE RELATÓRIOS
+
+
+
+
+
+
+
+
 
 
 // --- INICIANDO SERVIDOR ---
