@@ -6,13 +6,14 @@ import CardGeral from '../../components/Cards/CardGeral';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Button } from 'react-bootstrap';
+import { useParams } from 'react-router-dom';
 
 const Cardapio = () => {
   const [cardapio, setCardapio] = useState([]);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
 
   useEffect(() => {
-    fetch('http://localhost:3000/cardapio')
+    fetch(`http://localhost:3000/cardapio`)
       .then(res => res.json())
       .then(data => {
         if (!Array.isArray(data)) {
@@ -79,7 +80,7 @@ const Cardapio = () => {
   }, []);
 
   function handleCardClick(id) {
-    navigate(`/visualizar/${id}`);
+    navigate(`/Visualizar_Cardapio/${id}`);
   }
 
   function handleDelete(id) {
@@ -112,6 +113,8 @@ const Cardapio = () => {
           alert('Erro ao registrar pedido: ' + data.error);
         } else {
           alert('Pedido registrado com sucesso!');
+          navigate(`/Visualizar_Cardapio${id}`)
+          
         }
       })
       .catch(error => {
@@ -124,6 +127,10 @@ const Cardapio = () => {
     <div>
       <NavBar />
       <Container>
+        <h1
+          style={{
+            marginTop: "100px"
+          }}>Cardapio</h1>
         <Pesquisa
           nomeDrop="Filtro"
           navega="/cadastro_produto"

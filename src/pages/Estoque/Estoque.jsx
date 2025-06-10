@@ -4,6 +4,7 @@ import NavBar from '../../components/NavBar/NavBar';
 import Pesquisa from '../../components/Pesquisa/Pesquisa';
 import { Button, Container } from 'react-bootstrap';
 import CardGeral from '../../components/Cards/CardGeral';
+import EditarQuantidade from '../../components/EditarQuantidadeProd/EditarQuantidade';
 
 const Estoque = () => {
   const [produtos, setProdutos] = useState({});
@@ -34,7 +35,7 @@ const Estoque = () => {
             data: entradaFormatada,
             quantidade: insumos.quantidade_insumos,
             link: insumos.imagem_url || 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
-            descricao: [ 
+            descricao: [
               { texto: `Quantidade: ${insumos.quantidade_insumos}` },
               { texto: `Nome: ${insumos.nome_insumos}` }
             ]
@@ -56,8 +57,13 @@ const Estoque = () => {
     <div>
       <NavBar />
       <Container className="my-4">
+        <h1
+          style={{
+            marginTop: "100px"
+          }}>Estoque</h1>
         <Pesquisa
           nomeDrop="Filtro"
+          navega="/cadastro_insumos"
           lista={[
             { texto: "Carnes", link: "#carnes" },
             { texto: "Bebidas", link: "#bebidas" },
@@ -65,9 +71,7 @@ const Estoque = () => {
           ]}
         />
 
-        <div className="d-flex justify-content-end my-3">
-          <Button className="shadow rounded-5">Cadastrar</Button>
-        </div>
+        <EditarQuantidade quantidade={0}/>
 
         {Object.entries(produtos).map(([categoria, produtosDaCategoria]) => (
           <div key={categoria} id={categoria.toLowerCase()} className="mb-5">

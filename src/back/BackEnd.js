@@ -262,18 +262,70 @@ app.post('/insumos/insert', (req, res) => {
 app.get('/cardapio/:id_cardapio', (req, res) => {
   const { id_cardapio } = req.params;
 
-  connection.query(
-    `SELECT id_cardapio, imagem_url, categoria, nome_item, valor_item, data_cadastro, descricao_item FROM cardapio WHERE id_cardapio = ?`,
-    [id_cardapio],
-    (error, results) => {
-      if (error) return res.status(500).json({ error: 'Erro ao buscar produto' });
-      if (results.length === 0) return res.status(404).json({ error: 'Produto não encontrado' });
-      res.json(results[0]);
+  const sql = `
+    SELECT 
+      c.id_cardapio,
+      c.nome_item,
+      c.descricao_item,
+      c.valor_item,
+      c.imagem_url,
+      c.ativo,
+      c.data_cadastro,
+      c.categoria,
+      GROUP_CONCAT(
+        CONCAT(
+          '{"nome_insumo":"', IFNULL(i.nome_insumos, ''), '",',
+          '"quantidade":"', IFNULL(ici.quantidade_necessaria, ''), '",',
+          '"unidade_medida":"', IFNULL(ici.unidade_medida_receita, ''), '"}'
+        )
+      ) AS insumos
+    FROM cardapio c
+    LEFT JOIN itemcardapioinsumo ici ON ici.id_item_cardapio = c.id_cardapio
+    LEFT JOIN insumos i ON i.id_insumos = ici.id_insumo
+    WHERE c.id_cardapio = ?
+    GROUP BY c.id_cardapio
+  `;
+
+  connection.query(sql, [id_cardapio], (error, results) => {
+    if (error) {
+      console.error('Erro ao buscar item do cardápio:', error);
+      return res.status(500).json({ error: 'Erro ao buscar item do cardápio' });
     }
-  );
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Produto não encontrado' });
+    }
+
+    const item = results[0];
+    try {
+      item.insumos = item.insumos ? JSON.parse(`[${item.insumos}]`) : [];
+    } catch (e) {
+      item.insumos = [];
+    }
+
+    res.json(item);
+  });
 });
 
 
+// Rota para notificação de estoque baixo
+app.get('/produtos/estoque-baixo', (req, res) => {
+  connection.query(
+    'SELECT QTD_produto, id_produto, nome_produto FROM insumos WHERE QTD_produto <= 10',
+    (error, resultados) => {
+      if (error) {
+        console.error('Erro', error);
+        return res.status(500).json({ error: 'Erro ao buscar produtos' });
+      }
+
+      if (resultados.length === 0) {
+        res.status(204).send("Estoque ok.");
+      } else {
+        res.json(resultados);
+      }
+    }
+  );
+});
 
 // --- ROTAS CARDÁPIO ---
 
@@ -492,85 +544,52 @@ app.post('/saida-venda', (req, res) => {
 
 
 // REQUISIÇÕES PARA RELATÓRIOS
-app.get('/relatorios/financeiro', (req, res) => {
-  const diasRelatorio = 7;
-  const dataFim = new Date();
-  const dataInicio = new Date();
-  dataInicio.setDate(dataInicio.getDate() - diasRelatorio);
+app.get('/relatorios/diario', async (req, res) => {
+  try {
+    // Definir o período (últimos 7 dias)
+    const dataFim = new Date();
+    const dataInicio = new Date();
+    dataInicio.setDate(dataInicio.getDate() - 7);
 
-  const formatDateForSQL = (date) => date.toISOString().split('T')[0];
+    // 1. Buscar vendas e faturamento por dia
+    const vendasQuery = `
+      SELECT 
+        DATE(data_saida) as dia,
+        COUNT(DISTINCT id_registro_saida) as qtd_vendas,
+        SUM(c.valor_item) as faturamento
+      FROM registrosaidaproduto r
+      JOIN itemcardapioinsumo ici ON ici.id_insumo = r.id_insumos_RegistroSaidaProduto
+      JOIN cardapio c ON c.id_cardapio = ici.id_item_cardapio
+      WHERE motivo_saida = 'Venda'
+        AND data_saida BETWEEN ? AND ?
+      GROUP BY DATE(data_saida)
+      ORDER BY dia ASC
+    `;
 
-  
-  const vendasQuery = `
-    SELECT 
-      DATE(r.data_saida) as dia,
-      COUNT(DISTINCT r.id_registro_saida) as qtd_vendas,
-      SUM(c.valor_item) as faturamento_bruto
-    FROM registrosaidaproduto r
-    JOIN itemcardapioinsumo ici ON ici.id_insumo = r.id_insumos_RegistroSaidaProduto
-    JOIN cardapio c ON c.id_cardapio = ici.id_item_cardapio
-    WHERE r.motivo_saida = 'Venda'
-      AND r.data_saida BETWEEN ? AND ?
-    GROUP BY DATE(r.data_saida)
-    ORDER BY dia ASC
-  `;
+    // 2. Buscar custos dos insumos por dia
+    const custosQuery = `
+      SELECT 
+        DATE(data_saida) as dia,
+        SUM(i.valor_insumos * r.quantidade_saida) as custo_total,
+        COUNT(DISTINCT r.id_registro_saida) as qtd_vendas
+      FROM registrosaidaproduto r
+      JOIN itemcardapioinsumo ici ON ici.id_insumo = r.id_insumos_RegistroSaidaProduto
+      JOIN insumos i ON i.id_insumos = ici.id_insumo
+      WHERE motivo_saida = 'Venda'
+        AND data_saida BETWEEN ? AND ?
+      GROUP BY DATE(data_saida)
+      ORDER BY dia ASC
+    `;
 
+    const [vendas, custos] = await Promise.all([
+      new Promise((resolve) => connection.query(vendasQuery, [dataInicio, dataFim], (err, results) => resolve(results))),
+      new Promise((resolve) => connection.query(custosQuery, [dataInicio, dataFim], (err, results) => resolve(results)))
+    ]);
 
-  const custosQuery = `
-    SELECT 
-      DATE(r.data_saida) as dia,
-      SUM(i.valor_insumos * r.quantidade_saida) as custo_total,
-      COUNT(DISTINCT c.id_cardapio) as qtd_itens_vendidos
-    FROM registrosaidaproduto r
-    JOIN itemcardapioinsumo ici ON ici.id_insumo = r.id_insumos_RegistroSaidaProduto
-    JOIN insumos i ON i.id_insumos = ici.id_insumo
-    JOIN cardapio c ON c.id_cardapio = ici.id_item_cardapio
-    WHERE r.motivo_saida = 'Venda'
-      AND r.data_saida BETWEEN ? AND ?
-    GROUP BY DATE(r.data_saida)
-    ORDER BY dia ASC
-  `;
-
-
-  const ticketMedioQuery = `
-    SELECT 
-      DATE(r.data_saida) as dia,
-      SUM(c.valor_item) / COUNT(DISTINCT r.id_registro_saida) as ticket_medio
-    FROM registrosaidaproduto r
-    JOIN itemcardapioinsumo ici ON ici.id_insumo = r.id_insumos_RegistroSaidaProduto
-    JOIN cardapio c ON c.id_cardapio = ici.id_item_cardapio
-    WHERE r.motivo_saida = 'Venda'
-      AND r.data_saida BETWEEN ? AND ?
-    GROUP BY DATE(r.data_saida)
-    ORDER BY dia ASC
-  `;
-  
-  Promise.all([
-    new Promise((resolve, reject) => {
-      connection.query(vendasQuery, [formatDateForSQL(dataInicio), formatDateForSQL(dataFim)], (err, results) => {
-        if (err) reject(err);
-        else resolve(results);
-      });
-    }),
-    new Promise((resolve, reject) => {
-      connection.query(custosQuery, [formatDateForSQL(dataInicio), formatDateForSQL(dataFim)], (err, results) => {
-        if (err) reject(err);
-        else resolve(results);
-      });
-    }),
-    new Promise((resolve, reject) => {
-      connection.query(ticketMedioQuery, [formatDateForSQL(dataInicio), formatDateForSQL(dataFim)], (err, results) => {
-        if (err) reject(err);
-        else resolve(results);
-      });
-    })
-  ])
-  .then(([vendas, custos, ticketMedio]) => {
     // Combinar os resultados
     const diasUnicos = [...new Set([
       ...vendas.map(v => v.dia),
-      ...custos.map(c => c.dia),
-      ...ticketMedio.map(t => t.dia)
+      ...custos.map(c => c.dia)
     ])].sort();
 
     const response = {
@@ -578,29 +597,28 @@ app.get('/relatorios/financeiro', (req, res) => {
       dados: diasUnicos.map(dia => {
         const vendaDia = vendas.find(v => v.dia === dia) || {};
         const custoDia = custos.find(c => c.dia === dia) || {};
-        const ticketDia = ticketMedio.find(t => t.dia === dia) || {};
+
+        const qtdClientes = vendaDia.qtd_vendas || 1; // Evitar divisão por zero
+        const custoMedioCliente = custoDia.custo_total ? custoDia.custo_total / qtdClientes : 0;
+        const lucroMedioCliente = vendaDia.faturamento ? (vendaDia.faturamento - (custoDia.custo_total || 0)) / qtdClientes : 0;
 
         return {
           dia,
-          qtd_vendas: vendaDia.qtd_vendas || 0,
-          faturamento_bruto: vendaDia.faturamento_bruto || 0,
+          qtd_clientes: qtdClientes,
           custo_total: custoDia.custo_total || 0,
-          qtd_itens_vendidos: custoDia.qtd_itens_vendidos || 0,
-          ticket_medio: ticketDia.ticket_medio || 0,
-          custo_medio_item: custoDia.custo_total && custoDia.qtd_itens_vendidos 
-            ? custoDia.custo_total / custoDia.qtd_itens_vendidos 
-            : 0,
-          lucro: (vendaDia.faturamento_bruto || 0) - (custoDia.custo_total || 0)
+          faturamento: vendaDia.faturamento || 0,
+          custo_medio_cliente: custoMedioCliente,
+          lucro_medio_cliente: lucroMedioCliente,
+          lucro_total: (vendaDia.faturamento || 0) - (custoDia.custo_total || 0)
         };
       })
     };
 
     res.json(response);
-  })
-  .catch(error => {
-    console.error('Erro ao gerar relatório financeiro:', error);
-    res.status(500).json({ error: 'Erro ao gerar relatório financeiro' });
-  });
+  } catch (error) {
+    console.error('Erro no relatório diário:', error);
+    res.status(500).json({ error: 'Erro ao gerar relatório' });
+  }
 });
 
 

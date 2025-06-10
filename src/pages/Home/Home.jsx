@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
 import NavBar from "../../components/NavBar/NavBar";
 import styles from './Home.module.css'; // Usando CSS Modules
+import { useNavigate } from 'react-router';
 
 function Home() {
   const [temaEscuro, setTemaEscuro] = useState(false);
+
+  const navigate = useNavigate()
 
   useEffect(() => {
     document.body.className = temaEscuro ? styles['dark-mode'] : styles['light-mode'];
@@ -17,7 +20,7 @@ function Home() {
 
       <div className={styles.App}>
         {/* Botão de alternância de tema */}
-        <button className={styles['theme-toggle-button']} onClick={alternarTema}>
+        {/* <button className={styles['theme-toggle-button']} onClick={alternarTema}>
           <svg viewBox="0 0 24 24" width="24" height="24">
             <path
               fill="currentColor"
@@ -26,65 +29,90 @@ function Home() {
               c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3z"
             />
           </svg>
-        </button>
+        </button> */}
 
         {/* Título e descrição */}
-        <div className={styles.header}>
+        <div className={styles.header}
+          style={{
+            marginTop: "50px"
+          }}>
           <h1>
             Gerencie o <span className={styles.destaque}>estoque</span> do seu negócio de maneira ágil
           </h1>
-          <p>StoryBox facilita o gerenciamento de estoques com eficiência e recursos úteis.</p>
+          <p
+            style={{
+              width: "600px",
+              textAlign: "justify",
+              paddingTop: "10px"
+            }}>
+            A StoryBox é uma solução completa para o gerenciamento de estoques, oferecendo ferramentas intuitivas e recursos avançados que otimizam processos, reduzem erros e aumentam a eficiência operacional. Com uma interface amigável e funcionalidades inteligentes, ela facilita o controle de entradas e saídas, o acompanhamento de níveis de estoque e a tomada de decisões estratégicas com base em dados precisos e em tempo real.</p>
         </div>
 
         {/* Botão de Teste Grátis + Frase */}
         <div className={styles.testeGratisContainer}>
-          <button className={styles.botaoTesteGratis}>Teste Grátis</button>
+          <button className={styles.botaoTesteGratis}
+            onClick={() => {
+              navigate("/cadastro")
+            }}
+          >Teste Grátis</button>
           <span className={styles.bold}>Experimente grátis por 30 dias</span>
         </div>
 
         {/* Benefícios rápidos */}
         <div className={styles.beneficios}>
-          <div><strong>1</strong> Acesso em tempo real</div>
-          <div><strong>2</strong> Redução de erros</div>
-          <div><strong>3</strong> Relatórios detalhados</div>
+          <div className='shadow'>Acesso em tempo real</div>
+          <div className='shadow'>Redução de erros</div>
+          <div className='shadow'>Relatórios detalhados</div>
         </div>
 
         {/* Cartões de Planos */}
         <div className={styles.planos}>
           <div className={styles.card}>
-            <h3>Plano 2</h3>
-             <p className={styles.cardText}>
-              Experimente o primeiro plano <br />
-              • Uso ilimitado<br />
-              • inicio dos reursos avançados<br />
-              • Sem registro em reconhecimento<br />
-              • Sem obrigação de faturamento<br />
-              (mudar dps)
+            <h3>Gratis</h3>
+            <p className={styles.cardText}>
+              Experimente gratuitamente por 30 dias<br /><br />
+              • Uso limitado<br /><br />
+              • Sem recursos avançados<br /><br />
+              • Sem registro em reconhecimento<br /><br />
+              • Sem obrigação de faturamento
             </p>
-            <button className={styles.botaoTesteGratis2}>Começar</button>
+            <button className={styles.botaoTesteGratis2}
+              onClick={() => {
+                navigate("/cadastro")
+              }}
+            >Começar</button>
           </div>
           <div className={styles.card}>
             <h3>Plano 1</h3>
-             <p className={styles.cardText}>
-              Experimente o melhor plano<br />
-              • Uso ilimitado<br />
-              • Com recursos avançados<br />
-              • Com registro em reconhecimento<br />
-              • Com obrigação de faturamento<br />
+            <p className={styles.cardText}>
+              Experimente o melhor plano<br /><br />
+              • Uso ilimitado<br /><br />
+              • Com recursos avançados<br /><br />
+              • Com registro em reconhecimento<br /><br />
+              • Com obrigação de faturamento<br /><br />
               (mudar dps)
             </p>
-            <button className={styles.botaoTesteGratis1}>Começar</button>
+            <button className={styles.botaoTesteGratis2}
+              onClick={() => {
+                navigate("/cadastro")
+              }}
+            >Começar</button>
           </div>
           <div className={styles.card}>
-            <h3>Gratis</h3>
+            <h3>Plano 2</h3>
             <p className={styles.cardText}>
-              Experimente gratuitamente por 30 dias<br />
-              • Uso limitado<br />
-              • Sem recursos avançados<br />
-              • Sem registro em reconhecimento<br />
-              • Sem obrigação de faturamento
+              Experimente o primeiro plano <br /><br />
+              • Uso ilimitado<br /><br />
+              • inicio dos reursos avançados<br /><br />
+              • Sem registro em reconhecimento<br /><br />
+              • Sem obrigação de faturamento<br /><br />
+              (mudar dps)
             </p>
-            <button className={styles.botaoTesteGratis}>Começar</button>
+            <button className={styles.botaoTesteGratis2}
+              onClick={() => {
+                navigate("/cadastro")
+              }}
+            >Começar</button>
           </div>
         </div>
       </div>

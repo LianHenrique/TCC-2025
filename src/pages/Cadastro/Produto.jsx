@@ -82,7 +82,7 @@ const Produto = () => {
   };
 
   return (
-    <div style={{ marginTop: '90px' }}>
+    <div style={{ marginTop: '100px' }}>
       <NavBar />
       <Container>
         <Form onSubmit={handleSubmit} className="shadow" style={{ padding: '30px', borderRadius: '20px', border: '1px solid blue' }}>

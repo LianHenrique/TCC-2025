@@ -4,6 +4,7 @@ import Nav from "react-bootstrap/Nav";
 import Button from "react-bootstrap/Button";
 import { useContext } from "react";
 import { AuthContext } from "../../Contexts/UserContext";
+import styles from "./NavBar.module.css"
 
 const NavBar = () => {
 
@@ -16,7 +17,7 @@ const NavBar = () => {
       <Navbar expand="lg" bg="primary" data-bs-theme="dark" className="d-flex justify-content-center fixed-top">
         <Container>
           <Navbar.Brand 
-          className="fs-1"
+          className={styles.Titulo}
           href="/home">
           StoryBox
           </Navbar.Brand>
@@ -26,12 +27,18 @@ const NavBar = () => {
               usuarioNome == "Visitante" && 
               ( 
                 <Nav className="me-auto">
-                  <Nav.Link href="/relatorio"> Relatorio </Nav.Link>
-                  <Nav.Link href="/estoque"> Estoque </Nav.Link>
-                  <Nav.Link href="/funcionarios"> Funcionarios </Nav.Link>
-                  <Nav.Link href="/agenda"> Agenda </Nav.Link>
-                  <Nav.Link href="/cardapio"> Cardapio </Nav.Link>
-                  <Nav.Link href="/alertas"> Alertas </Nav.Link>
+                  <Nav.Link href="/relatorio"
+                  className={styles.button}> Relatorio </Nav.Link>
+                  <Nav.Link href="/estoque"
+                  className={styles.button}> Estoque </Nav.Link>
+                  <Nav.Link href="/funcionarios"
+                  className={styles.button}> Funcionarios </Nav.Link>
+                  <Nav.Link href="/cardapio"
+                  className={styles.button}> Cardapio </Nav.Link>
+                  <Nav.Link href="/agenda"
+                  className={styles.button}> Agenda </Nav.Link>
+                  <Nav.Link href="/alertas"
+                  className={styles.button}> Alertas </Nav.Link>
                 </Nav>
               )
             }

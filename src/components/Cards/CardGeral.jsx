@@ -69,9 +69,35 @@ const CardGeral = ({
                   }
                 </Card.Body>
               </div>
-            </Card>
-          ))
-        }
+              <div
+                style={{
+                  marginTop: 'auto',
+                  display: 'flex',
+                  justifyContent: 'flex-end',
+                  gap: '0.5rem',
+                }}
+              >
+                <Button
+                  variant='warning'
+                  className='rounded-circle fs-5 text-center shadow m-1'
+                  onClick={() => {
+                    if (item.acoes && item.acoes[0]?.onClick) item.acoes[0].onClick();
+                  }}
+                >
+                  <FaEdit />
+                </Button>
+                <Button
+                  variant='danger'
+                  className='rounded-circle fs-5 text-center shadow m-1'
+                  onClick={() => {
+                    if (item.acoes && item.acoes[1]?.onClick) item.acoes[1].onClick();
+                  }}
+                >
+                  <FaRegTrashAlt />
+                </Button>
+              </div>
+            </Card> 
+        ))}
       </div>
     </div>
   );

@@ -123,7 +123,7 @@ html, body {
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  margin-top: 21.5vh;
+  margin-top: 50px;
 }
 
 .botaoTesteGratis:hover {
@@ -154,21 +154,25 @@ html, body {
   gap: 3rem; /* Espaçamento maior entre os itens */
   margin: 2.5rem 0;
   font-weight: 600;
-  background: #f5f7ff;
   padding: 2rem 1rem;
   border-radius: 18px;
-  box-shadow: 0 2px 12px rgba(56, 88, 255, 0.07);
 }
 
 .beneficios div {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  background: #fff;
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
   padding: 1rem 1.5rem;
-  border-radius: 12px;
-  box-shadow: 0 1px 6px rgba(56, 88, 255, 0.08);
-  font-size: 1.1rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; /* Distribui melhor os itens */
+  gap: 2rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.beneficios div:hover {
+  transform: translateY(-8px) scale(1.03);
 }
 
 /* Cartões dos planos */
@@ -185,14 +189,13 @@ html, body {
   background-color: white;
   border-radius: 16px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
-  padding: 2.5rem 2rem;
+  padding: 1.5rem;
   width: 340px; /* Mais comprido */
-  min-height: 420px; /* Altura mínima maior */
   text-align: center;
   display: flex;
   flex-direction: column;
   justify-content: space-between; /* Distribui melhor os itens */
-  gap: 2rem;
+  gap: 1rem;
   transition: transform 0.2s, box-shadow 0.2s;
 }
 .card:hover {
@@ -200,7 +203,6 @@ html, body {
   box-shadow: 0 12px 32px rgba(56, 88, 255, 0.15);
 }
 .card h3 {
-  margin: 0 0 1rem 0;
   font-size: 1.5rem;
 }
 
@@ -209,5 +211,4 @@ html, body {
   color: #333;
   text-align: left;
   flex: 1;
-  margin-bottom: 1.5rem;
 }
