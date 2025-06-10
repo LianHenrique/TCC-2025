@@ -1,163 +1,212 @@
-import React, { useEffect, useState } from 'react'
-import NavBar from '../../components/NavBar/NavBar'
-import styles from './Relatorios.module.css'
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
-import CardGeral from '../../components/Cards/CardGeral';
-import { Col, Container, Figure } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import NavBar from '../../components/NavBar/NavBar';
+import { Col, Container } from 'react-bootstrap';
+import { Line } from 'react-chartjs-2'; // Importando apenas o componente Line
+import { 
+  Chart as ChartJS, 
+  CategoryScale, 
+  LinearScale, 
+  PointElement, 
+  LineElement, 
+  Title, 
+  Tooltip, 
+  Legend 
+} from 'chart.js';
+
+// Registrando apenas os componentes necessários para gráficos de linha
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const Relatorios = () => {
-  const [funcionarios, setFuncionarios] = useState([])
+  const [funcionarios, setFuncionarios] = useState([]);
+  const [custosData, setCustosData] = useState(null);
+  const [lucroData, setLucroData] = useState(null);
+
+  // Buscar dados de custos e lucros
+  const fetchFinancialData = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/relatorios/financeiro');
+      const data = await response.json();
+      
+      // Configuração para o gráfico de custos (linha única)
+      setCustosData({
+        labels: data.dias,
+        datasets: [
+          {
+            label: 'Custo médio por item (R$)',
+            data: data.dados.map(d => d.custo_medio_item),
+            borderColor: 'rgba(255, 99, 132, 1)',
+            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+            tension: 0.4, // Suaviza a curva
+            fill: true, // Preenche a área abaixo da linha
+            borderWidth: 2,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+            pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+          }
+        ]
+      });
+
+      // Configuração para o gráfico de faturamento vs lucro (utilizar duas linhas)
+      setLucroData({
+        labels: data.dias,
+        datasets: [
+          {
+            label: 'Faturamento diário (R$)',
+            data: data.dados.map(d => d.faturamento_bruto),
+            borderColor: 'rgba(54, 162, 235, 1)',
+            backgroundColor: 'rgba(54, 162, 235, 0.1)',
+            tension: 0.4,
+            borderWidth: 3,
+            pointRadius: 4,
+            pointHoverRadius: 6,
+          },
+          {
+            label: 'Lucro diário (R$)',
+            data: data.dados.map(d => d.lucro),
+            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: 'rgba(75, 192, 192, 0.1)',
+            tension: 0.4,
+            borderWidth: 3,
+            borderDash: [5, 5], // Linha tracejada
+            pointRadius: 4,
+            pointHoverRadius: 6,
+          }
+        ]
+      });
+
+    } catch (error) {
+      console.error('Erro ao buscar dados financeiros:', error);
+    }
+  };
 
   const fetchFuncionarios = async () => {
-    try {
-
-      // Aqui eu tive que definir os ids, pq agente não sabe como exatamente que o funcionário vai estar presente no relatório.
-      const IDfuncionario = [1, 2, 3, 4];
-
-      const responsePromises = IDfuncionario.map(id =>
-        fetch(`http://localhost:3000/funcionarios/${id}`)
-          .then((response) => response.json())
-          .catch((error) => {
-            console.error('Erro ao buscar funcionário:', error);
-          })
-      );
-
-      // Vai esperar tudo ser puxado para rodar
-      const funcionariosData = await Promise.all(responsePromises)
-
-      // formatando os dados. (opcional)
-      const funcionariosFormatados = funcionariosData.map(func => ({
-        nome: func.nome_funcionairo, //sim, o pedro digitou errado no banco
-        link: func.imagem_url || 'https://img.freepik.com/fotos-premium/hamburguer-bonito-em-fundo-escuro_213607-15.jpg',
-        descricao: [
-          { texto: `Cargo: ${func.cargo_funcionario}` },
-          { texto: `ID: ${func.id_funcionario}` }
-        ]
-      }))
-
-      setFuncionarios(funcionariosFormatados);
-    } catch (error) {
-      console.error('Erro ao buscar dados dos funcionários:', error)
-    }
-  }
+  };
 
   useEffect(() => {
     if (funcionarios.length === 0) {
       fetchFuncionarios();
     }
+    fetchFinancialData();
   }, []);
+
+  // Opções personalizadas para os gráficos de linha
+  const lineChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    interaction: {
+      mode: 'index',
+      intersect: false,
+    },
+    plugins: {
+      legend: {
+        position: 'top',
+        labels: {
+          usePointStyle: true,
+          padding: 20,
+        }
+      },
+      title: {
+        display: true,
+        text: 'Análise Financeira Diária',
+        font: {
+          size: 16
+        }
+      },
+      tooltip: {
+        callbacks: {
+          label: function(context) {
+            return `${context.dataset.label}: R$ ${context.parsed.y.toFixed(2)}`;
+          }
+        }
+      }
+    },
+    scales: {
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: 'Valor (R$)',
+          font: {
+            weight: 'bold'
+          }
+        },
+        grid: {
+          color: 'rgba(0, 0, 0, 0.05)',
+        }
+      },
+      x: {
+        grid: {
+          display: false
+        }
+      }
+    },
+    elements: {
+      line: {
+        tension: 0.4
+      },
+      point: {
+        radius: 4,
+        hoverRadius: 6
+      }
+    }
+  };
 
   return (
     <div>
       <NavBar />
-      <Container
-        className='d-flex flex-wrap'
-        style={{
-          marginTop: "90px"
-        }}>
-        <Col
-          className='shadow rounded-5 m-2'
-          style={{
-            padding: "10px",
-            maxWidth: "500px",
-            minWidth: "300px"
-          }}>
-          <Figure>
-            <h1
-              style={{
-                paddingLeft: "30px",
-                paddingTop: "10px"
-              }}>
-              Mensal
-            </h1>
-            <Figure.Image
-              style={{
-                width: "100%"
-              }}
-              alt="Gráfico API"
-              src="../src/public/Grafico.svg"
-            />
-            <Figure.Caption
-              style={{
-                paddingLeft: "30px"
-              }}>
-              1. Faturamento Estimado
-              <br />
-              Faturamento médio mensal: R$ 50.000,00
-              <br />
-              Faturamento durante a alta temporada (dezembro a fevereiro): Aumento de até 30%
-              <br />
-              Faturamento durante o Carnaval: Aumento de até 20%
-              <br />
-              Folha Vitória
-              <br /><br />
-              2. Custos Operacionais
-              Custo médio de uma refeição por cliente: R$ 54,67
-              <br />
-              Custo médio de um almoço completo fora de casa: R$ 48,79
-              Folha Vitória
-              <br /><br />
-              3. Mão de Obra
-              Número de colaboradores: 7.603 profissionais contratados com carteira assinada no setor de restaurantes e similares em Vitória
-              <br />
-              Novas contratações previstas para o verão: 5.000 postos de trabalho
-              <br /><br />
-              4. Desempenho do Setor
-              Expectativa de crescimento do faturamento no verão: Até 30%
-              <br />
-              Expectativa de aumento no faturamento durante o Carnaval: Até 20%
-            </Figure.Caption>
-          </Figure>
+      <Container className='d-flex flex-wrap' style={{ marginTop: "90px" }}>
+        <Col className='shadow rounded-5 m-2' style={{ padding: "10px", maxWidth: "500px", minWidth: "300px" }}>
+          <h1 style={{ paddingLeft: "30px", paddingTop: "10px" }}>Custos Operacionais</h1>
+          
+          {custosData && (
+            <div style={{ height: '300px', marginBottom: '20px', position: 'relative' }}>
+              <Line 
+                options={lineChartOptions} 
+                data={custosData} 
+              />
+            </div>
+          )}
+          
+          <div style={{ paddingLeft: "30px" }}>
+            <h3>Análise de Custos</h3>
+            <p>
+              A linha mostra a variação diária do custo médio por item.
+              Tendência ascendente indica aumento nos custos dos insumos.
+            </p>
+          </div>
         </Col>
-        <Col
-          className='shadow rounded-5 m-2'
-          style={{
-            padding: "10px",
-            maxWidth: "500px"
-          }}>
-          <Figure>
-            <h1
-              style={{
-                paddingLeft: "30px",
-                paddingTop: "10px"
-              }}>
-              Diario
-            </h1>
-            <Figure.Image
-              style={{
-                width: "100%"
-              }}
-              alt="Gráfico API"
-              src="../src/public/Grafico.svg"
-            />
-            <Figure.Caption
-              style={{
-                paddingLeft: "30px"
-              }}>
-              1. Faturamento Estimado
-              <br />
-              Ticket médio por cliente: R$ 54,67
-              <br />
-              Número de clientes atendidos: 50 clientes
-              <br />
-              Faturamento diário estimado: R$ 2.733,50
-              <br /><br />
-              2. Custos Operacionais
-              <br />
-              Custo médio de uma refeição por cliente: R$ 48,79
-              <br />
-              Custo operacional diário estimado: R$ 2.439,50
-              <br /><br />
-              3. Lucro Bruto Estimado
-              <br />
-              Lucro bruto diário estimado: R$ 294,00
-            </Figure.Caption>
-          </Figure>
+
+        <Col className='shadow rounded-5 m-2' style={{ padding: "10px", maxWidth: "500px" }}>
+          <h1 style={{ paddingLeft: "30px", paddingTop: "10px" }}>Faturamento vs Lucro</h1>
+          
+          {lucroData && (
+            <div style={{ height: '300px', marginBottom: '20px', position: 'relative' }}>
+              <Line 
+                options={lineChartOptions} 
+                data={lucroData} 
+              />
+            </div>
+          )}
+          
+          <div style={{ paddingLeft: "30px" }}>
+            <h3>Análise de Lucratividade</h3>
+            <p>
+              Comparação entre faturamento bruto (linha azul) e lucro líquido
+              (linha tracejada verde). A diferença vertical representa os custos.
+            </p>
+          </div>
         </Col>
       </Container>
     </div>
-  )
-}
+  );
+};
 
-export default Relatorios
+export default Relatorios;
