@@ -146,6 +146,7 @@ const Cardapio = () => {
           card={cardapio}
           onCardClick={handleCardClick}
           showButtons={false}
+          imgHeight={250}
           customButton={item => (
             <Button
               variant="success"

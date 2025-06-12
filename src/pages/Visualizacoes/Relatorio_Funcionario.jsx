@@ -54,6 +54,7 @@ const Relatorio_Funcionario = () => {
                 <CardGeral
                     filtro={null}
                     card={funcionario}
+                    imgHeight="auto"
                     ClassNameCard={style.corpo_card}
                     ClassImg={style.img}
                     enableOverflow={false}

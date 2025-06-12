@@ -83,6 +83,7 @@ const Visualizar = () => {
                         card={produtos}
                         ClassNameCard={style.corpo_card} 
                         ClassImg={style.img}
+                        imgHeight="auto"
                         enableOverflow={false}
                         Desc={style.desc}
                         ClassTitulo={style.titulo}

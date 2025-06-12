@@ -11,7 +11,8 @@ const CardGeral = ({
   Desc,
   onCardClick,
   showButtons = true,
-  customButton 
+  customButton,
+  imgHeight,
 }) => {
   return (
     <div className={ClassNameCard}>
@@ -38,7 +39,7 @@ const CardGeral = ({
               <div>
                 <Card.Img
                   className={ClassImg}
-                  style={{ borderRadius: "10px" }}
+                  style={{ borderRadius: "10px", height: {imgHeight} }}
                   variant="top"
                   src={item.link} />
                 <Card.Body>

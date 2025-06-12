@@ -421,6 +421,23 @@ app.post('/cardapio/insert', (req, res) => {
 
 
 
+// ROTA DO BOTÃO DE ALTERAR DA TELA DE CADASTRO DE VISUALIZAR CARDÁPIO (update)
+app.put('/AtualizarCardapio/:id', (req, res) => {
+  const {id} = req.params;
+  const {imagem_url, nome_item, descricao_item, valor_item} = req.body;
+  const query = 'UPDATE cardapio SET imagem_url = ?, nome_item = ?, descricao_item = ?, valor_item = ? WHERE id_cardapio = ?'
+  connection.query(
+    query,
+    [imagem_url, nome_item, descricao_item, valor_item, id],
+    (error, results) => {
+      if(error){
+        return res.status(500).json({error : "Erro ao atualizar produto do cardápio."});
+      }
+      res.status(200).json({message : 'Livro atualizado com sucesso!'})
+    }
+  )
+}) 
+
 
 
 // --- ROTA CLIENTE ---

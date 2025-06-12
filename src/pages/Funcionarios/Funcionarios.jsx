@@ -58,6 +58,7 @@ const Funcionarios = () => {
         <CardGeral
           filtro=""
           card={funcionarios}
+          imgHeight={250}
           onCardClick={handleCardClick}
         />
       </Container>

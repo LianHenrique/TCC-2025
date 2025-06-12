@@ -79,6 +79,7 @@ const Estoque = () => {
             <CardGeral
               card={produtosDaCategoria}
               onCardClick={handleCardClick}
+              imgHeight={250}
             />
           </div>
         ))}
