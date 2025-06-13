@@ -32,6 +32,7 @@ CREATE TABLE `cardapio` (
   `imagem_url` varchar(250) DEFAULT NULL,
   `ativo` tinyint(1) DEFAULT 1,
   `data_cadastro` timestamp NOT NULL DEFAULT current_timestamp(),
+  `categoria` varchar(20),
   PRIMARY KEY (`id_cardapio`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

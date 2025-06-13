@@ -24,7 +24,7 @@ const NavBar = () => {
           <Navbar.Toggle aria-controls="minha-nav" />
           <Navbar.Collapse id="minha-nav">
             {
-              usuarioNome == "Visitante" && 
+              usuarioNome === "Visitante" && 
               ( 
                 <Nav className="me-auto">
                   <Nav.Link href="/relatorio"

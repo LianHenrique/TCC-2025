@@ -71,7 +71,7 @@ const Estoque = () => {
           ]}
         />
 
-        <EditarQuantidade quantidade={0}/>
+        {/* <EditarQuantidade quantidade={0}/> */}
 
         {Object.entries(produtos).map(([categoria, produtosDaCategoria]) => (
           <div key={categoria} id={categoria.toLowerCase()} className="mb-5">
@@ -80,6 +80,7 @@ const Estoque = () => {
               card={produtosDaCategoria}
               onCardClick={handleCardClick}
               imgHeight={250}
+              showButtons = {false}
             />
           </div>
         ))}

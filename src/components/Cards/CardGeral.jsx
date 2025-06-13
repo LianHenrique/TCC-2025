@@ -39,7 +39,7 @@ const CardGeral = ({
               <div>
                 <Card.Img
                   className={ClassImg}
-                  style={{ borderRadius: "10px", height: {imgHeight} }}
+                  style={{ borderRadius: "10px", height: { imgHeight } }}
                   variant="top"
                   src={item.link} />
                 <Card.Body>
@@ -51,22 +51,24 @@ const CardGeral = ({
                       </Card.Text>
                     ))
                   }
-                  {customButton
-                    ? customButton(item)
-                    : (showButtons && (
-                        <>
-                          <Button
-                            variant="warning"
-                            className="rounded-circle fs-5 text-center shadow m-1">
-                            <FaEdit />
-                          </Button>
-                          <Button
-                            variant="danger"
-                            className="rounded-circle fs-5 text-center shadow">
-                            <FaRegTrashAlt />
-                          </Button>
-                        </>
-                      ))
+                  {showButtons
+                    ? (
+                      <>
+                        <Button
+                          variant="warning"
+                          className="rounded-circle fs-5 text-center shadow m-1"
+                        >
+                          <FaEdit />
+                        </Button>
+                        <Button
+                          variant="danger"
+                          className="rounded-circle fs-5 text-center shadow"
+                        >
+                          <FaRegTrashAlt />
+                        </Button>
+                      </>
+                    )
+                    : customButton && customButton(item)
                   }
                 </Card.Body>
               </div>
@@ -97,8 +99,8 @@ const CardGeral = ({
                   <FaRegTrashAlt />
                 </Button>
               </div>
-            </Card> 
-        ))}
+            </Card>
+          ))}
       </div>
     </div>
   );
