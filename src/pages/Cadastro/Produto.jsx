@@ -138,8 +138,15 @@ const Produto = () => {
             <Form.Control type="number" placeholder="Valor" value={valor} onChange={(e) => setValor(e.target.value)} required min="0" step="0.01" />
           </FloatingLabel>
 
-          <FloatingLabel controlId="floatingDescricao" label="Descrição" className="m-2">
-            <Form.Control type="text" placeholder="Descrição" value={descricao} onChange={(e) => setDescricao(e.target.value)} required />
+          <FloatingLabel controlId="descricao" label="Descrição" className="m-2">
+            <Form.Control
+              as="textarea"
+              placeholder="Descrição"
+              value={descricao}
+              onChange={(e) => setDescricao(e.target.value)}
+              className="rounded-5 shadow mt-3"
+              style={{ border: 'none', height: '100px' }}
+            />
           </FloatingLabel>
 
           <div className="d-flex m-2">

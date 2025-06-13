@@ -2,9 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import NavBar from '../../components/NavBar/NavBar';
 import Pesquisa from '../../components/Pesquisa/Pesquisa';
-import { Button, Container } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import CardGeral from '../../components/Cards/CardGeral';
-import EditarQuantidade from '../../components/EditarQuantidadeProd/EditarQuantidade';
 
 const Estoque = () => {
   const [produtos, setProdutos] = useState({});

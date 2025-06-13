@@ -7,6 +7,21 @@ app.use(cors());
 app.use(express.json());
 
 // --- ROTAS FUNCIONÁRIOS ---
+
+// Buscar funcionário por ID
+app.get('/funcionarios/id/:id_funcionario', (req, res) => {
+  const { id_funcionario } = req.params;
+  connection.query(
+    'SELECT * FROM funcionario WHERE id_funcionario = ?',
+    [id_funcionario],
+    (error, results) => {
+      if (error) return res.status(500).json({ error: 'Erro ao buscar funcionário' });
+      if (results.length === 0) return res.status(404).json({ error: 'Funcionário não encontrado' });
+      res.json(results[0]);
+    }
+  );
+});
+
 // Buscar funcionário por nome via query param
 app.get('/funcionarios', (req, res) => {
   const { nome_funcionario } = req.query;
@@ -183,7 +198,7 @@ app.post("/funcionarios/insert", (req, res) => {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
   }
 
-  const sql = `INSERT INTO funcionario (nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario) VALUES (?, ?, ?, ?)`;
+  const sql = `INSERT INTO funcionario (nome_funcionairo, cargo_funcionario, senha_funcionario, email_funcionario) VALUES (?, ?, ?, ?)`;
 
   connection.query(sql, [nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario], (error) => {
     if (error) {

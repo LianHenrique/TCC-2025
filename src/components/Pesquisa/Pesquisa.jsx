@@ -15,7 +15,8 @@ const Pesquisa = ({ lista, nomeDrop, navega, onFilterChange }) => {
   };
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit)}>
+    <Form onSubmit={handleSubmit(onSubmit)} 
+    style={{ marginTop: "100x" }}>
       <FloatingLabel
         controlId="floatingInput"
         label="Pesquisa"
