@@ -13,16 +13,16 @@ const Funcionarios = () => {
     fetch('http://localhost:3000/funcionarios')
       .then(response => response.json())
       .then(data => {
-        const funcionariosFormatados = data.map(func => ({
-          id: func.id_funcionairo,
-          nome: func.nome_funcionairo,
-          link: func.link || 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
+        const FuncionariosFormatados = data.map(func => ({
+          id: func.id_funcionario,
+          nome: func.nome_funcionario,
+          link: func.imagem_url || 'https://via.placeholder.com/150',
           descricao: [
             { texto: `Email: ${func.email_funcionario}` },
             { texto: `Cargo: ${func.cargo_funcionario}` }
-          ]
-        }));
-        setFuncionarios(funcionariosFormatados);
+          ],
+        }))
+        setFuncionarios(FuncionariosFormatados)
       })
       .catch(error => console.error('Erro ao buscar funcionários:', error));
   }, []);
@@ -36,24 +36,29 @@ const Funcionarios = () => {
       <NavBar />
 
       <Container>
-      <Pesquisa 
-      nomeDrop="Cargo" 
-      navega="/cadastro_funcionario"
-      lista={[
-        {
-          lista: "Gerente",
-          link: "#gerente"  
-        },
-        {
-          lista: "Estoquista",
-          link: "#estoquista"  
-        }
-      ]}
-      />
+        <h1
+          style={{
+            marginTop: "100px"
+          }}>Funcionario</h1>
+        <Pesquisa
+          nomeDrop="Cargo"
+          navega="/cadastro_funcionario"
+          lista={[
+            {
+              lista: "Gerente",
+              link: "#gerente"
+            },
+            {
+              lista: "Estoquista",
+              link: "#estoquista"
+            }
+          ]}
+        />
 
         <CardGeral
           filtro=""
           card={funcionarios}
+          imgHeight={250}
           onCardClick={handleCardClick}
         />
       </Container>

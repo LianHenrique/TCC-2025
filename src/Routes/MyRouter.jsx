@@ -13,6 +13,8 @@ import Relatorio_Funcionario from "../pages/Visualizacoes/Relatorio_Funcionario"
 import Funcionario from "../pages/Cadastro/Funcionario"
 import Produto from "../pages/Cadastro/Produto"
 import Agenda from "../pages/Agenda/Agenda"
+import Alerta from "../pages/Alerta/Alerta" 
+import Visualizar_Cardapio from "../pages/Visualizacoes/Visualizar_Cardapio"
 
 const MyRouter = createBrowserRouter([
     {
@@ -74,6 +76,14 @@ const MyRouter = createBrowserRouter([
             {
                 path: "/agenda",
                 element: <Agenda />
+            },
+            {
+                path: "/alertas",
+                element: <Alerta/>
+            },
+            {
+                path: "/Visualizar_Cardapio/:id",
+                element: <Visualizar_Cardapio/>
             }
         ]
     }

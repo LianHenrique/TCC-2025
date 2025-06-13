@@ -65,9 +65,12 @@ const Insumos = () => {
   const today = new Date().toISOString().split('T')[0];
 
   return (
-    <div style={{ marginTop: '90px' }}>
+    <div style={{ marginTop: '100px' }}>
       <NavBar />
-      <Container>
+      <Container
+        style={{
+          maxWidth: "800px"
+        }}>
         <Form
           onSubmit={handleSubmit}
           className="shadow"
@@ -75,7 +78,7 @@ const Insumos = () => {
             padding: '30px',
             borderRadius: '20px',
             border: '1px blue solid',
-            marginBottom: "10px"  
+            marginBottom: "10px"
           }}
         >
           <h1 style={{ textAlign: 'center' }}>Cadastro</h1>

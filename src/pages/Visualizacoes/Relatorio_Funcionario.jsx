@@ -25,10 +25,11 @@ const Relatorio_Funcionario = () => {
                 const funcionario = Array.isArray(data) ? data[0] : data;
                 const funcionarioFormatado = {
                     nome: funcionario.nome_funcionario,
-                    link: funcionario.link,
+                    link: funcionario.imagem_url,
                     descricao: [
-                        { texto: `Nome: ${funcionario.nome_funcionairo}` },
-                        { texto: `Email de contato: ${funcionario.email_funcionario}` }
+                        { texto: `Nome: ${funcionario.nome_funcionario}` },
+                        { texto: `Email de contato: ${funcionario.email_funcionario}` },
+                        { texto: `Cargo: ${funcionario.cargo_funcionario}` }
                     ]
                 };
                 setFuncionario([funcionarioFormatado])
@@ -53,6 +54,7 @@ const Relatorio_Funcionario = () => {
                 <CardGeral
                     filtro={null}
                     card={funcionario}
+                    imgHeight="auto"
                     ClassNameCard={style.corpo_card}
                     ClassImg={style.img}
                     enableOverflow={false}

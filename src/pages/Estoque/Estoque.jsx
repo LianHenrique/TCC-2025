@@ -4,35 +4,40 @@ import NavBar from '../../components/NavBar/NavBar';
 import Pesquisa from '../../components/Pesquisa/Pesquisa';
 import { Button, Container } from 'react-bootstrap';
 import CardGeral from '../../components/Cards/CardGeral';
+import EditarQuantidade from '../../components/EditarQuantidadeProd/EditarQuantidade';
 
 const Estoque = () => {
   const [produtos, setProdutos] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('http://localhost:3000/insumos')
+    fetch('http://localhost:3000/estoque')
       .then(res => res.json())
       .then(data => {
         if (!Array.isArray(data)) {
           throw new Error("Resposta inesperada da API");
         }
 
-        const agrupados = data.reduce((acc, produto) => {
-          const cat = produto.categoria || 'Outros';
+        const agrupados = data.reduce((acc, insumos) => {
+          const cat = insumos.categoria || 'Outros';
 
           if (!acc[cat]) {
             acc[cat] = [];
           }
 
-          const entradaFormatada = new Date(produto.data_vencimento_prod).toLocaleDateString()
+          const entradaFormatada = insumos.data_entrada_insumos
+            ? new Date(insumos.data_entrada_insumos).toLocaleDateString()
+            : 'Data desconhecida';
 
           acc[cat].push({
-            id: produto.id_produto,
-            nome: produto.nome_produto,
-            link: produto.imagem_url || 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
+            id: insumos.id_insumos,
+            nome: insumos.nome_insumos,
+            data: entradaFormatada,
+            quantidade: insumos.quantidade_insumos,
+            link: insumos.imagem_url || 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
             descricao: [
-              { texto: `Quantidade: ${produto.QTD_produto}` },
-              { texto: `Entrada: ${entradaFormatada}` }
+              { texto: `Quantidade: ${insumos.quantidade_insumos}` },
+              { texto: `Nome: ${insumos.nome_insumos}` }
             ]
           });
 
@@ -52,6 +57,10 @@ const Estoque = () => {
     <div>
       <NavBar />
       <Container className="my-4">
+        <h1
+          style={{
+            marginTop: "100px"
+          }}>Estoque</h1>
         <Pesquisa
           nomeDrop="Filtro"
           navega="/cadastro_insumos"
@@ -62,13 +71,15 @@ const Estoque = () => {
           ]}
         />
 
+        <EditarQuantidade quantidade={0}/>
+
         {Object.entries(produtos).map(([categoria, produtosDaCategoria]) => (
           <div key={categoria} id={categoria.toLowerCase()} className="mb-5">
             <h2 className="mb-3">{categoria}</h2>
             <CardGeral
-              filtro="produtos"
               card={produtosDaCategoria}
               onCardClick={handleCardClick}
+              imgHeight={250}
             />
           </div>
         ))}

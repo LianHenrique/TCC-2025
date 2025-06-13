@@ -1,163 +1,193 @@
-import React, { useEffect, useState } from 'react'
-import NavBar from '../../components/NavBar/NavBar'
-import styles from './Relatorios.module.css'
-import Button from 'react-bootstrap/Button';
-import Card from 'react-bootstrap/Card';
-import CardGeral from '../../components/Cards/CardGeral';
-import { Col, Container, Figure } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Line } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import NavBar from '../../components/NavBar/NavBar';
+import { Container } from 'react-bootstrap';
 
-const Relatorios = () => {
-  const [funcionarios, setFuncionarios] = useState([])
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-  const fetchFuncionarios = async () => {
+const RelatorioFinanceiro = () => {
+  const [relatorioData, setRelatorioData] = useState(null);
+
+  const fetchData = async () => {
     try {
-
-      // Aqui eu tive que definir os ids, pq agente não sabe como exatamente que o funcionário vai estar presente no relatório.
-      const IDfuncionario = [1, 2, 3, 4];
-
-      const responsePromises = IDfuncionario.map(id =>
-        fetch(`http://localhost:3000/funcionarios/${id}`)
-          .then((response) => response.json())
-          .catch((error) => {
-            console.error('Erro ao buscar funcionário:', error);
-          })
-      );
-
-      // Vai esperar tudo ser puxado para rodar
-      const funcionariosData = await Promise.all(responsePromises)
-
-      // formatando os dados. (opcional)
-      const funcionariosFormatados = funcionariosData.map(func => ({
-        nome: func.nome_funcionairo, //sim, o pedro digitou errado no banco
-        link: func.imagem_url || 'https://img.freepik.com/fotos-premium/hamburguer-bonito-em-fundo-escuro_213607-15.jpg',
-        descricao: [
-          { texto: `Cargo: ${func.cargo_funcionario}` },
-          { texto: `ID: ${func.id_funcionario}` }
-        ]
-      }))
-
-      setFuncionarios(funcionariosFormatados);
+      const response = await fetch('http://localhost:3000/relatorios/diario');
+      const data = await response.json();
+      setRelatorioData(data);
     } catch (error) {
-      console.error('Erro ao buscar dados dos funcionários:', error)
+      console.error('Erro ao buscar dados:', error);
     }
-  }
+  };
 
   useEffect(() => {
-    if (funcionarios.length === 0) {
-      fetchFuncionarios();
-    }
+    fetchData();
   }, []);
 
+  // Gráfico de Custo Médio vs Lucro Médio por Cliente
+  const custoLucroChart = {
+    labels: relatorioData?.dias || [],
+    datasets: [
+      {
+        label: 'Custo Médio por Cliente (R$)',
+        data: relatorioData?.dados.map(d => d.custo_medio_cliente) || [],
+        borderColor: 'rgba(255, 99, 132, 1)',
+        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+        tension: 0.3,
+        yAxisID: 'y',
+      },
+      {
+        label: 'Lucro Médio por Cliente (R$)',
+        data: relatorioData?.dados.map(d => d.lucro_medio_cliente) || [],
+        borderColor: 'rgba(75, 192, 192, 1)',
+        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+        tension: 0.3,
+        yAxisID: 'y',
+      }
+    ]
+  };
+ 
+
+  // GRÁFICO DE LUCRO
+  const lucratividadeChart = {
+    labels: relatorioData?.dias || [],
+    datasets: [
+      {
+        label: 'Lucro Total (R$)',
+        data: relatorioData?.dados.map(d => d.lucro_total) || [],
+        borderColor: 'rgba(54, 162, 235, 1)',
+        backgroundColor: (context) => {
+          const ctx = context.chart.ctx;
+          const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+          gradient.addColorStop(0, 'rgba(54, 162, 235, 0.5)');
+          gradient.addColorStop(1, 'rgba(54, 162, 235, 0)');
+          return gradient;
+        },
+        fill: true,
+        tension: 0.3,
+      }
+    ]
+  };
+
+  const options = {
+    responsive: true,
+    interaction: {
+      mode: 'index',
+      intersect: false,
+    },
+    plugins: {
+      legend: {
+        position: 'top',
+      },
+      tooltip: {
+        callbacks: {
+          label: (context) => {
+            let label = context.dataset.label || '';
+            if (label) label += ': ';
+            if (context.parsed.y !== null) {
+              label += new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+              }).format(context.parsed.y);
+            }
+            return label;
+          }
+        }
+      }
+    },
+    scales: {
+      y: {
+        type: 'linear',
+        display: true,
+        position: 'left',
+        title: {
+          display: true,
+          text: 'Valor (R$)'
+        },
+        ticks: {
+          callback: (value) => 'R$ ' + value.toFixed(2)
+        }
+      }
+    }
+  };
+
   return (
-    <div>
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <NavBar />
-      <Container
-        className='d-flex flex-wrap'
-        style={{
-          marginTop: "90px"
-        }}>
-        <Col
-          className='shadow rounded-5 m-2'
-          style={{
-            padding: "10px",
-            maxWidth: "500px",
-            minWidth: "300px"
-          }}>
-          <Figure>
-            <h1
-              style={{
-                paddingLeft: "30px",
-                paddingTop: "10px"
-              }}>
-              Mensal
-            </h1>
-            <Figure.Image
-              style={{
-                width: "100%"
-              }}
-              alt="Gráfico API"
-              src="../src/public/Grafico.svg"
-            />
-            <Figure.Caption
-              style={{
-                paddingLeft: "30px"
-              }}>
-              1. Faturamento Estimado
-              <br />
-              Faturamento médio mensal: R$ 50.000,00
-              <br />
-              Faturamento durante a alta temporada (dezembro a fevereiro): Aumento de até 30%
-              <br />
-              Faturamento durante o Carnaval: Aumento de até 20%
-              <br />
-              Folha Vitória
-              <br /><br />
-              2. Custos Operacionais
-              Custo médio de uma refeição por cliente: R$ 54,67
-              <br />
-              Custo médio de um almoço completo fora de casa: R$ 48,79
-              Folha Vitória
-              <br /><br />
-              3. Mão de Obra
-              Número de colaboradores: 7.603 profissionais contratados com carteira assinada no setor de restaurantes e similares em Vitória
-              <br />
-              Novas contratações previstas para o verão: 5.000 postos de trabalho
-              <br /><br />
-              4. Desempenho do Setor
-              Expectativa de crescimento do faturamento no verão: Até 30%
-              <br />
-              Expectativa de aumento no faturamento durante o Carnaval: Até 20%
-            </Figure.Caption>
-          </Figure>
-        </Col>
-        <Col
-          className='shadow rounded-5 m-2'
-          style={{
-            padding: "10px",
-            maxWidth: "500px"
-          }}>
-          <Figure>
-            <h1
-              style={{
-                paddingLeft: "30px",
-                paddingTop: "10px"
-              }}>
-              Diario
-            </h1>
-            <Figure.Image
-              style={{
-                width: "100%"
-              }}
-              alt="Gráfico API"
-              src="../src/public/Grafico.svg"
-            />
-            <Figure.Caption
-              style={{
-                paddingLeft: "30px"
-              }}>
-              1. Faturamento Estimado
-              <br />
-              Ticket médio por cliente: R$ 54,67
-              <br />
-              Número de clientes atendidos: 50 clientes
-              <br />
-              Faturamento diário estimado: R$ 2.733,50
-              <br /><br />
-              2. Custos Operacionais
-              <br />
-              Custo médio de uma refeição por cliente: R$ 48,79
-              <br />
-              Custo operacional diário estimado: R$ 2.439,50
-              <br /><br />
-              3. Lucro Bruto Estimado
-              <br />
-              Lucro bruto diário estimado: R$ 294,00
-            </Figure.Caption>
-          </Figure>
-        </Col>
+
+      {/* ESTILIZAÇÃO DA NAVBAR */}
+      <Container style={{
+        flex: 1,
+        paddingTop: '15vh',  
+        paddingBottom: '20px',
+        marginTop: '0'        
+      }}>
+        <h1 className="mb-4" style={{ fontSize: '2rem'}}>Relatório Financeiro Diário</h1>
+
+        <div className="row">
+          <div className="col-md-6 mb-4">
+            <div className="card h-100">
+              <div className="card-header bg-white">
+                <h5 style={{ fontWeight: '600' }}>Custo vs Lucro por Cliente</h5>
+              </div>
+              <div className="card-body">
+                <div style={{ height: '300px' }}>
+                  <Line data={custoLucroChart} options={options} />
+                </div>
+                <p className="mt-3 text-muted">
+                  Comparação entre o custo médio por cliente (vermelho) e o lucro médio por cliente (verde).
+                  Valores negativos indicam prejuízo.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-md-6 mb-4">
+            <div className="card h-100">
+              <div className="card-header bg-white">
+                <h5 style={{ fontWeight: '600' }}>Evolução do Lucro Diário</h5>
+              </div>
+              <div className="card-body">
+                <div style={{ height: '300px' }}>
+                  <Line data={lucratividadeChart} options={options} />
+                </div>
+                <p className="mt-3 text-muted">
+                  Evolução do lucro total do restaurante. Área abaixo da linha indica períodos positivos.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="card mt-4">
+          <div className="card-header bg-white">
+            <h5 style={{ fontWeight: '600' }}>Resumo Financeiro</h5>
+          </div>
+          <div className="card-body">
+            {relatorioData?.dados.map((dia, index) => (
+              <div key={index} className="mb-3 p-3 border rounded">
+                <h6 style={{ fontWeight: '500' }}>{dia.dia}</h6>
+                <div className="row">
+                  <div className="col-md-4">
+                    <p>Clientes atendidos: <strong>{dia.qtd_clientes}</strong></p>
+                  </div>
+                  <div className="col-md-4">
+                    <p>Custo médio: <strong className={dia.custo_medio_cliente > 50 ? 'text-danger' : ''}>
+                      {dia.custo_medio_cliente.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                    </strong></p>
+                  </div>
+                  <div className="col-md-4">
+                    <p>Lucro médio: <strong className={dia.lucro_medio_cliente >= 0 ? 'text-success' : 'text-danger'}>
+                      {dia.lucro_medio_cliente.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                    </strong></p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </Container>
     </div>
-  )
-}
+  );
+};
 
-export default Relatorios
+export default RelatorioFinanceiro;

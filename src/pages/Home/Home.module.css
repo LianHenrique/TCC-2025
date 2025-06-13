@@ -30,15 +30,30 @@ html, body {
 
 /* Botão de alternância de tema */
 .theme-toggle-button {
-  background: none;
-  border: none;
+  background: #f5f7ff;
+  border: 2px solid #3858FF;
+  color: #3858FF;
+  border-radius: 50%;
   cursor: pointer;
   margin: 1rem auto;
-  padding: 5px;
+  padding: 10px;
   position: relative;
   z-index: 999;
+  box-shadow: 0 2px 8px rgba(56, 88, 255, 0.10);
+  transition: background 0.2s, box-shadow 0.2s, color 0.2s, border 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+.theme-toggle-button:hover, 
+.theme-toggle-button:focus {
+  background: #3858FF;
+  color: #fff;
+  border: 2px solid #1a42d1;
+  box-shadow: 0 4px 16px rgba(56, 88, 255, 0.18);
+  outline: none;
+}
 /* Título e descrição */
 .header {
   text-align: center;
@@ -108,7 +123,7 @@ html, body {
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  margin-top: 21.5vh;
+  margin-top: 50px;
 }
 
 .botaoTesteGratis:hover {
@@ -133,16 +148,31 @@ html, body {
 /* Benefícios rápidos */
 .beneficios {
   display: flex;
-  justify-content: center;
-  gap: 2rem;
-  margin: 1.5rem 0;
+  justify-content: space-around; /* Distribui melhor os itens */
+  align-items: center;
+  flex-wrap: wrap; /* Permite quebrar linha em telas menores */
+  gap: 3rem; /* Espaçamento maior entre os itens */
+  margin: 2.5rem 0;
   font-weight: 600;
+  padding: 2rem 1rem;
+  border-radius: 18px;
 }
 
 .beneficios div {
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  padding: 1rem 1.5rem;
+  text-align: center;
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  flex-direction: column;
+  justify-content: space-between; /* Distribui melhor os itens */
+  gap: 2rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.beneficios div:hover {
+  transform: translateY(-8px) scale(1.03);
 }
 
 /* Cartões dos planos */
@@ -150,28 +180,35 @@ html, body {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 1.5rem;
-  padding: 2rem 0;
+  align-items: stretch; /* Garante altura igual */
+  gap: 3rem; /* Espaçamento maior entre os cards */
+  padding: 3rem 0;
 }
 
 .card {
   background-color: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
   padding: 1.5rem;
-  width: 250px;
+  width: 340px; /* Mais comprido */
   text-align: center;
   display: flex;
   flex-direction: column;
+  justify-content: space-between; /* Distribui melhor os itens */
   gap: 1rem;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
-
+.card:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 12px 32px rgba(56, 88, 255, 0.15);
+}
 .card h3 {
-  margin: 0;
+  font-size: 1.5rem;
 }
 
 .cardText {
-  font-size: 0.9rem;
+  font-size: 1.05rem;
   color: #333;
   text-align: left;
+  flex: 1;
 }

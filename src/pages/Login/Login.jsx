@@ -126,7 +126,7 @@ const Login = () => {
             color:"black",
             border:"none"
           }}>
-            Cadastre-se
+            Ainda não cadastrou? cadastre-se
           </Button>
         </Form>
       </Container>
