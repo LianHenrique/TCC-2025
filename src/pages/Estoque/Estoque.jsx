@@ -2,9 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import NavBar from '../../components/NavBar/NavBar';
 import Pesquisa from '../../components/Pesquisa/Pesquisa';
-import { Button, Container } from 'react-bootstrap';
+import { Container } from 'react-bootstrap';
 import CardGeral from '../../components/Cards/CardGeral';
-import EditarQuantidade from '../../components/EditarQuantidadeProd/EditarQuantidade';
 
 const Estoque = () => {
   const [produtos, setProdutos] = useState({});
@@ -71,7 +70,7 @@ const Estoque = () => {
           ]}
         />
 
-        <EditarQuantidade quantidade={0}/>
+        {/* <EditarQuantidade quantidade={0}/> */}
 
         {Object.entries(produtos).map(([categoria, produtosDaCategoria]) => (
           <div key={categoria} id={categoria.toLowerCase()} className="mb-5">
@@ -80,6 +79,7 @@ const Estoque = () => {
               card={produtosDaCategoria}
               onCardClick={handleCardClick}
               imgHeight={250}
+              showButtons = {false}
             />
           </div>
         ))}

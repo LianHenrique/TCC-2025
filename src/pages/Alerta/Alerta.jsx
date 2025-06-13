@@ -118,7 +118,7 @@ const Alerta = () => {
                                             <p>Quantidade: {insumo.quantidade}</p>
                                         </section>
 
-                                        {/* Botão para adicionar mais insumo */}
+                                        {/* Botão para adicionar mais insumos no estoque */}
                                         <Button style={{
                                             display: 'flex',
                                             position: 'relative',
