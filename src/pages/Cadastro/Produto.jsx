@@ -21,6 +21,8 @@ const Produto = () => {
 
   const navigate = useNavigate();
 
+  const uni = ["g", "Kg"];
+
   useEffect(() => {
     fetch('http://localhost:3000/insumos')
       .then(res => res.json())
@@ -84,43 +86,108 @@ const Produto = () => {
   return (
     <div style={{ marginTop: '100px' }}>
       <NavBar />
-      <Container>
-        <Form onSubmit={handleSubmit} className="shadow" style={{ padding: '30px', borderRadius: '20px', border: '1px solid blue' }}>
+      <Container
+      style={{
+          maxWidth: "800px"
+        }}>
+        <Form
+          onSubmit={handleSubmit}
+          className="shadow"
+          style={{
+            padding: '30px',
+            borderRadius: '20px',
+            border: '1px solid blue'
+          }}>
           <h1 style={{ textAlign: 'center' }}>Cadastro</h1>
 
-          <FloatingLabel controlId="floatingNome" label="Nome" className="m-2">
-            <Form.Control type="text" placeholder="Nome" className="rounded-5 shadow mt-3" value={nome} onChange={(e) => setNome(e.target.value)} required />
+          <FloatingLabel
+            controlId="floatingNome"
+            label="Nome"
+            className="m-2">
+            <Form.Control
+              type="text"
+              placeholder="Nome"
+              className="rounded-5 shadow mt-3"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              required />
           </FloatingLabel>
 
           <div className="d-flex align-items-center m-2 gap-2">
+            {/* Seleção de insumo */}
             <Dropdown className="shadow rounded-5">
               <Dropdown.Toggle variant="outline-primary rounded-5">
                 {insumoSelecionado.nome || 'Insumos'}
               </Dropdown.Toggle>
               <Dropdown.Menu style={{ maxHeight: '200px', overflowY: 'auto' }}>
                 {insumos.map(({ nome_insumos, id_insumos }) => (
-                  <Dropdown.Item key={id_insumos} onClick={() => setInsumoSelecionado((prev) => ({ ...prev, id: id_insumos, nome: nome_insumos }))}>
+                  <Dropdown.Item
+                    key={`insumo-${id_insumos}`}
+                    onClick={() =>
+                      setInsumoSelecionado((prev) => ({
+                        ...prev,
+                        id: id_insumos,
+                        nome: nome_insumos,
+                      }))
+                    }
+                  >
                     {nome_insumos}
                   </Dropdown.Item>
                 ))}
               </Dropdown.Menu>
             </Dropdown>
 
-            <Form.Control type="number" placeholder="Qtd" value={insumoSelecionado.quantidade_necessaria}
-              onChange={(e) => setInsumoSelecionado((prev) => ({ ...prev, quantidade_necessaria: e.target.value }))}
-              className="shadow" style={{ width: '100px' }} min="0" />
+            {/* Quantidade */}
+            <Form.Control
+              type="number"
+              placeholder="Quantidade"
+              value={insumoSelecionado.quantidade_necessaria}
+              onChange={(e) =>
+                setInsumoSelecionado((prev) => ({
+                  ...prev,
+                  quantidade_necessaria: e.target.value,
+                }))
+              }
+              className="shadow rounded-5"
+              style={{ width: '150px' }}
+              min="0"
+            />
 
-            <Form.Control type="text" placeholder="Unidade" value={insumoSelecionado.unidade_medida_receita}
-              onChange={(e) => setInsumoSelecionado((prev) => ({ ...prev, unidade_medida_receita: e.target.value }))}
-              className="shadow" style={{ width: '100px' }} />
+            {/* Unidade de medida */}
+            <Dropdown className="shadow rounded-5">
+              <Dropdown.Toggle
+                variant="outline-primary rounded-5">
+                {insumoSelecionado.unidade_medida_receita || 'Unidade'}
+              </Dropdown.Toggle>
+              <Dropdown.Menu
+                style={{ maxHeight: '200px', overflowY: 'auto' }}>
+                {uni.map((nome, index) => (
+                  <Dropdown.Item
+                    key={`uni-${index}`}
+                    onClick={() =>
+                      setInsumoSelecionado((prev) => ({
+                        ...prev,
+                        unidade_medida_receita: nome,
+                      }))
+                    }
+                  >
+                    {nome}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
 
-            <Button variant="success" onClick={adicionarInsumo}>+</Button>
+            {/* Botão de adicionar */}
+            <Button variant="primary" onClick={adicionarInsumo} className="rounded-5">
+              +
+            </Button>
           </div>
 
           <div className="m-2">
             {insumosSelecionados.length > 0 ? (
               insumosSelecionados.map((i) => (
-                <Badge key={i.id} pill bg="primary" className="m-1" style={{ cursor: 'pointer', padding: '10px' }}
+                <Badge key={i.id} pill bg="primary"
+                  className="m-1 rounded-5" style={{ cursor: 'pointer', padding: '10px' }}
                   onClick={() => removerInsumo(i.id)}>
                   {i.nome} — {i.quantidade_necessaria} {i.unidade_medida_receita} ✕
                 </Badge>
@@ -130,12 +197,32 @@ const Produto = () => {
             )}
           </div>
 
-           <FloatingLabel controlId="floatingImagem" label="URL da Imagem" className="m-2">
-              <Form.Control type="text" placeholder="URL da imagem" value={imagemUrl} onChange={(e) => setImagemUrl(e.target.value)} />
-            </FloatingLabel>
+          <FloatingLabel
+            controlId="floatingImagem"
+            label="URL da Imagem"
+            className="m-2">
+            <Form.Control
+              type="text"
+              className="rounded-5 shadow mt-3"
+              placeholder="URL da imagem"
+              value={imagemUrl}
+              onChange={(e) =>
+                setImagemUrl(e.target.value)} />
+          </FloatingLabel>
 
-          <FloatingLabel controlId="floatingValor" label="Valor" className="m-2">
-            <Form.Control type="number" placeholder="Valor" value={valor} onChange={(e) => setValor(e.target.value)} required min="0" step="0.01" />
+          <FloatingLabel 
+          controlId="floatingValor" 
+          label="Valor" 
+          className="m-2">
+            <Form.Control 
+            type="number" 
+            placeholder="Valor" 
+            className="rounded-5 shadow mt-3"
+            value={valor} 
+            onChange={(e) => setValor(e.target.value)} 
+            required 
+            min="0" 
+            step="0.01" />
           </FloatingLabel>
 
           <FloatingLabel controlId="descricao" label="Descrição" className="m-2">

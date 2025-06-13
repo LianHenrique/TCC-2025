@@ -41,9 +41,10 @@ const Alerta = () => {
             <section style={{ marginTop: '20vh' }}>
                 <Container>
                     {/* Título do alerta */}
-                    <p className='h1 alert alert-danger w-25' style={{ fontSize: '2vh' }}>
-                        Insumos para serem repostos
-                    </p>
+                    <h1
+                    style={{
+                        marginBottom:"50px"
+                    }}>Insumos para serem repostos</h1>
                     {/* Seção para ícones ou legendas (comentada) */}
                     <section style={{
                         display: 'flex',
@@ -72,7 +73,7 @@ const Alerta = () => {
                                 color = 'rgba(246, 148, 148, 1)' // Vermelho claro: crítico
                             } else if (insumo.quantidade > 15) {
                                 color = 'rgb(189, 251, 158)' // Verde: tranquilo
-                            } else if (insumo.quantidade < 15) {
+                            } else if (insumo.quantidade <= 15) {
                                 color = 'rgb(251, 255, 176)' // Amarelo: atenção
                             }
                             else {

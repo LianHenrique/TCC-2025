@@ -7,24 +7,6 @@ app.use(cors());
 app.use(express.json());
 
 // --- ROTAS FUNCIONÁRIOS ---
-<<<<<<< HEAD
-
-// Buscar funcionário por ID
-app.get('/funcionarios/id/:id_funcionario', (req, res) => {
-  const { id_funcionario } = req.params;
-  connection.query(
-    'SELECT * FROM funcionario WHERE id_funcionario = ?',
-    [id_funcionario],
-    (error, results) => {
-      if (error) return res.status(500).json({ error: 'Erro ao buscar funcionário' });
-      if (results.length === 0) return res.status(404).json({ error: 'Funcionário não encontrado' });
-      res.json(results[0]);
-    }
-  );
-});
-
-=======
->>>>>>> 9e451cfd75d5ca378aeb535b7dcc278bf8a3fe50
 // Buscar funcionário por nome via query param
 app.get('/funcionarios', (req, res) => {
   const { nome_funcionario } = req.query;
@@ -170,16 +152,24 @@ app.post("/cliente/insert", (req, res) => {
 
 app.post("/insumos/insert", (req, res) => {
   const {
-    nome_produto,
-    valor_produto,
-    filtro, QTD_produto,
+    nome_insumos,
+    valor_insumos,
+    QTD_insumos,
     data_vencimento,
-    descricao_produto
+    descricao_insumos
   } = req.body;
 
-  const sql = `INSERT INTO insumos (nome_produto, valor_produto, filtro, QTD_produto, data_vencimento_prod, descricao_produto) VALUES (?, ?, ?, ?, ?, ?)`;
+  const sql = 
+  `INSERT INTO insumos 
+  (
+  nome_insumos, 
+  valor_insumos,
+  quantidade_insumos, 
+  data_vencimento, 
+  descricao_insumos
+  ) VALUES (?, ?, ?, ?, ?)`;
 
-  connection.query(sql, [nome_produto, valor_produto, filtro, QTD_produto, data_vencimento, descricao_produto], (erro, data) => {
+  connection.query(sql, [nome_insumos, valor_insumos, QTD_insumos, data_vencimento, descricao_insumos], (erro, data) => {
     if (erro) {
       console.log(erro);
       return res.status(500).json({ error: 'Erro ao cadastrar insumo' });
@@ -195,11 +185,7 @@ app.post("/funcionarios/insert", (req, res) => {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
   }
 
-<<<<<<< HEAD
-  const sql = `INSERT INTO funcionario (nome_funcionairo, cargo_funcionario, senha_funcionario, email_funcionario) VALUES (?, ?, ?, ?)`;
-=======
   const sql = `INSERT INTO funcionario (nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario) VALUES (?, ?, ?, ?)`;
->>>>>>> 9e451cfd75d5ca378aeb535b7dcc278bf8a3fe50
 
   connection.query(sql, [nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario], (error) => {
     if (error) {

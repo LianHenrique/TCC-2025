@@ -45,11 +45,11 @@ const Funcionarios = () => {
           navega="/cadastro_funcionario"
           lista={[
             {
-              lista: "Gerente",
+              texto: "Gerente",
               link: "#gerente"
             },
             {
-              lista: "Estoquista",
+              texto: "Estoquista",
               link: "#estoquista"
             }
           ]}
