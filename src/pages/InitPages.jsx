@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom"
 import { AuthProvider } from '../Contexts/UserContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Notficacao from "../Notificacao/Notficacao";
+import Notficacao from "../components/Notificacao/Notficacao";
 
 const InitPages = () => {
   return (
