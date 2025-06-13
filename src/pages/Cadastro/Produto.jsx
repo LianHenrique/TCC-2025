@@ -166,15 +166,14 @@ const Produto = () => {
             />
           </FloatingLabel>
 
-          <FloatingLabel controlId="floatingDescricao" label="Descrição" className="m-2">
+          <FloatingLabel controlId="descricao" label="Descrição" className="m-2">
             <Form.Control
-              type="text"
+              as="textarea"
               placeholder="Descrição"
-              className="rounded-5 shadow mt-3"
-              style={{ border: 'none' }}
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
-              required
+              className="rounded-5 shadow mt-3"
+              style={{ border: 'none', height: '100px' }}
             />
           </FloatingLabel>
 

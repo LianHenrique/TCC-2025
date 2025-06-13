@@ -66,6 +66,7 @@ const Estoque = () => {
           <div key={categoria} id={categoria.toLowerCase()} className="mb-5">
             <h2 className="mb-3">{categoria}</h2>
             <CardGeral
+              filtro="produtos"
               card={produtosDaCategoria}
               onCardClick={handleCardClick}
             />

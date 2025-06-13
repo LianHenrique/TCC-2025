@@ -2,8 +2,6 @@ import Container from "react-bootstrap/Container";
 import Navbar from "react-bootstrap/Navbar";
 import Nav from "react-bootstrap/Nav";
 import Button from "react-bootstrap/Button";
-
-
 import { useContext } from "react";
 import { AuthContext } from "../../Contexts/UserContext";
 
@@ -25,7 +23,7 @@ const NavBar = () => {
           <Navbar.Toggle aria-controls="minha-nav" />
           <Navbar.Collapse id="minha-nav">
             {
-              usuarioNome == "Visitante" && 
+              usuarioNome != "Visitante" && 
               ( 
                 <Nav className="me-auto">
                   <Nav.Link href="/relatorio"> Relatorio </Nav.Link>
