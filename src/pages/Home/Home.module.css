@@ -54,6 +54,7 @@ html, body {
   box-shadow: 0 4px 16px rgba(56, 88, 255, 0.18);
   outline: none;
 }
+
 /* Título e descrição */
 .header {
   text-align: center;
@@ -69,6 +70,10 @@ html, body {
 .header p {
   font-size: 1.1rem;
   color: #444;
+  max-width: 800px; /* melhor do que width fixa */
+  margin: 0 auto; /* centralizar */
+  text-align: justify;
+  padding-top: 10px;
 }
 
 /* Destaque azul */
@@ -88,32 +93,12 @@ html, body {
   gap: 1rem;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap; /* Para responsividade */
 }
 
-/* Botão principal */
-.botaoTesteGratis {
-  background-color: #3858FF;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-}
-
-.botaoTesteGratis1 {
-  background-color: #3858FF;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  margin-top: 21.5vh;
-}
-
+/* Botões principais */
+.botaoTesteGratis,
+.botaoTesteGratis1,
 .botaoTesteGratis2 {
   background-color: #3858FF;
   color: white;
@@ -123,35 +108,38 @@ html, body {
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
+  display: inline-block;
+  text-align: center;
+}
+
+.botaoTesteGratis1 {
+  margin-top: 21.5vh;
+}
+
+.botaoTesteGratis2 {
   margin-top: 50px;
 }
 
-.botaoTesteGratis:hover {
-  background-color: #1a42d1;
-  transform: scale(1.05);
-}
-
-.botaoTesteGratis1:hover {
-  background-color: #1a42d1;
-  transform: scale(1.05);
-}
-
+.botaoTesteGratis:hover,
+.botaoTesteGratis1:hover,
 .botaoTesteGratis2:hover {
   background-color: #1a42d1;
   transform: scale(1.05);
 }
 
-.botaoTesteGratis:focus {
+.botaoTesteGratis:focus,
+.botaoTesteGratis1:focus,
+.botaoTesteGratis2:focus {
   outline: none;
 }
 
 /* Benefícios rápidos */
 .beneficios {
   display: flex;
-  justify-content: space-around; /* Distribui melhor os itens */
+  justify-content: space-around;
   align-items: center;
-  flex-wrap: wrap; /* Permite quebrar linha em telas menores */
-  gap: 3rem; /* Espaçamento maior entre os itens */
+  flex-wrap: wrap;
+  gap: 3rem;
   margin: 2.5rem 0;
   font-weight: 600;
   padding: 2rem 1rem;
@@ -166,9 +154,10 @@ html, body {
   text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Distribui melhor os itens */
+  justify-content: center; /* mudou de space-between para center */
   gap: 2rem;
   transition: transform 0.2s, box-shadow 0.2s;
+  min-width: 180px; /* para tamanho mínimo */
 }
 
 .beneficios div:hover {
@@ -180,8 +169,8 @@ html, body {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: stretch; /* Garante altura igual */
-  gap: 3rem; /* Espaçamento maior entre os cards */
+  align-items: stretch;
+  gap: 3rem;
   padding: 3rem 0;
 }
 
@@ -190,18 +179,20 @@ html, body {
   border-radius: 16px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
   padding: 1.5rem;
-  width: 340px; /* Mais comprido */
+  width: 340px;
   text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Distribui melhor os itens */
+  justify-content: space-between;
   gap: 1rem;
   transition: transform 0.2s, box-shadow 0.2s;
 }
+
 .card:hover {
   transform: translateY(-8px) scale(1.03);
   box-shadow: 0 12px 32px rgba(56, 88, 255, 0.15);
 }
+
 .card h3 {
   font-size: 1.5rem;
 }
