@@ -12,7 +12,7 @@ app.use(express.json());
 app.get('/funcionarios/id/:id_funcionario', (req, res) => {
   const { id_funcionario } = req.params;
   connection.query(
-    'SELECT * FROM funcionarios WHERE id_funcionario = ?',
+    'SELECT * FROM funcionario WHERE id_funcionario = ?',
     [id_funcionario],
     (error, results) => {
       if (error) return res.status(500).json({ error: 'Erro ao buscar funcionário' });
@@ -28,7 +28,7 @@ app.get('/funcionarios', (req, res) => {
 
   if (nome_funcionario) {
     connection.query(
-      'SELECT * FROM funcionarios WHERE nome_funcionario = ?',
+      'SELECT * FROM funcionario WHERE nome_funcionario = ?',
       [nome_funcionario],
       (error, results) => {
         if (error) return res.status(500).json({ error: 'Erro ao buscar funcionário' });
@@ -39,7 +39,7 @@ app.get('/funcionarios', (req, res) => {
   } else {
     // Se não houver query param nome_funcionario, lista todos os funcionários
     connection.query(
-      'SELECT * FROM funcionarios',
+      'SELECT * FROM funcionario',
       (error, results) => {
         if (error) return res.status(500).json({ error: 'Erro ao buscar funcionários' });
         res.json(results);
@@ -146,7 +146,7 @@ app.post("/funcionarios/insert", (req, res) => {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
   }
 
-  const sql = `INSERT INTO funcionarios (nome_funcionairo, cargo_funcionario, senha_funcionario, email_funcionario) VALUES (?, ?, ?, ?)`;
+  const sql = `INSERT INTO funcionario (nome_funcionairo, cargo_funcionario, senha_funcionario, email_funcionario) VALUES (?, ?, ?, ?)`;
 
   connection.query(sql, [nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario], (error) => {
     if (error) {
