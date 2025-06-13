@@ -6,7 +6,6 @@ import CardGeral from '../../components/Cards/CardGeral';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Button } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
 
 const Cardapio = () => {
   const [cardapio, setCardapio] = useState([]);
