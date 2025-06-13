@@ -72,7 +72,7 @@ const Alerta = () => {
                                 color = 'rgba(246, 148, 148, 1)' // Vermelho claro: crítico
                             } else if (insumo.quantidade > 15) {
                                 color = 'rgb(189, 251, 158)' // Verde: tranquilo
-                            } else if (insumo.quantidade < 15) {
+                            } else if (insumo.quantidade <= 15) {
                                 color = 'rgb(251, 255, 176)' // Amarelo: atenção
                             }
                             else {
