@@ -5,56 +5,56 @@ import { useNavigate } from "react-router";
 import { Button, Container, FloatingLabel } from "react-bootstrap";
 
 const Login = () => {
-    const [email, setEmail] = useState("");
-    const [senha, setSenha] = useState("");
-    const navigate = useNavigate(); 
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const navigate = useNavigate();
 
-    const verificacao  = (e) => {
-        e.preventDefault();
+  const verificacao = (e) => {
+    e.preventDefault();
 
-        if(email === "" || senha === ""){
-            setEmail("");
-            setSenha("");
-            alert("Preencha todos os campos");
-            return;
-        }
-
-        const logins = JSON.parse(localStorage.getItem("logins")) || [];
-
-        const usuarioEncontrado = logins.find((logins) => logins.email === email);
-
-        if(!usuarioEncontrado) {
-            setEmail("");
-            setSenha("");
-            alert("Email não cadastrado!")
-            return;
-        }
-
-        if(usuarioEncontrado.senha !== senha) {
-            setEmail("");
-            setSenha("");
-            alert("Informações inválidas!")
-            return;
-        }
-
-        alert("Login aceito!")
-        
-        setEmail("")
-        setSenha("")
-
+    if (email === "" || senha === "") {
+      setEmail("");
+      setSenha("");
+      alert("Preencha todos os campos");
+      return;
     }
 
-    return(
-        
-        <div
-    style={{
-      marginTop: "150px"
-    }}>
+    const logins = JSON.parse(localStorage.getItem("logins")) || [];
+
+    const usuarioEncontrado = logins.find((logins) => logins.email === email);
+
+    if (!usuarioEncontrado) {
+      setEmail("");
+      setSenha("");
+      alert("Email não cadastrado!")
+      return;
+    }
+
+    if (usuarioEncontrado.senha !== senha) {
+      setEmail("");
+      setSenha("");
+      alert("Informações inválidas!")
+      return;
+    }
+
+    alert("Login aceito!")
+
+    setEmail("")
+    setSenha("")
+
+  }
+
+  return (
+
+    <div
+      style={{
+        marginTop: "150px"
+      }}>
       <NavBar />
       <Container
-      style={{
-        width: "650px"
-      }}>
+        style={{
+          width: "650px"
+        }}>
         <Form
           className='shadow'
           style={{
@@ -107,6 +107,16 @@ const Login = () => {
             Entrar
           </Button>
           <Button
+            href="/recuperar_senha"
+            style={{
+              background: "none",
+              color: "black",
+              border: "none",
+              marginLeft: "20px"
+            }}>
+            Esqueceu a senha? recuperar senha
+          </Button>
+          <Button
             className="shadow mt-4"
             variant='outline-primary'
             href="/home"
@@ -119,20 +129,20 @@ const Login = () => {
             Voltar
           </Button>
           <Button
-          href="/cadastro"
-          className="m-3"
-          style={{
-            background:"none",
-            color:"black",
-            border:"none"
-          }}>
+            href="/cadastro"
+            style={{
+              background: "none",
+              color: "black",
+              border: "none",
+              marginLeft: "20px"
+            }}>
             Ainda não cadastrou? cadastre-se
           </Button>
         </Form>
       </Container>
     </div>
-         
-    )
+
+  )
 }
 
 export default Login

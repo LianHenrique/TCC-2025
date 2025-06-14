@@ -5,8 +5,8 @@ import { Button, Container, Dropdown, FloatingLabel, Form } from 'react-bootstra
 import { useNavigate } from 'react-router';
 
 const Insumos = () => {
-  const [nomeProduto, setNomeProduto] = useState('');
-  const [valorProduto, setValorProduto] = useState('');
+  const [nomeinsumos, setNomeinsumos] = useState('');
+  const [valorinsumos, setValorinsumos] = useState('');
   const [dataValidade, setDataValidade] = useState('');
   const [quantidade, setQuantidade] = useState('');
   const [filtro, setFiltro] = useState('Filtro');
@@ -17,7 +17,7 @@ const Insumos = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!nomeProduto || !valorProduto || !dataValidade || !quantidade || filtro === 'Filtro') {
+    if (!nomeinsumos || !valorinsumos || !dataValidade || !quantidade || filtro === 'Filtro') {
       console.log('Por favor, preencha todos os campos e escolha um filtro');
       return;
     }
@@ -28,12 +28,12 @@ const Insumos = () => {
     }
 
     const dados = {
-      nome_produto: nomeProduto,
-      valor_produto: valorProduto,
+      nome_insumos: nomeinsumos,
+      valor_insumos: valorinsumos,
       filtro: filtro,
-      QTD_produto: quantidade,
+      QTD_insumos: quantidade,
       data_vencimento: dataValidade,
-      descricao_produto: descricao,
+      descricao_insumos: descricao,
     };
 
     try {
@@ -46,8 +46,8 @@ const Insumos = () => {
       if (res.ok) {
         console.log("Insumo cadastrado com sucesso!");
         // Resetar o formulário, se quiser:
-        setNomeProduto('');
-        setValorProduto('');
+        setNomeinsumos('');
+        setValorinsumos('');
         setDataValidade('');
         setQuantidade('');
         setFiltro('Filtro');
@@ -83,24 +83,24 @@ const Insumos = () => {
         >
           <h1 style={{ textAlign: 'center' }}>Cadastro</h1>
 
-          <FloatingLabel controlId="nomeProduto" label="Nome" className="m-2">
+          <FloatingLabel controlId="nomeinsumos" label="Nome" className="m-2">
             <Form.Control
               type="text"
               placeholder="Nome"
-              value={nomeProduto}
-              onChange={(e) => setNomeProduto(e.target.value)}
+              value={nomeinsumos}
+              onChange={(e) => setNomeinsumos(e.target.value)}
               className="rounded-5 shadow mt-3"
               style={{ border: 'none' }}
             />
           </FloatingLabel>
 
-          <FloatingLabel controlId="valorProduto" label="Valor unidade" className="m-2">
+          <FloatingLabel controlId="valorinsumos" label="Valor unidade" className="m-2">
             <Form.Control
               type="number"
               step="0.01"
               placeholder="Valor unidade"
-              value={valorProduto}
-              onChange={(e) => setValorProduto(e.target.value)}
+              value={valorinsumos}
+              onChange={(e) => setValorinsumos(e.target.value)}
               className="rounded-5 shadow mt-3"
               style={{ border: 'none' }}
             />
@@ -168,8 +168,8 @@ const Insumos = () => {
               style={{ width: '60px', height: '60px' }}
               onClick={() => {
                 // Limpar formulário se quiser
-                setNomeProduto('');
-                setValorProduto('');
+                setNomeinsumos('');
+                setValorinsumos('');
                 setDataValidade('');
                 setQuantidade('');
                 setFiltro('Filtro');
