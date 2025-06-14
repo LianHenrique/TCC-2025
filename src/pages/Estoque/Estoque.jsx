@@ -144,11 +144,7 @@ const Estoque = () => {
               card={produtosDaCategoria}
               onCardClick={handleCardClick}
               imgHeight={250}
-<<<<<<< HEAD
               showButtons={false}
-=======
-              showButtons = {false}
->>>>>>> efd50171c636e62307064a358d56e1c3f7edc41b
             />
           </div>
         ))}
