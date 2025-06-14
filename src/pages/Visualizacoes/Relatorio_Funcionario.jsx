@@ -60,6 +60,7 @@ const Relatorio_Funcionario = () => {
                     enableOverflow={false}
                     Desc={style.desc}
                     ClassTitulo={style.titulo}
+                    showButtons = {false}
                 />
             )}
             </Container>

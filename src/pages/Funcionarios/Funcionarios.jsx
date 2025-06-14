@@ -60,6 +60,7 @@ const Funcionarios = () => {
           card={funcionarios}
           imgHeight={250}
           onCardClick={handleCardClick}
+          showButtons={true}
         />
       </Container>
     </div>

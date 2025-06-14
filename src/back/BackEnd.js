@@ -155,19 +155,19 @@ app.post("/cliente/insert", (req, res) => {
 
 
 
-
 app.post("/insumos/insert", (req, res) => {
-  const {
-    nome_produto,
-    valor_produto,
-    filtro, QTD_produto,
+  const { 
+    nome_insumos,
+    valor_insumos,
+    categoria, 
+    quantidade_insumos,
     data_vencimento,
-    descricao_produto
+    descricao_insumos
   } = req.body;
 
   const sql = `INSERT INTO insumos (nome_insumos, valor_insumos, categoria, quantidade_insumo, data_vencimento, descricao_insumos) VALUES (?, ?, ?, ?, ?, ?)`;
 
-  connection.query(sql, [nome_insumos, valor_insumos, filtro, QTD_produto, data_vencimento, descricao_produto], (erro, data) => {
+  connection.query(sql, [nome_insumos, valor_insumos, categoria, quantidade_insumos, data_vencimento, descricao_insumos], (erro, data) => {
     if (erro) {
       console.log(erro);
       return res.status(500).json({ error: 'Erro ao cadastrar insumo' });
@@ -175,6 +175,8 @@ app.post("/insumos/insert", (req, res) => {
     res.status(201).json({ message: 'Insumo cadastrado' });
   });
 });
+
+
 
 app.post("/funcionarios/insert", (req, res) => {
   const { nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario } = req.body;
@@ -232,10 +234,12 @@ app.get('/insumos_tudo/:id_insumos', (req, res) => {
 app.put('/insumos_tudo_POST/:id_insumos', (req, res) => {
   const { id_insumos } = req.params;
   const { quantidade_insumos } = req.body;
+  const { nome_insumos } = req.body
+  const { imagem_url } = req.body
 
-  const query = 'UPDATE insumos WHERE quantidade_insumos = ? WHERE id_insumos = ?';
+  const query = 'UPDATE insumos SET quantidade_insumos = ?, nome_insumos = ?, imagem_url = ? WHERE id_insumos = ?';
 
-  connection.query(query, [quantidade_insumos, id_insumos], (error, results) => {
+  connection.query(query, [quantidade_insumos, nome_insumos, imagem_url, id_insumos], (error, results) => {
     if (error) {
       return res.status(500).json({ error: 'Erro ao atualizar insumo' });
     }
@@ -602,8 +606,18 @@ GROUP BY c.id_cardapio
   });
 
 
+  // Deletando item do estoque
+  app.delete('/estoqueDeletarIten/:id', async (req, res) => {
+    const id = req.params.id
+    console.log('Recebido para deletar id:', id)
 
-
+    connection.query('DELETE FROM insumos WHERE id_insumos = ?', [id], (error, results) =>{
+      if(error){
+        return res.status(500).json({error: 'Erro ao deletar iten do estoque'})
+      }
+      res.status(200).json({message: 'Insumo deletado com sucesso'})
+    })
+  })
 
 
 

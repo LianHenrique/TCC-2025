@@ -5,6 +5,9 @@ import { Container } from 'react-bootstrap'
 import style from './visualizar.module.css'
 import { useParams } from 'react-router-dom'
 import { Row, Col, Form } from 'react-bootstrap'
+import Button from 'react-bootstrap/Button';
+
+// import Button from "react"
 
 // tem que pegar o id da tela de cardápio, props.
 const Visualizar = () => {
@@ -13,6 +16,9 @@ const Visualizar = () => {
     const [insumos, setInsumos] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+    const [novaQuantidade, setNovaQuantidade] = useState('');
+    const [novoNome, setNovoNome] = useState('')
+    const [novaUrl, setNovaUrl] = useState('')
     console.log('params:', useParams)
 
     useEffect(() => {
@@ -55,6 +61,7 @@ const Visualizar = () => {
 
                 console.log('Dados recebidos formatados:', insumosFormatado);
                 setInsumos([insumosFormatado]); // coloca em array porque CardGeral espera um array
+                setNovaQuantidade(insumos.quantidade_insumos)
                 setLoading(false);
                 setError(null);
             })
@@ -67,10 +74,29 @@ const Visualizar = () => {
     }, [id]);
 
 
-    const handleInsert = async () =>{
-        // HANDLE INSERT NÃO DEU CERTO, PESQUISAR NA TELA DE VISUALIZAR ESTOQUE (INSUMOS)
-        const { name, value } = e.target;
-        setInsumos({ ...insumos, [name]: value });
+    // Consultar na linha 231 do BackEnd
+    const handleInsert = async () => {
+        try {
+            const response = await fetch(`http://localhost:3000/insumos_tudo_POST/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    quantidade_insumos: novaQuantidade !== '' ? novaQuantidade : insumos[0].Quantidade,
+                    nome_insumos: novoNome || insumos[0].nome,
+                    imagem_url: novaUrl || insumos[0].link
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(data.error || 'Erro ao atualizar insumo');
+            }
+
+            alert('Insumo atualizado com sucesso!')
+        } catch (error) {
+            alert(`Erro: ${error.message}`)
+        }
     }
 
 
@@ -83,26 +109,66 @@ const Visualizar = () => {
             <Navbar />
             <Container>
                 <Form style={{ marginTop: '21vh', marginLeft: '8vw' }}>
-                    <Row className="justify-content-start" style={{display: 'flex', flexDirection:'row'}}>
+                    <Row className="justify-content-start" style={{ display: 'flex', flexDirection: 'row' }}>
                         <Col xs='auto'>
-                            <Form.Group style={{ display: 'flex', flexDirection: 'column' }}>
-                                <Form.Label className='h5 flex-start'>{insumos[0].nome} <i class="bi bi-pencil-square"></i></Form.Label>
-                                <img src={insumos[0].link} alt='imagem representativa do insumo' className='img-fluid rounded' style={{
-                                    maxHeight: '50vh'
-                                }} />
-                            </Form.Group>
 
-                                <Form.Group style={{ display: 'flex', flexDirection: 'column' }}>
-                                    <Form.Label className='flex-start'>  <p>Quantidade desponível:{insumos[0].Quantidade}</p> <p>{insumos[0].Unidade}</p> <i class="bi bi-pencil-square"></i></Form.Label>
-                                    <p>Alterar quantidade</p>
-                                    <Form.Control
-                                    type="number"
-                                    name="quantidade"
-                                    placeholder={`Atualmente: ${insumos[0].Quantidade}`}
-                                    value={insumos[0].quantidade_insumos || ''}
-                                    onChange={handleInsert}
+                            {/* Campos do formulário */}
+                            <Row className="align-items-start">
+                                {/* Coluna da imagem - AGORA À ESQUERDA */}
+                                <Col md={6} className="text-center mb-4">
+                                    <img
+                                        src={insumos[0].link}
+                                        alt="imagem representativa do insumo"
+                                        className="img-fluid rounded"
+                                        style={{ maxHeight: '50vh' }}
                                     />
-                                </Form.Group>
+                                    <p className="h5 mt-3">Modifique o registro aqui:</p>
+                                </Col>
+
+                                {/* Coluna dos campos - À DIREITA */}
+                                <Col md={6}>
+                                    {/* Alterar o nome */}
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Alterar o nome</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            name="nome"
+                                            placeholder={`Nome atual: ${insumos[0].nome}`}
+                                            value={novoNome}
+                                            onChange={(e) => setNovoNome(e.target.value)}
+                                        />
+                                    </Form.Group>
+
+                                    {/* Quantidade */}
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>
+                                            Quantidade disponível: {insumos[0].Quantidade} {insumos[0].Unidade}
+                                        </Form.Label>
+                                        <Form.Control
+                                            type="number"
+                                            name="quantidade"
+                                            value={novaQuantidade}
+                                            onChange={(e) => setNovaQuantidade(e.target.value)}
+                                        />
+                                    </Form.Group>
+
+                                    {/* URL da imagem */}
+                                    <Form.Group className="mb-3">
+                                        <Form.Label>Alterar imagem</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            name="url"
+                                            value={novaUrl}
+                                            placeholder={`URL atual: ${insumos[0].link}`}
+                                            onChange={(e) => setNovaUrl(e.target.value)}
+                                        />
+                                    </Form.Group>
+
+                                    <Button variant="primary" onClick={handleInsert}>
+                                        Confirmar
+                                    </Button>
+                                </Col>
+                            </Row>
                         </Col>
                     </Row>
                 </Form>

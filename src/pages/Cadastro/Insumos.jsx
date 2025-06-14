@@ -28,13 +28,14 @@ const Insumos = () => {
     }
 
     const dados = {
-      nome_produto: nomeProduto,
-      valor_produto: valorProduto,
-      filtro: filtro,
-      QTD_produto: quantidade,
+      nome_insumos: nomeProduto,
+      valor_insumos: valorProduto,
+      categoria: filtro,
+      quantidade_insumos: quantidade,
       data_vencimento: dataValidade,
-      descricao_produto: descricao,
+      descricao_insumos: descricao,
     };
+
 
     try {
       const res = await fetch("http://localhost:3000/insumos/insert", {

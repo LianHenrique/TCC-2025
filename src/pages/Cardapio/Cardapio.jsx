@@ -144,7 +144,7 @@ const Cardapio = () => {
         <CardGeral
           filtro=""
           card={cardapio}
-          onCardClick={handleCardClick}
+          onCardClick={handleCardClick} 
           showButtons={false}
           imgHeight={250}
           customButton={item => (

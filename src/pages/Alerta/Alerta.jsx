@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import NavBar from '../../components/NavBar/NavBar'
 import { Container, Card } from 'react-bootstrap'
 import Button from 'react-bootstrap/Button'
+import { useNavigate } from 'react-router-dom'
 // import 'bootstrap-icons/font/bootstrap-icons.css';
 
 // Componente principal da página de alerta de insumos
@@ -34,6 +35,11 @@ const Alerta = () => {
             .catch(error => console.error('Erro ao buscar insumo', error))
     }, []) // Executa apenas uma vez ao montar
 
+ 
+const navigate = useNavigate()
+const handleNavigate = (id) => {
+    navigate(`/visualizar/${id}`)
+}
     return (
         <div>
             {/* Barra de navegação */}
@@ -125,7 +131,9 @@ const Alerta = () => {
                                             left: '32vw',
                                             // top: '-100%'
                                             top: '-2.5em',
-                                        }}>
+                                        }}
+                                        
+                                        onClick={() => handleNavigate(insumo.id)}>
                                             Adicionar
                                         </Button>
                                     </section>

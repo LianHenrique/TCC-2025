@@ -5,6 +5,7 @@ import Pesquisa from '../../components/Pesquisa/Pesquisa';
 import { Button, Container } from 'react-bootstrap';
 import CardGeral from '../../components/Cards/CardGeral';
 import EditarQuantidade from '../../components/EditarQuantidadeProd/EditarQuantidade';
+import { FaEdit, FaRegTrashAlt } from 'react-icons/fa';
 
 const Estoque = () => {
   const [produtos, setProdutos] = useState({});
@@ -53,6 +54,26 @@ const Estoque = () => {
     navigate(`/visualizar/${id}`);
   };
 
+  // Requisição para deletar, linha: 608
+  const handleDelete = (id) => {
+    fetch(`http://localhost:3000/estoqueDeletarIten/${id}`, {
+      method: 'DELETE'
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Erro ao deletar o item')
+        }
+        return response.json()
+      })
+      .then(data => {
+        console.log("Item deletado com sucesso", data)
+      })
+      .catch(error => {
+        console.error('Erro:', error)
+      })
+  }
+
+
   return (
     <div>
       <NavBar />
@@ -80,7 +101,32 @@ const Estoque = () => {
               card={produtosDaCategoria}
               onCardClick={handleCardClick}
               imgHeight={250}
-              showButtons = {false}
+              showButtons={false}
+              customButton={(item) => (
+                <>
+                  <Button
+                    variant="warning"
+                    className="rounded-circle fs-5 text-center shadow m-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (item.acoes && item.acoes[0]?.onClick)
+                        item.acoes[0].onClick();
+                    }}
+                  >
+                    <FaEdit />
+                  </Button>
+                  <Button
+                    variant="danger"
+                    className="rounded-circle fs-5 text-center shadow m-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(item.id);
+                    }}
+                  >
+                    <FaRegTrashAlt />
+                  </Button>
+                </>
+              )}
             />
           </div>
         ))}
