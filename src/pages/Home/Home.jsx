@@ -27,7 +27,6 @@ function Home() {
             Com uma interface amigável e funcionalidades inteligentes, ela facilita o controle de entradas e saídas,
             o acompanhamento dos níveis de estoque e a tomada de decisões estratégicas com base em dados precisos e em tempo real.
           </p>
-          <p></p>
         </div>
 
         <div className={`${styles.testeGratisContainer} ${styles.alinharEsquerda}`}>
