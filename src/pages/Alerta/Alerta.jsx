@@ -69,11 +69,11 @@ const Alerta = () => {
                         {insumos.map(insumo => {
                             // Define a cor de fundo de acordo com a quantidade
                             let color = ''
-                            if (insumo.quantidade < 10) {
+                            if (insumos.quantidade_insumos < 10) {
                                 color = 'rgba(246, 148, 148, 1)' // Vermelho claro: crítico
                             } else if (insumo.quantidade > 15) {
                                 color = 'rgb(189, 251, 158)' // Verde: tranquilo
-                            } else if (insumo.quantidade <= 15) {
+                            } else if (insumos.quantidade_insumos <= 15) {
                                 color = 'rgb(251, 255, 176)' // Amarelo: atenção
                             }
                             else {

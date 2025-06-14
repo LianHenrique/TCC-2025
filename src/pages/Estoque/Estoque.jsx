@@ -67,47 +67,51 @@ const Estoque = () => {
   }, []);
 
   const aplicarFiltro = (data, filtro) => {
-    const { texto, filtro: categoriaFiltro } = filtro;
+  const { texto, filtro: categoriaFiltro } = filtro;
 
-    const filtrado = data.filter(insumo => {
-      const correspondeTexto = texto
-        ? insumo.nome_insumos.toLowerCase().includes(texto.toLowerCase())
-        : true;
-
-      const correspondeCategoria = categoriaFiltro
-        ? insumo.categoria?.toLowerCase() === categoriaFiltro.toLowerCase()
-        : true;
-
-      return correspondeTexto && correspondeCategoria;
-    });
-
-    const agrupados = filtrado.reduce((acc, insumo) => {
-      const cat = insumo.categoria || 'Outros';
-
-      if (!acc[cat]) acc[cat] = [];
-
-      const entradaFormatada = insumo.data_entrada_insumos
-        ? new Date(insumo.data_entrada_insumos).toLocaleDateString()
-        : 'Data desconhecida';
-
-      acc[cat].push({
-        id: insumo.id_insumos,
-        nome: insumo.nome_insumos,
-        data: entradaFormatada,
-        quantidade: insumo.quantidade_insumos,
-        link: insumo.imagem_url || 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
-        descricao: [
-          { texto: `Quantidade: ${insumo.quantidade_insumos}` },
-          { texto: `Nome: ${insumo.nome_insumos}` }
-        ]
-      });
-
-      return acc;
-    }, {});
-
-    setProdutos(agrupados);
+  const removerAcentos = (texto) => {
+    return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   };
 
+  const filtrado = data.filter(insumo => {
+    const correspondeTexto = texto
+      ? removerAcentos(insumo.nome_insumos.toLowerCase()).includes(removerAcentos(texto.toLowerCase()))
+      : true;
+
+    const correspondeCategoria = categoriaFiltro
+      ? insumo.categoria?.toLowerCase() === categoriaFiltro.toLowerCase()
+      : true;
+
+    return correspondeTexto && correspondeCategoria;
+  });
+
+  // resto igual, agrupando e setando produtos
+  const agrupados = filtrado.reduce((acc, insumo) => {
+    const cat = insumo.categoria || 'Outros';
+
+    if (!acc[cat]) acc[cat] = [];
+
+    const entradaFormatada = insumo.data_entrada_insumos
+      ? new Date(insumo.data_entrada_insumos).toLocaleDateString()
+      : 'Data desconhecida';
+
+    acc[cat].push({
+      id: insumo.id_insumos,
+      nome: insumo.nome_insumos,
+      data: entradaFormatada,
+      quantidade: insumo.quantidade_insumos,
+      link: insumo.imagem_url || 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
+      descricao: [
+        { texto: `Quantidade: ${insumo.quantidade_insumos}` },
+        { texto: `Nome: ${insumo.nome_insumos}` }
+      ]
+    });
+
+    return acc;
+  }, {});
+
+  setProdutos(agrupados);
+};
   const handleCardClick = (id) => {
     navigate(`/visualizar/${id}`);
   };

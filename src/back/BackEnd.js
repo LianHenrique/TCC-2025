@@ -12,13 +12,14 @@ app.get('/funcionarios', (req, res) => {
   const { nome_funcionario } = req.query;
 
   if (nome_funcionario) {
+    // Busca por nome parecido usando LIKE com %
     connection.query(
-      'SELECT * FROM funcionario WHERE nome_funcionario = ?',
-      [nome_funcionario],
+      'SELECT * FROM funcionario WHERE nome_funcionario LIKE ?',
+      [`%${nome_funcionario}%`],
       (error, results) => {
         if (error) return res.status(500).json({ error: 'Erro ao buscar funcionário' });
         if (results.length === 0) return res.status(404).json({ error: 'Funcionário não encontrado' });
-        return res.json(results[0]);
+        return res.json(results); // Retornar lista dos funcionários encontrados (todos que baterem)
       }
     );
   } else {
@@ -159,8 +160,8 @@ app.post("/insumos/insert", (req, res) => {
     descricao_insumos
   } = req.body;
 
-  const sql = 
-  `INSERT INTO insumos 
+  const sql =
+    `INSERT INTO insumos 
   (
   nome_insumos, 
   valor_insumos,
@@ -431,20 +432,20 @@ app.post('/cardapio/insert', (req, res) => {
 
 // ROTA DO BOTÃO DE ALTERAR DA TELA DE CADASTRO DE VISUALIZAR CARDÁPIO (update)
 app.put('/AtualizarCardapio/:id', (req, res) => {
-  const {id} = req.params;
-  const {imagem_url, nome_item, descricao_item, valor_item} = req.body;
+  const { id } = req.params;
+  const { imagem_url, nome_item, descricao_item, valor_item } = req.body;
   const query = 'UPDATE cardapio SET imagem_url = ?, nome_item = ?, descricao_item = ?, valor_item = ? WHERE id_cardapio = ?'
   connection.query(
     query,
     [imagem_url, nome_item, descricao_item, valor_item, id],
     (error, results) => {
-      if(error){
-        return res.status(500).json({error : "Erro ao atualizar produto do cardápio."});
+      if (error) {
+        return res.status(500).json({ error: "Erro ao atualizar produto do cardápio." });
       }
-      res.status(200).json({message : 'Livro atualizado com sucesso!'})
+      res.status(200).json({ message: 'Livro atualizado com sucesso!' })
     }
   )
-}) 
+})
 
 
 
