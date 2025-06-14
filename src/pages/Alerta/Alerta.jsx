@@ -73,7 +73,11 @@ const Alerta = () => {
                                 color = 'rgba(246, 148, 148, 1)' // Vermelho claro: crítico
                             } else if (insumo.quantidade > 15) {
                                 color = 'rgb(189, 251, 158)' // Verde: tranquilo
+<<<<<<< HEAD
                             } else if (insumos.quantidade_insumos <= 15) {
+=======
+                            } else if (insumo.quantidade <= 15) {
+>>>>>>> efd50171c636e62307064a358d56e1c3f7edc41b
                                 color = 'rgb(251, 255, 176)' // Amarelo: atenção
                             }
                             else {
@@ -119,7 +123,7 @@ const Alerta = () => {
                                             <p>Quantidade: {insumo.quantidade}</p>
                                         </section>
 
-                                        {/* Botão para adicionar mais insumo */}
+                                        {/* Botão para adicionar mais insumos no estoque */}
                                         <Button style={{
                                             display: 'flex',
                                             position: 'relative',

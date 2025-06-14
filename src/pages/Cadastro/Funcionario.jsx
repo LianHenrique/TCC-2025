@@ -95,6 +95,7 @@ const Funcionarios = () => {
               onChange={(e) => setEmailFuncionario(e.target.value)}
               className="rounded-5 shadow mt-3"
               style={{ border: 'none' }}
+              showButtons = {false}
             />
           </FloatingLabel>
 
