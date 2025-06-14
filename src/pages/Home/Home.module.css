@@ -28,47 +28,28 @@ html, body {
   padding-top: 60px;
 }
 
-/* Botão de alternância de tema */
-.theme-toggle-button {
-  background: #f5f7ff;
-  border: 2px solid #3858FF;
-  color: #3858FF;
-  border-radius: 50%;
-  cursor: pointer;
-  margin: 1rem auto;
-  padding: 10px;
-  position: relative;
-  z-index: 999;
-  box-shadow: 0 2px 8px rgba(56, 88, 255, 0.10);
-  transition: background 0.2s, box-shadow 0.2s, color 0.2s, border 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.theme-toggle-button:hover, 
-.theme-toggle-button:focus {
-  background: #3858FF;
-  color: #fff;
-  border: 2px solid #1a42d1;
-  box-shadow: 0 4px 16px rgba(56, 88, 255, 0.18);
-  outline: none;
-}
 /* Título e descrição */
 .header {
-  text-align: center;
+  text-align: left;
   margin-top: 2rem;
   margin-bottom: 1rem;
+  padding-left: 2rem;
+  transform: translateX(-150px);
 }
 
 .header h1 {
   font-size: 2.5rem;
   font-weight: bold;
+  transform: translateX(-10px);
 }
 
 .header p {
   font-size: 1.1rem;
   color: #444;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: justify;
+  padding-top: 20px;
 }
 
 /* Destaque azul */
@@ -87,33 +68,19 @@ html, body {
   display: flex;
   gap: 1rem;
   align-items: center;
-  justify-content: center;
+  flex-wrap: wrap;
+  transform: translateX(-350px);
 }
 
-/* Botão principal */
-.botaoTesteGratis {
-  background-color: #3858FF;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+/* Alinhamento para a esquerda */
+.alinharEsquerda {
+  justify-content: flex-start;
+  padding-left: 3rem;
 }
 
-.botaoTesteGratis1 {
-  background-color: #3858FF;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
-  margin-top: 21.5vh;
-}
-
+/* Botões principais */
+.botaoTesteGratis,
+.botaoTesteGratis1,
 .botaoTesteGratis2 {
   background-color: #3858FF;
   color: white;
@@ -123,42 +90,45 @@ html, body {
   font-size: 16px;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
+  display: inline-block;
+  text-align: center;
+}
+
+.botaoTesteGratis1 {
+  margin-top: 21.5vh;
+}
+
+.botaoTesteGratis2 {
   margin-top: 50px;
 }
 
-.botaoTesteGratis:hover {
-  background-color: #1a42d1;
-  transform: scale(1.05);
-}
-
-.botaoTesteGratis1:hover {
-  background-color: #1a42d1;
-  transform: scale(1.05);
-}
-
+.botaoTesteGratis:hover,
+.botaoTesteGratis1:hover,
 .botaoTesteGratis2:hover {
   background-color: #1a42d1;
   transform: scale(1.05);
 }
 
-.botaoTesteGratis:focus {
+.botaoTesteGratis:focus,
+.botaoTesteGratis1:focus,
+.botaoTesteGratis2:focus {
   outline: none;
 }
 
 /* Benefícios rápidos */
 .beneficios {
   display: flex;
-  justify-content: space-around; /* Distribui melhor os itens */
+  justify-content: center;
   align-items: center;
-  flex-wrap: wrap; /* Permite quebrar linha em telas menores */
-  gap: 3rem; /* Espaçamento maior entre os itens */
+  flex-wrap: wrap;
+  gap: 3rem;
   margin: 2.5rem 0;
   font-weight: 600;
   padding: 2rem 1rem;
   border-radius: 18px;
 }
 
-.beneficios div {
+.beneficioCard {
   background-color: white;
   border-radius: 16px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
@@ -166,12 +136,18 @@ html, body {
   text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Distribui melhor os itens */
+  justify-content: center;
   gap: 2rem;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.3s ease;
+  min-width: 180px;
 }
 
-.beneficios div:hover {
+/* Movimento individual */
+.beneficio1 { transform: translateX(-150px); }
+.beneficio2 { transform: translateX(0px); }
+.beneficio3 { transform: translateX(150px); }
+
+.beneficioCard:hover {
   transform: translateY(-8px) scale(1.03);
 }
 
@@ -180,8 +156,8 @@ html, body {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  align-items: stretch; /* Garante altura igual */
-  gap: 3rem; /* Espaçamento maior entre os cards */
+  align-items: stretch;
+  gap: 3rem;
   padding: 3rem 0;
 }
 
@@ -190,18 +166,20 @@ html, body {
   border-radius: 16px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
   padding: 1.5rem;
-  width: 340px; /* Mais comprido */
+  width: 340px;
   text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: space-between; /* Distribui melhor os itens */
+  justify-content: space-between;
   gap: 1rem;
   transition: transform 0.2s, box-shadow 0.2s;
 }
+
 .card:hover {
   transform: translateY(-8px) scale(1.03);
   box-shadow: 0 12px 32px rgba(56, 88, 255, 0.15);
 }
+
 .card h3 {
   font-size: 1.5rem;
 }
