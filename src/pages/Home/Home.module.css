@@ -28,50 +28,26 @@ html, body {
   padding-top: 60px;
 }
 
-/* Botão de alternância de tema */
-.theme-toggle-button {
-  background: #f5f7ff;
-  border: 2px solid #3858FF;
-  color: #3858FF;
-  border-radius: 50%;
-  cursor: pointer;
-  margin: 1rem auto;
-  padding: 10px;
-  position: relative;
-  z-index: 999;
-  box-shadow: 0 2px 8px rgba(56, 88, 255, 0.10);
-  transition: background 0.2s, box-shadow 0.2s, color 0.2s, border 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.theme-toggle-button:hover, 
-.theme-toggle-button:focus {
-  background: #3858FF;
-  color: #fff;
-  border: 2px solid #1a42d1;
-  box-shadow: 0 4px 16px rgba(56, 88, 255, 0.18);
-  outline: none;
-}
-
 /* Título e descrição */
 .header {
-  text-align: center;
+  text-align: left;
   margin-top: 2rem;
   margin-bottom: 1rem;
+  padding-left: 2rem;
+  transform: translateX(-150px);
 }
 
 .header h1 {
   font-size: 2.5rem;
   font-weight: bold;
+  transform: translateX(-10px);
 }
 
 .header p {
   font-size: 1.1rem;
   color: #444;
-  max-width: 800px; /* melhor do que width fixa */
-  margin: 0 auto; /* centralizar */
+  max-width: 800px;
+  margin: 0 auto;
   text-align: justify;
   padding-top: 10px;
 }
@@ -92,8 +68,14 @@ html, body {
   display: flex;
   gap: 1rem;
   align-items: center;
-  justify-content: center;
-  flex-wrap: wrap; /* Para responsividade */
+  flex-wrap: wrap;
+  transform: translateX(-350px);
+}
+
+/* Alinhamento para a esquerda */
+.alinharEsquerda {
+  justify-content: flex-start;
+  padding-left: 3rem;
 }
 
 /* Botões principais */
@@ -136,7 +118,7 @@ html, body {
 /* Benefícios rápidos */
 .beneficios {
   display: flex;
-  justify-content: space-around;
+  justify-content: center;
   align-items: center;
   flex-wrap: wrap;
   gap: 3rem;
@@ -146,7 +128,7 @@ html, body {
   border-radius: 18px;
 }
 
-.beneficios div {
+.beneficioCard {
   background-color: white;
   border-radius: 16px;
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
@@ -154,13 +136,18 @@ html, body {
   text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* mudou de space-between para center */
+  justify-content: center;
   gap: 2rem;
-  transition: transform 0.2s, box-shadow 0.2s;
-  min-width: 180px; /* para tamanho mínimo */
+  transition: transform 0.3s ease;
+  min-width: 180px;
 }
 
-.beneficios div:hover {
+/* Movimento individual */
+.beneficio1 { transform: translateX(-150px); }
+.beneficio2 { transform: translateX(0px); }
+.beneficio3 { transform: translateX(150px); }
+
+.beneficioCard:hover {
   transform: translateY(-8px) scale(1.03);
 }
 
