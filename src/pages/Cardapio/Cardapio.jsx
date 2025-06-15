@@ -1,3 +1,4 @@
+
 import { Container } from 'react-bootstrap';
 import NavBar from '../../components/NavBar/NavBar';
 import Pesquisa from '../../components/Pesquisa/Pesquisa';
@@ -6,10 +7,11 @@ import CardGeral from '../../components/Cards/CardGeral';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Button } from 'react-bootstrap';
+import { useParams } from 'react-router-dom';
 
 const Cardapio = () => {
   const [cardapio, setCardapio] = useState([]);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     fetch(`http://localhost:3000/cardapio`)
@@ -82,7 +84,6 @@ const Cardapio = () => {
     navigate(`/Visualizar_Cardapio/${id}`);
   }
 
-
   function handleDelete(id) {
     if (window.confirm('Tem certeza que deseja excluir este produto?')) {
       fetch(`http://localhost:3000/cardapio/${id}`, {
@@ -113,8 +114,8 @@ const Cardapio = () => {
           alert('Erro ao registrar pedido: ' + data.error);
         } else {
           alert('Pedido registrado com sucesso!');
-          // navigate(`/Visualizar_Cardapio${id_cardapio}`)
-
+          navigate(`/Visualizar_Cardapio${id}`)
+          
         }
       })
       .catch(error => {
@@ -144,7 +145,7 @@ const Cardapio = () => {
         <CardGeral
           filtro=""
           card={cardapio}
-          onCardClick={handleCardClick}
+          onCardClick={handleCardClick} 
           showButtons={false}
           imgHeight={250}
           customButton={item => (

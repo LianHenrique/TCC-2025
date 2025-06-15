@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router'
 import style from '../Visualizacoes/visualizar.module.css'

@@ -1,3 +1,4 @@
+
 import { createBrowserRouter } from "react-router-dom"
 import InitPages from "../pages/InitPages"
 import Home from "../pages/Home/Home"
@@ -84,11 +85,11 @@ const MyRouter = createBrowserRouter([
             },
             {
                 path: "/Visualizar_Cardapio/:id",
-                element: <Visualizar_Cardapio/>
+                element: <Visualizar_Cardapio />
             },
             {
                 path: "/recuperar_senha",
-                element: <RecSenha/>
+                element: <RecSenha />
             }
         ]
     }
