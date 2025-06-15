@@ -1,4 +1,4 @@
- import { Container, FloatingLabel, Form } from "react-bootstrap"
+import { Container, FloatingLabel, Form } from "react-bootstrap"
 import NavBar from "../../components/NavBar/NavBar"
 
 const RecSenha = () => {
