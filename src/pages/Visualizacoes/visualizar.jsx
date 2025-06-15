@@ -1,10 +1,7 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Navbar from '../../components/NavBar/NavBar'
-import CardGeral from '../../components/Cards/CardGeral'
-import { Container } from 'react-bootstrap'
-import style from './visualizar.module.css'
 import { useParams } from 'react-router-dom'
-import { Row, Col, Form } from 'react-bootstrap'
+import { Col, Form } from 'react-bootstrap'
 import Button from 'react-bootstrap/Button';
 
 // import Button from "react"
@@ -67,7 +64,7 @@ const Visualizar = () => {
             })
             .catch(error => {
                 console.log("Erro ao buscar insumo", error);
-                setProdutos([]);
+                setInsumos([]);
                 setLoading(false);
                 setError(error.message);
             });
@@ -107,79 +104,87 @@ const Visualizar = () => {
     return (
         <>
             <Navbar />
-            <Container>
-                <Form style={{ marginTop: '21vh', marginLeft: '8vw' }}>
-                    <Row className="justify-content-start" style={{ display: 'flex', flexDirection: 'column' }}>
-                            <Col xs='auto'>
+            <Form
+                style={{
+                    display: 'flex',
+                    justifyContent: "center",
+                    margin: "200px auto",
+                    gap: "20px"
+                }}>
 
-                            {/* Campos do formulário */}
-                            <Row className="align-items-start">
-                                {/* Coluna da imagem - AGORA À ESQUERDA */}
-                                <Col md={6} className="text-center mb-4">
-                                    <img
-                                        src={insumos[0].link}
-                                        alt="imagem representativa do insumo"
-                                        className="img-fluid rounded"
-                                        style={{ maxHeight: '50vh',
-                                                 marginRight:'2vw'
-                                         }}
-                                    />
-                                    <p className="h5 mb-1 d-flex" style={{
-                                       backgroundColor:'red',
-                                       position:'relative',
-                                       bottom:'10rem'
+                {/* Coluna da imagem - AGORA À ESQUERDA */}
+                <Col md={6} 
+                className="text-center"
+                style={{
+                    width: "400px"
+                }}>
+                    <img
+                        className="rounded"
+                        src={insumos[0].link}
+                        alt="Imagem do insumo"
+                        style={{
+                            width: '100%',
+                            height: 'auto',
+                            maxWidth: '400px',
+                            objectFit: 'contain'
+                        }}
+                    />
+                </Col>
 
-                                    }}>Modifique o registro aqui:</p>
-                                </Col>
+                {/* Coluna dos campos - À DIREITA */}
+                <Col md={6}>
+                    <p className="h5 mb-5">Modifique o registro aqui:</p>
+                    {/* Alterar o nome */}
+                    <Form.Group className="mb-3">
+                        <Form.Label>Alterar o nome</Form.Label>
+                        <Form.Control
+                            type="text"
+                            name="nome"
+                            style={{
+                                height: "50px"
+                            }}
+                            placeholder={`Nome atual: ${insumos[0].nome}`}
+                            value={novoNome}
+                            onChange={(e) => setNovoNome(e.target.value)}
+                        />
+                    </Form.Group>
 
-                                {/* Coluna dos campos - À DIREITA */}
-                                <Col md={6}>
-                                    {/* Alterar o nome */}
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Alterar o nome</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            name="nome"
-                                            placeholder={`Nome atual: ${insumos[0].nome}`}
-                                            value={novoNome}
-                                            onChange={(e) => setNovoNome(e.target.value)}
-                                        />
-                                    </Form.Group>
+                    {/* Quantidade */}
+                    <Form.Group className="mb-3">
+                        <Form.Label>
+                            Quantidade disponível: {insumos[0].Quantidade} {insumos[0].Unidade}
+                        </Form.Label>
+                        <Form.Control
+                            type="number"
+                            name="quantidade"
+                            style={{
+                                height: "50px"
+                            }}
+                            placeholder={`Quantidade atual: ${novaQuantidade}`}
+                            onChange={(e) => setNovaQuantidade(e.target.value)}
+                        />
+                    </Form.Group>
 
-                                    {/* Quantidade */}
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>
-                                            Quantidade disponível: {insumos[0].Quantidade} {insumos[0].Unidade}
-                                        </Form.Label>
-                                        <Form.Control
-                                            type="number"
-                                            name="quantidade"
-                                            value={novaQuantidade}
-                                            onChange={(e) => setNovaQuantidade(e.target.value)}
-                                        />
-                                    </Form.Group>
+                    {/* URL da imagem */}
+                    <Form.Group className="mb-3">
+                        <Form.Label>Alterar imagem</Form.Label>
+                        <Form.Control
+                            type="text"
+                            name="url"
+                            value={novaUrl}
+                            style={{
+                                height: "50px"
+                            }}
+                            placeholder={`Imagem atual: ${insumos[0].link}`}
+                            onChange={(e) => setNovaUrl(e.target.value)}
+                        />
+                    </Form.Group>
 
-                                    {/* URL da imagem */}
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Alterar imagem</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            name="url"
-                                            value={novaUrl}
-                                            placeholder={`URL atual: ${insumos[0].link}`}
-                                            onChange={(e) => setNovaUrl(e.target.value)}
-                                        />
-                                    </Form.Group>
-
-                                    <Button variant="primary" onClick={handleInsert}>
-                                        Confirmar
-                                    </Button>
-                                </Col>
-                            </Row>
-                        </Col>
-                    </Row>
-                </Form>
-            </Container>
+                    <Button variant="primary" onClick={handleInsert}>
+                        Confirmar
+                    </Button>
+                </Col>
+            </Form>
         </>
     )
 }

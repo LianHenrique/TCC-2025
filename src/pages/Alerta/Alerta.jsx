@@ -36,115 +36,112 @@ const Alerta = () => {
             .catch(error => console.error('Erro ao buscar insumo', error))
     }, []) // Executa apenas uma vez ao montar
 
- 
-const navigate = useNavigate()
-const handleNavigate = (id) => {
-    navigate(`/visualizar/${id}`)
-}
+
+    const navigate = useNavigate()
+    const handleNavigate = (id) => {
+        navigate(`/visualizar/${id}`)
+    }
     return (
         <div>
             {/* Barra de navegação */}
             <NavBar />
-            <section style={{ marginTop: '20vh' }}>
-                <Container>
-                    {/* Título do alerta */}
-                    <p className='h1 alert alert-danger w-25' style={{ fontSize: '2vh' }}>
-                        Insumos para serem repostos
-                    </p>
-                    {/* Seção para ícones ou legendas (comentada) */}
-                    <section style={{
-                        display: 'flex',
-                        position: 'relative',
-                        top: '3.8em',
-                        width: '3vw',
-                        right: '-60vw'
-                    }}>
-                        {/* <i class="bi bi-palette-fill text-success p">Baixa prioridade</i> */}
-                    </section>
-                    {/* Card que contém a lista de insumos */}
-                    <Card.Body
-                        // key={insumos.id} // Não precisa de key aqui, pois o Card.Body não é repetido
-                        style={{
-                            boxShadow: '5px 5px 9px rgba(0, 0, 0, 0.3)',
-                            width: '55vw',
-                            position: 'relative',
-                            // left: '10vw'
-                        }}
-                    >
-                        {/* Mapeia cada insumo para exibir na tela */}
-                        {insumos.map(insumo => {
-                            // Define a cor de fundo de acordo com a quantidade
-                            let color = ''
-                            if (insumo.quantidade < 10) {
-                                color = 'rgba(246, 148, 148, 1)' // Vermelho claro: crítico
-                            } else if (insumo.quantidade > 15) {
-                                color = 'rgb(189, 251, 158)' // Verde: tranquilo
-                            } else if (insumo.quantidade < 15) {
-                                color = 'rgb(251, 255, 176)' // Amarelo: atenção
-                            }
-                            else {
-                                color = 'white'
-                            }
+            <Container
+                style={{
+                    marginTop: "100px"
+                }}>
+                {/* Título do alerta */}
+                <h1>Insumos para serem repostos</h1>
+                {/* Seção para ícones ou legendas (comentada) */}
+                <section style={{
+                    display: 'flex',
+                    position: 'relative'
+                }}>
+                    {/* <i class="bi bi-palette-fill text-success p">Baixa prioridade</i> */}
+                </section>
+                {/* Card que contém a lista de insumos */}
+                <Card.Body className='d-flex flex-wrap gap-4 justify-content-start'>
+                    {/* Mapeia cada insumo para exibir na tela */}
+                    {insumos.map(insumo => {
+                        // Define a cor de fundo de acordo com a quantidade
+                        let colort = ''
+                        if (insumo.quantidade < 10) {
+                            colort = 'rgba(246, 148, 148, 1)' // Vermelho claro: crítico
+                        } else if (insumo.quantidade > 15) {
+                            colort = 'rgb(189, 251, 158)' // Verde: tranquilo
+                        } else if (insumo.quantidade <= 15) {
+                            colort = 'rgb(251, 255, 176)' // Amarelo: atenção
+                        }
+                        else {
+                            colort = 'white'
+                        }
 
-                            // Renderiza cada insumo
-                            return (
-                                <div key={insumo.id} style={{
-                                    marginLeft: '1vw'
-                                }}>
-                                    {/* Imagem do insumo */}
-                                    <img
-                                        src={insumo.link}
-                                        alt={insumo.nome}
-                                        className='img-fluid'
-                                        style={{
-                                            position: 'relative',
-                                            top: '2vh',
-                                            height: '60px',
-                                            borderRadius: '100%',
-                                            width: '60px',
-                                            boxShadow: '1px 2px 5px rgba(0, 0, 0, 0.3)',
-                                            backgroundColor: color
-                                        }}
-                                    />
-                                    {/* Seção com informações e botão */}
-                                    <section style={{
-                                        // border: 'solid 5px blue',
-                                        backgroundColor: color,
-                                        position: 'relative',
-                                        top: '-4.2vh',
-                                        width: '30vw',
-                                        left: '5vw',
-                                        height: '3.5vh'
-                                    }}>
-                                        <section style={{
-                                            display: 'flex',
-                                            gap: '20px'
-                                        }}>
-                                            {/* Nome e quantidade do insumo */}
-                                            <p className='p'>Nome: {insumo.nome}</p>
+                        // Renderiza cada insumo
+                        return (
+                            <div key={insumo.id}
+                                className='shadow rounded-5 d-flex gap-3 align-items-center'
+                                style={{
+                                    width: '100%',
+                                    maxWidth: '625px',
+                                    padding: '10px',
+                                    backgroundColor: 'white'
+                                }}
+                            >
+                                {/* Imagem do insumo */}
+                                <img
+                                    src={insumo.link}
+                                    alt={insumo.nome}
+                                    className='img-fluid rounded-5'
+                                    style={{
+                                        width: '100px',
+                                        height: '100px',
+                                        objectFit: 'contain', // ou 'cover' se quiser cortar a imagem
+                                        backgroundColor: '#f8f9fa' // opcional: fundo neutro
+                                    }}
+                                />
+                                {/* Seção com informações e botão */}
+
+                                <div
+                                    className='d-flex justify-content-between align-items-center'
+                                    style={{ width: '100%' }}
+                                >
+                                    {/* Conteúdo principal à esquerda */}
+                                    <div style={{ flexGrow: 1 }}>
+                                        <div
+                                            style={{
+                                                display: 'flex',
+                                                gap: '20px',
+                                                fontSize: '20px',
+                                                flexWrap: 'wrap'
+                                            }}
+                                        >
+                                            <p>Nome: {insumo.nome}</p>
                                             <p>Quantidade: {insumo.quantidade}</p>
-                                        </section>
+                                        </div>
 
-                                        {/* Botão para adicionar mais insumos no estoque */}
-                                        <Button style={{
-                                            display: 'flex',
-                                            position: 'relative',
-                                            left: '32vw',
-                                            // top: '-100%'
-                                            top: '-2.5em',
+                                        <Button onClick={() => handleNavigate(insumo.id)}>Adicionar</Button>
+                                    </div>
+
+                                    {/* Ícone de alerta à direita */}
+                                    <h2
+                                        className='rounded-5 d-flex justify-content-center align-items-center'
+                                        style={{
+                                            backgroundColor: colort,
+                                            border: '1px solid black',
+                                            width: '40px',
+                                            height: '40px',
+                                            textAlign: 'center',
+                                            marginLeft: '20px'
                                         }}
-                                        
-                                        onClick={() => handleNavigate(insumo.id)}>
-                                            Adicionar
-                                        </Button>
-                                    </section>
+                                    >
+                                        !
+                                    </h2>
                                 </div>
-                            )
-                        })}
-                    </Card.Body>
-                </Container>
-            </section>
-        </div>
+                            </div>
+                        )
+                    })}
+                </Card.Body>
+            </Container>
+        </div >
     )
 }
 
