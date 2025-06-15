@@ -6,7 +6,7 @@ const connection = mysql.createConnection({
     host:'localhost',
     user: 'root',
     // Não tem senha, é super seguro
-    database: 'story_box2' //mudar p/storybox (tem q ser o exato nome do banco)
+    database: 'story_box' //mudar p/storybox (tem q ser o exato nome do banco)
 })
 
 connection.connect((error) => {
