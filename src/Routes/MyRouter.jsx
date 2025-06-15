@@ -84,11 +84,11 @@ const MyRouter = createBrowserRouter([
             },
             {
                 path: "/Visualizar_Cardapio/:id",
-                element: <Visualizar_Cardapio />
+                element: <Visualizar_Cardapio/>
             },
             {
                 path: "/recuperar_senha",
-                element: <RecSenha />
+                element: <RecSenha/>
             }
         ]
     }
