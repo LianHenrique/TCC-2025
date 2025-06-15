@@ -31,8 +31,8 @@ const Insumos = () => {
     const dados = {
       nome_insumos: nomeinsumos,
       valor_insumos: valorinsumos,
-      filtro: filtro,
-      QTD_insumos: quantidade,
+      categoria: filtro,
+      quantidade_insumos: quantidade,
       data_vencimento: dataValidade,
       descricao_insumos: descricao,
     };

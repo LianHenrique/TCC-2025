@@ -287,15 +287,15 @@ app.put('/insumos_tudo_POST/:id_insumos', (req, res) => {
 
   // Inserir insumo
   app.post('/insumos/insert', (req, res) => {
-    const { nome_produto, valor_produto, filtro, QTD_produto, data_vencimento, descricao_produto } = req.body;
+    const { nome_insumos, valor_insumos, categoria, quantidade_insumos, data_vencimento, descricao_insumos } = req.body;
 
-    if (!nome_produto || !valor_produto || !filtro || !QTD_produto || !data_vencimento || !descricao_produto) {
+    if (!nome_insumos || !valor_insumos || !categoria || !quantidade_insumos || !data_vencimento || !descricao_insumos) {
       return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
     }
 
-    const sql = `INSERT INTO insumos (nome_produto, valor_produto, filtro, QTD_produto, data_vencimento_prod, descricao_produto) VALUES (?, ?, ?, ?, ?, ?)`;
+    const sql = `INSERT INTO insumos (nome_insumos, valor_insumos, categoria, quantidade_insumos, data_vencimento_prod, descricao_produto) VALUES (?, ?, ?, ?, ?, ?)`;
 
-    connection.query(sql, [nome_produto, valor_produto, filtro, QTD_produto, data_vencimento, descricao_produto], (error) => {
+    connection.query(sql, [nome_insumos, valor_insumos, categoria, quantidade_insumos, data_vencimento, descricao_insumos], (error) => {
       if (error) {
         console.error(error);
         return res.status(500).json({ error: 'Erro ao cadastrar insumo' });
