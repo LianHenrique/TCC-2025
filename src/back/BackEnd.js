@@ -180,6 +180,7 @@ app.post("/insumos/insert", (req, res) => {
 
 
 
+// Inserir funcionário
 app.post("/funcionarios/insert", (req, res) => {
   const { nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario } = req.body;
 
@@ -200,6 +201,28 @@ app.post("/funcionarios/insert", (req, res) => {
 
 
 
+// Deletar funcionário
+app.delete("/deletarFuncionario/:id", (req, res) => {
+  const { id } = req.params;
+  connection.query('DELETE FROM funcionario WHERE id_funcionario = ?', [id],
+    (error, results) => {
+      if (error) {
+        console.error('Erro ao deletar funcionário');
+        return res.status(500).json({ error: 'Erro interno ao deletar funcionário' })
+      }
+
+      if(results.affectedRows === 0){
+        return res.status(404).json({message: 'Funcionário não encontrado'})
+      }
+
+      console.log('Funcionário deletado com sucesso')
+      return res.status(200).json({ message: 'Tudo certo' })
+    }
+  )
+})
+
+
+
 // --- ROTAS INSUMOS ---
 // Buscar todos insumos
 app.get('/insumos', (req, res) => {
@@ -211,6 +234,24 @@ app.get('/insumos', (req, res) => {
     }
   );
 });
+
+
+
+// Deletando os insumos por it
+app.delete('/InsumosDelete/:id', (req, res) => {
+  const {id} = req.params;
+
+  connection.query('DELETE FROM insumos WHERE id_insumos = ?', [id], (error, results) => {
+    if(error){
+      return res.status(500).json({message: console.log('Erro na requisição:', error)})
+    }
+      if(results.affectedRows === 0){
+          return res.status(404).json({message: 'Insumo não encontrado'})
+      }
+        return res.status(200).json({message: 'Insumo deletado com sucesso'})
+  })
+}) 
+
 
 
 // Buscando todos os insumos por id

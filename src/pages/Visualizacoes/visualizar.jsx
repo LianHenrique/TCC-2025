@@ -104,13 +104,31 @@ const Visualizar = () => {
     if (loading) return <p>Carregando produto...</p>
     if (error) return <p>{error}</p>
 
+
+    const handleDelete = (id) => {
+        fetch(`http://localhost:3000/InsumosDelete/${id}`, {
+            method: 'DELETE'
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Erro na requisição')
+                }
+                console.log('Requisição feita')
+                window.location.reload();
+            })
+            .catch(error => {
+                console.log('Erro ao deletar o insumo')
+                alert('Erro ao deletar o insumo')
+            })
+    }
+
     return (
         <>
             <Navbar />
             <Container>
                 <Form style={{ marginTop: '21vh', marginLeft: '8vw' }}>
                     <Row className="justify-content-start" style={{ display: 'flex', flexDirection: 'column' }}>
-                            <Col xs='auto'>
+                        <Col xs='auto'>
 
                             {/* Campos do formulário */}
                             <Row className="align-items-start">
@@ -120,14 +138,15 @@ const Visualizar = () => {
                                         src={insumos[0].link}
                                         alt="imagem representativa do insumo"
                                         className="img-fluid rounded"
-                                        style={{ maxHeight: '50vh',
-                                                 marginRight:'2vw'
-                                         }}
+                                        style={{
+                                            maxHeight: '50vh',
+                                            marginRight: '2vw'
+                                        }}
                                     />
                                     <p className="h5 mb-1 d-flex" style={{
-                                       backgroundColor:'red',
-                                       position:'relative',
-                                       bottom:'10rem'
+                                        backgroundColor: 'red',
+                                        position: 'relative',
+                                        bottom: '10rem'
 
                                     }}>Modifique o registro aqui:</p>
                                 </Col>
@@ -172,7 +191,11 @@ const Visualizar = () => {
                                     </Form.Group>
 
                                     <Button variant="primary" onClick={handleInsert}>
-                                        Confirmar
+                                        Alterar
+                                    </Button>
+
+                                    <Button variant="danger" onClick={() => handleDelete(id)}>
+                                        Deletar
                                     </Button>
                                 </Col>
                             </Row>
