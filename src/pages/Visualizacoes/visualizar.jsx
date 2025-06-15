@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react'
 import Navbar from '../../components/NavBar/NavBar'
 import CardGeral from '../../components/Cards/CardGeral'
@@ -110,8 +109,8 @@ const Visualizar = () => {
             <Navbar />
             <Container>
                 <Form style={{ marginTop: '21vh', marginLeft: '8vw' }}>
-                    <Row className="justify-content-start" style={{ display: 'flex', flexDirection: 'row' }}>
-                        <Col xs='auto'>
+                    <Row className="justify-content-start" style={{ display: 'flex', flexDirection: 'column' }}>
+                            <Col xs='auto'>
 
                             {/* Campos do formulário */}
                             <Row className="align-items-start">
@@ -121,9 +120,16 @@ const Visualizar = () => {
                                         src={insumos[0].link}
                                         alt="imagem representativa do insumo"
                                         className="img-fluid rounded"
-                                        style={{ maxHeight: '50vh' }}
+                                        style={{ maxHeight: '50vh',
+                                                 marginRight:'2vw'
+                                         }}
                                     />
-                                    <p className="h5 mt-3">Modifique o registro aqui:</p>
+                                    <p className="h5 mb-1 d-flex" style={{
+                                       backgroundColor:'red',
+                                       position:'relative',
+                                       bottom:'10rem'
+
+                                    }}>Modifique o registro aqui:</p>
                                 </Col>
 
                                 {/* Coluna dos campos - À DIREITA */}

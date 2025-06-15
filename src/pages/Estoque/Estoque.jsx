@@ -68,6 +68,7 @@ const Estoque = () => {
       })
       .then(data => {
         console.log("Item deletado com sucesso", data)
+        window.location.reload();
       })
       .catch(error => {
         console.error('Erro:', error)
