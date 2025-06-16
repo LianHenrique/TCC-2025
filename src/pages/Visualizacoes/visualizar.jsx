@@ -1,29 +1,20 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import Navbar from '../../components/NavBar/NavBar'
-import CardGeral from '../../components/Cards/CardGeral'
-import { Container } from 'react-bootstrap'
-import style from './visualizar.module.css'
 import { useParams } from 'react-router-dom'
-import { Row, Col, Form } from 'react-bootstrap'
+import { Col, Form, Row, Container } from 'react-bootstrap'
 import Button from 'react-bootstrap/Button';
 
-// import Button from "react"
-
-// tem que pegar o id da tela de cardápio, props.
 const Visualizar = () => {
-
     const { id } = useParams();
-    const [insumos, setInsumos] = useState([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(null)
+    const [insumos, setInsumos] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const [novaQuantidade, setNovaQuantidade] = useState('');
-    const [novoNome, setNovoNome] = useState('')
-    const [novaUrl, setNovaUrl] = useState('')
-    console.log('params:', useParams)
+    const [novoNome, setNovoNome] = useState('');
+    const [novaUrl, setNovaUrl] = useState('');
+    const [novoPreco, setNovoPreco] = useState('');
 
     useEffect(() => {
-        console.log(`UseEffect disparou. id: ${id}`);
-
         if (!id) {
             setInsumos([]);
             setLoading(false);
@@ -36,45 +27,36 @@ const Visualizar = () => {
                 return response.json();
             })
             .then(data => {
-                console.log('Data bruto recebido:', data);
-
-                // Corrige se o backend retornou apenas um objeto
-                const insumos = Array.isArray(data) ? data[0] : data;
-
-                const imagemValida = insumos.imagem_url && insumos.imagem_url.trim() !== ''
-                    ? `${insumos.imagem_url}?t=${new Date().getTime()}`
+                const insumo = Array.isArray(data) ? data[0] : data;
+                const imagemValida = insumo.imagem_url && insumo.imagem_url.trim() !== ''
+                    ? `${insumo.imagem_url}?t=${new Date().getTime()}`
                     : 'https://www.valuehost.com.br/blog/wp-content/uploads/2022/01/post_thumbnail-77d8f2a95f2f41b5863f3fba5a261d7e.jpeg.webp';
 
                 const insumosFormatado = {
-                    nome: insumos.nome_insumos || 'Sem nome',
+                    nome: insumo.nome_insumos || 'Sem nome',
                     link: imagemValida,
-                    Quantidade: insumos.quantidade_insumos,
-                    Unidade: insumos.unidade_medida,
+                    Quantidade: insumo.quantidade_insumos,
+                    Unidade: insumo.unidade_medida,
+                    Preco: insumo.valor_insumos,
                     descricao: [
-                        { texto: `Categoria: ${insumos.categoria ?? 'N/A'}` },
-
-                        { texto: `Data de entrada: ${insumos.data_cadastro ?? 'N/A'}` },
-
-                        { texto: `Descrição: ${insumos.descricao_item ?? 'N/A'}` }
+                        { texto: `Categoria: ${insumo.categoria ?? 'N/A'}` },
+                        { texto: `Data de entrada: ${insumo.data_cadastro ?? 'N/A'}` },
+                        { texto: `Descrição: ${insumo.descricao_item ?? 'N/A'}` }
                     ]
                 };
 
-                console.log('Dados recebidos formatados:', insumosFormatado);
-                setInsumos([insumosFormatado]); // coloca em array porque CardGeral espera um array
-                setNovaQuantidade(insumos.quantidade_insumos)
+                setInsumos([insumosFormatado]);
+                setNovaQuantidade(insumo.quantidade_insumos);
                 setLoading(false);
                 setError(null);
             })
             .catch(error => {
-                console.log("Erro ao buscar insumo", error);
-                setProdutos([]);
+                setInsumos([]);
                 setLoading(false);
                 setError(error.message);
             });
     }, [id]);
 
-
-    // Consultar na linha 231 do BackEnd
     const handleInsert = async () => {
         try {
             const response = await fetch(`http://localhost:3000/insumos_tudo_POST/${id}`, {
@@ -85,25 +67,21 @@ const Visualizar = () => {
                 body: JSON.stringify({
                     quantidade_insumos: novaQuantidade !== '' ? novaQuantidade : insumos[0].Quantidade,
                     nome_insumos: novoNome || insumos[0].nome,
-                    imagem_url: novaUrl || insumos[0].link
+                    imagem_url: novaUrl || insumos[0].link,
+                    Preco: novoPreco || insumos[0].Preco
                 })
             });
 
             if (!response.ok) {
+                const data = await response.json();
                 throw new Error(data.error || 'Erro ao atualizar insumo');
             }
 
-            alert('Insumo atualizado com sucesso!')
+            alert('Insumo atualizado com sucesso!');
         } catch (error) {
-            alert(`Erro: ${error.message}`)
+            alert(`Erro: ${error.message}`);
         }
-    }
-
-
-
-    if (loading) return <p>Carregando produto...</p>
-    if (error) return <p>{error}</p>
-
+    };
 
     const handleDelete = (id) => {
         fetch(`http://localhost:3000/InsumosDelete/${id}`, {
@@ -111,105 +89,116 @@ const Visualizar = () => {
         })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Erro na requisição')
+                    throw new Error('Erro na requisição');
                 }
-                console.log('Requisição feita')
                 window.location.reload();
             })
-            .catch(error => {
-                console.log('Erro ao deletar o insumo')
-                alert('Erro ao deletar o insumo')
-            })
-    }
+            .catch(() => {
+                alert('Erro ao deletar o insumo');
+            });
+    };
+
+    if (loading) return <p>Carregando produto...</p>;
+    if (error) return <p>{error}</p>;
 
     return (
         <>
             <Navbar />
             <Container>
-                <Form style={{ marginTop: '21vh', marginLeft: '8vw' }}>
-                    <Row className="justify-content-start" style={{ display: 'flex', flexDirection: 'column' }}>
-                        <Col xs='auto'>
-
-                            {/* Campos do formulário */}
-                            <Row className="align-items-start">
-                                {/* Coluna da imagem - AGORA À ESQUERDA */}
-                                <Col md={6} className="text-center mb-4">
-                                    <img
-                                        src={insumos[0].link}
-                                        alt="imagem representativa do insumo"
-                                        className="img-fluid rounded"
-                                        style={{
-                                            maxHeight: '50vh',
-                                            marginRight: '2vw'
-                                        }}
-                                    />
-                                    <p className="h5 mb-1 d-flex" style={{
-                                        backgroundColor: 'red',
-                                        position: 'relative',
-                                        bottom: '10rem'
-
-                                    }}>Modifique o registro aqui:</p>
-                                </Col>
-
-                                {/* Coluna dos campos - À DIREITA */}
-                                <Col md={6}>
-                                    {/* Alterar o nome */}
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Alterar o nome</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            name="nome"
-                                            placeholder={`Nome atual: ${insumos[0].nome}`}
-                                            value={novoNome}
-                                            onChange={(e) => setNovoNome(e.target.value)}
-                                        />
-                                    </Form.Group>
-
-                                    {/* Quantidade */}
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>
-                                            Quantidade disponível: {insumos[0].Quantidade} {insumos[0].Unidade}
-                                        </Form.Label>
-                                        <Form.Control
-                                            type="number"
-                                            name="quantidade"
-                                            value={novaQuantidade}
-                                            onChange={(e) => setNovaQuantidade(e.target.value)}
-                                        />
-                                    </Form.Group>
-
-                                    {/* URL da imagem */}
-                                    <Form.Group className="mb-3">
-                                        <Form.Label>Alterar imagem</Form.Label>
-                                        <Form.Control
-                                            type="text"
-                                            name="url"
-                                            value={novaUrl}
-                                            placeholder={`URL atual: ${insumos[0].link}`}
-                                            onChange={(e) => setNovaUrl(e.target.value)}
-                                        />
-                                    </Form.Group>
-
-                                    <Button variant="primary" onClick={handleInsert}>
-                                        Alterar
-                                    </Button>
-
-                                    <Button variant="danger" onClick={() => {
-                                        const confirmar = window.confirm('Deseja deletar o insumo?')
-                                        if(confirmar){
-                                            handleDelete(id)
-                                        }
-                                    }}>
-                                        Deletar
-                                    </Button>
-                                </Col>
-                            </Row>
+                <Form
+                    style={{
+                        display: 'flex',
+                        justifyContent: "center",
+                        margin: "100px auto",
+                        gap: "20px"
+                    }}>
+                    <Row style={{ width: "100%" }}>
+                        {/* Coluna da imagem */}
+                        <Col md={6} className="text-center" style={{ width: "400px" }}>
+                            <img
+                                className="rounded"
+                                src={insumos[0]?.link}
+                                alt="Imagem do insumo"
+                                style={{
+                                    width: '100%',
+                                    height: 'auto',
+                                    maxWidth: '400px',
+                                    objectFit: 'contain'
+                                }}
+                            />
+                        </Col>
+                        {/* Coluna dos campos */}
+                        <Col md={6}>
+                            <p className="h5 mb-5">Modifique o registro aqui:</p>
+                            {/* Alterar o nome */}
+                            <Form.Group className="mb-3">
+                                <Form.Label>Alterar o nome</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="nome"
+                                    style={{ height: "50px" }}
+                                    placeholder={`Nome atual: ${insumos[0]?.nome}`}
+                                    value={novoNome}
+                                    onChange={(e) => setNovoNome(e.target.value)}
+                                />
+                            </Form.Group>
+                            {/* Quantidade */}
+                            <Form.Group className="mb-3">
+                                <Form.Label>
+                                    Quantidade disponível: {insumos[0]?.Quantidade} {insumos[0]?.Unidade}
+                                </Form.Label>
+                                <Form.Control
+                                    type="number"
+                                    name="quantidade"
+                                    style={{ height: "50px" }}
+                                    placeholder={`Quantidade atual: ${novaQuantidade}`}
+                                    value={novaQuantidade}
+                                    onChange={(e) => setNovaQuantidade(e.target.value)}
+                                />
+                            </Form.Group>
+                            {/* PREÇO DO INSUMO */}
+                            <Form.Group className="mb-3">
+                                <Form.Label>
+                                    Preço atual: {insumos[0]?.Preco}
+                                </Form.Label>
+                                <Form.Control
+                                    type="number"
+                                    name="Preco"
+                                    style={{ height: "50px" }}
+                                    placeholder={`Preco atual: ${insumos[0]?.Preco}`}
+                                    value={novaQuantidade}
+                                    onChange={(e) => setNovaQuantidade(e.target.value)}
+                                />
+                            </Form.Group>
+                            {/* URL da imagem */}
+                            <Form.Group className="mb-3">
+                                <Form.Label>Alterar imagem</Form.Label>
+                                <Form.Control
+                                    type="text"
+                                    name="url"
+                                    value={novaUrl}
+                                    style={{ height: "50px" }}
+                                    placeholder={`Imagem atual: ${insumos[0]?.link}`}
+                                    onChange={(e) => setNovaUrl(e.target.value)}
+                                />
+                            </Form.Group>
+                            <Button variant="primary" onClick={handleInsert}>
+                                Alterar
+                            </Button>{' '}
+                            <Button variant="danger" onClick={() => {
+                                const confirmar = window.confirm('Deseja deletar o insumo?');
+                                if (confirmar) {
+                                    handleDelete(id);
+                                }
+                            }}>
+                                Deletar
+                            </Button>
                         </Col>
                     </Row>
                 </Form>
             </Container>
         </>
-    )
-}
+    );
+};
 
-export default Visualizar
+export default Visualizar;
