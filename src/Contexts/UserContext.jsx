@@ -7,7 +7,7 @@ export const AuthProvider = ({children}) => {
   const [usuarioNome, setUsuarioNome] = useState("")
 
   useEffect(() => {
-    const nome = localStorage.getItem("userName") || "Visitante"
+    const nome = localStorage.getItem("userName") || ""
     setUsuarioNome(nome)
   }, [])
 
@@ -18,13 +18,13 @@ export const AuthProvider = ({children}) => {
   console.log("Usuário logado:", nome, email);
   localStorage.setItem("userName", nome);
   localStorage.setItem("email", email);
-  setUsuarioNome(nome);
+  setUsuarioNome(email);
 };
 
   const logout = () => {
     localStorage.removeItem("userName")
     localStorage.removeItem("email")
-    setUsuarioNome("Visitante")
+    setUsuarioNome("")
   }
 
   return (
