@@ -167,7 +167,7 @@ const Visualizar = () => {
                                     style={{ height: "50px" }}
                                     placeholder={`Alterar preço: ${insumos[0]?.Preco}`}
                                     value={novoPreco}
-                                    onChange={(e) => setNovaQuantidade(e.target.value)}
+                                    onChange={(e) => setNovoPreco(e.target.value)}
                                 />
                             </Form.Group>
                             {/* URL da imagem */}
