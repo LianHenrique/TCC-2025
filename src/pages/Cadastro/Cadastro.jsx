@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import Form from 'react-bootstrap/Form';
 import '../Style/login.css';
 import { Button, Container, FloatingLabel } from 'react-bootstrap';
 import NavBar from '../../components/NavBar/NavBar';
 import { useNavigate } from 'react-router';
+import { AuthContext } from '../../Contexts/UserContext';
 
 const Cadastro = () => {
   const [nome, setNome] = useState('');
@@ -12,7 +13,8 @@ const Cadastro = () => {
   const [confSenha, setConfSenha] = useState('');
   const [cnpj, setCnpj] = useState('');
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,23 +30,36 @@ const Cadastro = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          nome,
-          email,
-          senha,
-          cnpj,
-        }),
+        body: JSON.stringify({ nome, email, senha, cnpj }),
       });
 
       if (res.ok) {
         console.log('Cadastro realizado com sucesso!');
-        // Redirecionar, limpar ou atualizar UI
+
+        // Fazer login automático após cadastro
+        const loginRes = await fetch("http://localhost:3000/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, senha }),
+        });
+
+        const loginData = await loginRes.json();
+
+        if (loginRes.ok && loginData.usuario) {
+          login(loginData.usuario); // Atualiza o contexto
+          alert("Cadastro e login realizados com sucesso!");
+          navigate("/estoque");
+        } else {
+          alert("Cadastro feito, mas houve um problema ao fazer login automático.");
+          navigate("/login");
+        }
       } else {
-        console.log('Erro ao cadastrar');
+        const erro = await res.json();
+        alert(erro.message || 'Erro ao cadastrar.');
       }
     } catch (err) {
       console.error(err);
-      console.log('Erro de rede ou servidor');
+      alert('Erro de rede ou servidor.');
     }
   };
 
@@ -102,7 +117,7 @@ const Cadastro = () => {
 
           <FloatingLabel controlId="cnpj" label="CNPJ" className="m-2">
             <Form.Control
-              type="number"
+              type="text"
               placeholder="CNPJ"
               value={cnpj}
               onChange={(e) => setCnpj(e.target.value)}
@@ -113,9 +128,6 @@ const Cadastro = () => {
 
           <Button
             type="submit"
-            onClick={() => {
-              navigate("/estoque")
-            }}
             className="shadow mt-4"
             style={{ padding: '15px', width: '90%', borderRadius: '30px', marginLeft: '20px' }}>
             Cadastrar
@@ -132,14 +144,9 @@ const Cadastro = () => {
           <Button
             href="/login"
             className="m-3"
-            style={{
-              background: "none",
-              color: "black",
-              border: "none"
-            }}>
-            ja tem uma conta? log-in
+            style={{ background: "none", color: "black", border: "none" }}>
+            Já tem uma conta? Log-in
           </Button>
-
         </Form>
       </Container>
     </div>

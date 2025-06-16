@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import '../Style/login.css'; // Importa o CSS
+import '../Style/login.css';
 import NavBar from '../../components/NavBar/NavBar';
 import { Button, Container, Dropdown, FloatingLabel, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router';
@@ -8,32 +8,43 @@ const Insumos = () => {
   const [nomeinsumos, setNomeinsumos] = useState('');
   const [valorinsumos, setValorinsumos] = useState('');
   const [dataValidade, setDataValidade] = useState('');
-  const [quantidade, setQuantidade] = useState('');
+  const [quantidade, setQuantidade] = useState(0);
   const [filtro, setFiltro] = useState('Filtro');
   const [descricao, setDescricao] = useState('');
+  const [url, setUrl] = useState('');
 
   const navigate = useNavigate();
+  const today = new Date().toISOString().split('T')[0];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!nomeinsumos || !valorinsumos || !dataValidade || !quantidade || filtro === 'Filtro') {
-      console.log('Por favor, preencha todos os campos e escolha um filtro');
+    if (
+      nomeinsumos.trim() === '' ||
+      url.trim() === '' ||
+      valorinsumos === '' ||
+      filtro === 'Filtro' ||
+      quantidade === null || quantidade === undefined || isNaN(quantidade) ||
+      dataValidade === '' ||
+      descricao.trim() === ''
+    ) {
+      alert('Todos os campos são obrigatórios.');
       return;
     }
 
     if (new Date(dataValidade) < new Date(today)) {
-      console.log('A data de validade deve ser hoje ou uma data futura.');
+      alert('A data de validade deve ser hoje ou uma data futura.');
       return;
     }
 
     const dados = {
       nome_insumos: nomeinsumos,
-      valor_insumos: valorinsumos,
-      filtro: filtro,
-      QTD_insumos: quantidade,
+      valor_insumos: Number(valorinsumos),
+      categoria: filtro,
+      quantidade_insumos: Number(quantidade),
       data_vencimento: dataValidade,
       descricao_insumos: descricao,
+      imagem_url: url
     };
 
     try {
@@ -45,32 +56,27 @@ const Insumos = () => {
 
       if (res.ok) {
         console.log("Insumo cadastrado com sucesso!");
-        // Resetar o formulário, se quiser:
         setNomeinsumos('');
         setValorinsumos('');
         setDataValidade('');
-        setQuantidade('');
+        setQuantidade(0);
         setFiltro('Filtro');
         setDescricao('');
-        navigate('/estoque'); // redireciona após sucesso
+        setUrl('');
+        navigate('/estoque');
       } else {
-        console.log("Erro ao cadastrar insumo");
+        alert("Erro ao cadastrar insumo.");
       }
     } catch (error) {
-      console.log("Erro de rede ou servidor");
-      console.error(error);
+      console.error("Erro de rede ou servidor", error);
+      alert("Erro de rede ou servidor.");
     }
   };
-
-  const today = new Date().toISOString().split('T')[0];
 
   return (
     <div style={{ marginTop: '100px' }}>
       <NavBar />
-      <Container
-        style={{
-          maxWidth: "800px"
-        }}>
+      <Container style={{ maxWidth: "800px" }}>
         <Form
           onSubmit={handleSubmit}
           className="shadow"
@@ -123,7 +129,18 @@ const Insumos = () => {
               type="number"
               placeholder="Quantidade"
               value={quantidade}
-              onChange={(e) => setQuantidade(e.target.value)}
+              onChange={(e) => setQuantidade(Number(e.target.value))}
+              className="rounded-5 shadow mt-3"
+              style={{ border: 'none' }}
+            />
+          </FloatingLabel>
+
+          <FloatingLabel controlId="imagem_url" label="Url:" className="m-2">
+            <Form.Control
+              type="text"
+              placeholder="Url:"
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
               className="rounded-5 shadow mt-3"
               style={{ border: 'none' }}
             />
@@ -141,10 +158,7 @@ const Insumos = () => {
           </FloatingLabel>
 
           <div className="d-flex m-2" style={{ alignContent: 'center' }}>
-            <Dropdown
-              className="d-flex shadow rounded-5 mt-2"
-              style={{ width: '150px', height: '60px' }}
-            >
+            <Dropdown className="d-flex shadow rounded-5 mt-2" style={{ width: '150px', height: '60px' }}>
               <Dropdown.Toggle
                 variant="outline-primary rounded-5"
                 style={{ width: '150px', height: '60px' }}
@@ -167,13 +181,13 @@ const Insumos = () => {
               className="rounded-5 m-2 mt-2 fs-2"
               style={{ width: '60px', height: '60px' }}
               onClick={() => {
-                // Limpar formulário se quiser
                 setNomeinsumos('');
                 setValorinsumos('');
                 setDataValidade('');
-                setQuantidade('');
+                setQuantidade(0);
                 setFiltro('Filtro');
                 setDescricao('');
+                setUrl('');
               }}
             >
               +

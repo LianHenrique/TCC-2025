@@ -10,7 +10,7 @@ const CardGeral = ({
   enableOverflow = true,
   Desc,
   onCardClick,
-  showButtons = true,
+  showButtons = false,
   customButton,
   imgHeight = '180px', // valor padrão para imagem
 }) => {
@@ -19,7 +19,7 @@ const CardGeral = ({
       {filtro && <h2>{filtro}</h2>}
 
       <div
-        className='d-flex'
+        className="d-flex"
         style={{
           overflowX: enableOverflow ? 'auto' : 'visible',
           borderRadius: '20px',

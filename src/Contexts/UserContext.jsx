@@ -7,21 +7,24 @@ export const AuthProvider = ({children}) => {
   const [usuarioNome, setUsuarioNome] = useState("")
 
   useEffect(() => {
-    const nome = localStorage.getItem("userName") || "Visitante"
+    const nome = localStorage.getItem("userName") || ""
     setUsuarioNome(nome)
   }, [])
 
   const login = (data) => {
-    console.log("Usuario:",data)
-    localStorage.setItem("userName",data.nome)
-    localStorage.setItem("email", data.email)
-    setUsuarioNome(data.nome)
-  }
+  const nome = data.nome_cliente || data.nome || "Visitante";
+  const email = data.email_cliente || data.email || "";
+
+  console.log("Usuário logado:", nome, email);
+  localStorage.setItem("userName", nome);
+  localStorage.setItem("email", email);
+  setUsuarioNome(email);
+};
 
   const logout = () => {
     localStorage.removeItem("userName")
     localStorage.removeItem("email")
-    setUsuarioNome("Visitante")
+    setUsuarioNome("")
   }
 
   return (

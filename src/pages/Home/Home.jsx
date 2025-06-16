@@ -18,7 +18,8 @@ function Home() {
       <div className={styles.App}>
         <div className={styles.header}>
           <h1>
-            Gerencie o <span className={styles.destaque}>estoque</span> do seu <br /> negócio de maneira ágil
+            Gerencie o <span className={styles.destaque}>estoque</span> do seu <br />
+            negócio de maneira ágil
           </h1>
           <p>
             A StoryBox é uma solução completa para o gerenciamento de estoques, oferecendo ferramentas intuitivas
@@ -28,7 +29,7 @@ function Home() {
           </p>
         </div>
 
-        <div className={styles.testeGratisContainer}>
+        <div className={`${styles.testeGratisContainer} ${styles.alinharEsquerda}`}>
           <button
             className={styles.botaoTesteGratis}
             onClick={() => navigate("/cadastro")}
@@ -39,9 +40,9 @@ function Home() {
         </div>
 
         <div className={styles.beneficios}>
-          <div className={styles.beneficioCard}>Acesso em tempo real</div>
-          <div className={styles.beneficioCard}>Redução de erros</div>
-          <div className={styles.beneficioCard}>Relatórios detalhados</div>
+          <div className={`${styles.beneficioCard} ${styles.beneficio1}`}>Acesso em tempo real</div>
+          <div className={`${styles.beneficioCard} ${styles.beneficio2}`}>Redução de erros</div>
+          <div className={`${styles.beneficioCard} ${styles.beneficio3}`}>Relatórios detalhados</div>
         </div>
 
         <div className={styles.planos}>

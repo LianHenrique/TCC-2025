@@ -1,3 +1,4 @@
+
 import express from 'express';
 import connection from './db.js';
 import cors from 'cors';
@@ -7,20 +8,22 @@ app.use(cors());
 app.use(express.json());
 
 // --- ROTAS FUNCIONÁRIOS ---
+<<<<<<< HEAD
 
+=======
+>>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
 // Buscar funcionário por nome via query param
 app.get('/funcionarios', (req, res) => {
   const { nome_funcionario } = req.query;
 
   if (nome_funcionario) {
-    // Busca por nome parecido usando LIKE com %
     connection.query(
-      'SELECT * FROM funcionario WHERE nome_funcionario LIKE ?',
-      [`%${nome_funcionario}%`],
+      'SELECT * FROM funcionario WHERE nome_funcionario = ?',
+      [nome_funcionario],
       (error, results) => {
         if (error) return res.status(500).json({ error: 'Erro ao buscar funcionário' });
         if (results.length === 0) return res.status(404).json({ error: 'Funcionário não encontrado' });
-        return res.json(results); // Retornar lista dos funcionários encontrados (todos que baterem)
+        return res.json(results[0]);
       }
     );
   } else {
@@ -139,16 +142,18 @@ app.post("/cliente/insert", (req, res) => {
 
 
 
-
 app.post("/insumos/insert", (req, res) => {
   const {
     nome_insumos,
     valor_insumos,
-    QTD_insumos,
+    categoria,
+    quantidade_insumos,
     data_vencimento,
-    descricao_insumos
+    descricao_insumos,
+    imagem_url
   } = req.body;
 
+<<<<<<< HEAD
   const sql =
     `INSERT INTO insumos 
   (
@@ -160,6 +165,11 @@ app.post("/insumos/insert", (req, res) => {
   ) VALUES (?, ?, ?, ?, ?)`;
 
   connection.query(sql, [nome_insumos, valor_insumos, QTD_insumos, data_vencimento, descricao_insumos], (erro, data) => {
+=======
+  const sql = `INSERT INTO insumos (nome_insumos, valor_insumos, categoria, quantidade_insumos, data_vencimento, descricao_insumos, imagem_url) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+
+  connection.query(sql, [nome_insumos, valor_insumos, categoria, quantidade_insumos, data_vencimento, descricao_insumos, imagem_url], (erro, data) => {
+>>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
     if (erro) {
       console.log(erro);
       return res.status(500).json({ error: 'Erro ao cadastrar insumo' });
@@ -168,16 +178,23 @@ app.post("/insumos/insert", (req, res) => {
   });
 });
 
-app.post("/funcionarios/insert", (req, res) => {
-  const { nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario } = req.body;
 
-  if (!nome_funcionario || !cargo_funcionario || !senha_funcionario || !email_funcionario) {
+
+// Inserir funcionário
+app.post("/funcionarios/insert", (req, res) => {
+  const { nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario, imagem_url } = req.body;
+
+  if (!nome_funcionario || !cargo_funcionario || !senha_funcionario || !email_funcionario || !imagem_url){
     return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
   }
 
+<<<<<<< HEAD
   const sql = `INSERT INTO funcionario (nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario) VALUES (?, ?, ?, ?)`;
+=======
+  const sql = `INSERT INTO funcionario (nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario, imagem_url) VALUES (?, ?, ?, ?, ?)`;
+>>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
 
-  connection.query(sql, [nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario], (error) => {
+  connection.query(sql, [nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario, imagem_url], (error) => {
     if (error) {
       console.error(error);
       return res.status(500).json({ error: 'Erro ao cadastrar funcionário' });
@@ -185,6 +202,28 @@ app.post("/funcionarios/insert", (req, res) => {
     res.status(201).json({ message: 'Funcionário cadastrado com sucesso' });
   });
 });
+
+
+
+// Deletar funcionário
+app.delete("/deletarFuncionario/:id", (req, res) => {
+  const { id } = req.params;
+  connection.query('DELETE FROM funcionario WHERE id_funcionario = ?', [id],
+    (error, results) => {
+      if (error) {
+        console.error('Erro ao deletar funcionário');
+        return res.status(500).json({ error: 'Erro interno ao deletar funcionário' })
+      }
+
+      if(results.affectedRows === 0){
+        return res.status(404).json({message: 'Funcionário não encontrado'})
+      }
+
+      console.log('Funcionário deletado com sucesso')
+      return res.status(200).json({ message: 'Tudo certo' })
+    }
+  )
+})
 
 
 
@@ -199,6 +238,24 @@ app.get('/insumos', (req, res) => {
     }
   );
 });
+
+
+
+// Deletando os insumos por it
+app.delete('/InsumosDelete/:id', (req, res) => {
+  const {id} = req.params;
+
+  connection.query('DELETE FROM insumos WHERE id_insumos = ?', [id], (error, results) => {
+    if(error){
+      return res.status(500).json({message: console.log('Erro na requisição:', error)})
+    }
+      if(results.affectedRows === 0){
+          return res.status(404).json({message: 'Insumo não encontrado'})
+      }
+        return res.status(200).json({message: 'Insumo deletado com sucesso'})
+  })
+}) 
+
 
 
 // Buscando todos os insumos por id
@@ -224,10 +281,16 @@ app.get('/insumos_tudo/:id_insumos', (req, res) => {
 app.put('/insumos_tudo_POST/:id_insumos', (req, res) => {
   const { id_insumos } = req.params;
   const { quantidade_insumos } = req.body;
+  const { nome_insumos } = req.body
+  const { imagem_url } = req.body
 
+<<<<<<< HEAD
   const query = 'UPDATE insumos SET quantidade_insumos = ? WHERE id_insumos = ?';
+=======
+  const query = 'UPDATE insumos SET quantidade_insumos = ?, nome_insumos = ?, imagem_url = ? WHERE id_insumos = ?';
+>>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
 
-  connection.query(query, [quantidade_insumos, id_insumos], (error, results) => {
+  connection.query(query, [quantidade_insumos, nome_insumos, imagem_url, id_insumos], (error, results) => {
     if (error) {
       return res.status(500).json({ error: 'Erro ao atualizar insumo' });
     }
@@ -274,6 +337,7 @@ app.get('/insumos/:id_insumos', (req, res) => {
 
 // Inserir insumo
 app.post('/insumos/insert', (req, res) => {
+<<<<<<< HEAD
   const { nome_produto, valor_produto, filtro, QTD_produto, data_vencimento, descricao_produto } = req.body;
 
   if (!nome_produto || !valor_produto || !filtro || !QTD_produto || !data_vencimento || !descricao_produto) {
@@ -283,6 +347,25 @@ app.post('/insumos/insert', (req, res) => {
   const sql = `INSERT INTO insumos (nome_produto, valor_produto, filtro, QTD_produto, data_vencimento_prod, descricao_produto) VALUES (?, ?, ?, ?, ?, ?)`;
 
   connection.query(sql, [nome_produto, valor_produto, filtro, QTD_produto, data_vencimento, descricao_produto], (error) => {
+=======
+  const { nome_insumos, imagem_url, valor_insumos, categoria, quantidade_insumos, data_vencimento, descricao_insumos } = req.body;
+
+  if (
+    nome_insumos === undefined || nome_insumos === '' ||
+    imagem_url === undefined || imagem_url === '' ||
+    valor_insumos === undefined ||
+    categoria === undefined || categoria === '' ||
+    quantidade_insumos === undefined || quantidade_insumos === null ||
+    data_vencimento === undefined || data_vencimento === '' ||
+    descricao_insumos === undefined || descricao_insumos === ''
+  ) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+  }
+
+  const sql = `INSERT INTO insumos (nome_insumos, imagem_url, valor_insumos, categoria, quantidade_insumos, data_vencimento_prod, descricao_produto) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+
+  connection.query(sql, [nome_insumos, imagem_url, valor_insumos, categoria, quantidade_insumos, data_vencimento, descricao_insumos], (error) => {
+>>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
     if (error) {
       console.error(error);
       return res.status(500).json({ error: 'Erro ao cadastrar insumo' });
@@ -345,7 +428,37 @@ app.get('/cardapio/:id_cardapio', (req, res) => {
   });
 });
 
+<<<<<<< HEAD
 
+=======
+app.put('/AtualizarFuncionario/:id', (req, res) => {
+  const { id_funcionario } = req.params;
+  const { nome_funcionario, email_funcionario, cargo_funcionario, imagem_url } = req.body;
+
+  if (!nome_funcionario || !email_funcionario || !cargo_funcionario || !imagem_url) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+  }
+
+  const query = `
+    UPDATE funcionario 
+    SET nome_funcionario = ?, email_funcionario = ?, cargo_funcionario = ?, imagem_url = ?
+    WHERE id_funcionario = ?
+  `;
+
+  connection.query(query, [nome_funcionario, email_funcionario, cargo_funcionario, imagem_url, id_funcionario], (error, results) => {
+    if (error) {
+      console.error('Erro ao atualizar funcionário:', error);
+      return res.status(500).json({ error: 'Erro ao atualizar funcionário' });
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Funcionário não encontrado' });
+    }
+
+    res.json({ message: 'Funcionário atualizado com sucesso' });
+  });
+});
+>>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
 
 // Rota para notificação de estoque baixo
 app.get('/produtos/estoque-baixo', (req, res) => {
@@ -366,8 +479,33 @@ app.get('/produtos/estoque-baixo', (req, res) => {
   );
 });
 
+<<<<<<< HEAD
 // --- ROTAS CARDÁPIO ---
 
+=======
+app.post('/login', (req, res) => {
+  const { email, senha } = req.body;
+
+  const query = `SELECT * FROM cliente WHERE email_cliente = ? AND senha_cliente = ?`;
+  
+  connection.query(query, [email, senha], (error, results) => {
+    if (error) {
+      console.error("Erro ao fazer login:", error);
+      return res.status(500).json({ error: 'Erro no servidor' });
+    }
+
+    if (results.length === 0) {
+      return res.status(401).json({ error: 'Email ou senha inválidos' });
+    }
+
+    // Se quiser, pode retornar dados do usuário ou token
+    return res.status(200).json({ message: 'Login bem-sucedido', usuario: results[0] });
+  });
+});
+
+// --- ROTAS CARDÁPIO ---
+
+>>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
 // Buscar todos os itens do cardápio 
 app.get('/cardapio', (req, res) => {
   const sql = `
@@ -487,6 +625,53 @@ connection.query(sql, [email, senha], (error) => {
   res.status(201).json({ message: 'Cliente cadastrado com sucesso' });
 });
 
+<<<<<<< HEAD
+// Pegando todos os itend de estoque
+app.get('/estoque', (req, res) => {
+  connection.query(
+    'select * from insumos',
+    (error, results) => {
+      if (error) return res.status(500).json({ error: 'Erro ao buscar estoque' });
+      res.json(results);
+    }
+  );
+=======
+// --- ROTA CLIENTE ---
+
+app.post('/cliente/insert', (req, res) => {
+  const { email, senha } = req.body;
+
+  if (!email || !senha) {
+    return res.status(400).json({ error: 'Email e senha são obrigatórios' });
+  }
+
+  const sql = `INSERT INTO cliente (email_cliente, senha_cliente) VALUES (?, ?)`;
+
+  connection.query(sql, [email, senha], (error) => {
+    if (error) {
+      console.error(error);
+      return res.status(500).json({ error: 'Erro ao cadastrar cliente' });
+    }
+    res.status(201).json({ message: 'Cliente cadastrado com sucesso' });
+  });
+>>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
+});
+
+
+
+// Rota para saída de venda
+app.post('/saida-venda', (req, res) => {
+  const { id_cardapio } = req.body;
+
+  if (!id_cardapio) {
+    return res.status(400).json({ error: 'ID do item do cardápio não fornecido' });
+  }
+
+  const data_saida = new Date().toISOString().slice(0, 10);
+
+<<<<<<< HEAD
+=======
+// --- ROTA ESTOQUE ---
 // Pegando todos os itend de estoque
 app.get('/estoque', (req, res) => {
   connection.query(
@@ -510,6 +695,7 @@ app.post('/saida-venda', (req, res) => {
 
   const data_saida = new Date().toISOString().slice(0, 10);
 
+>>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
   const buscarInsumosQuery = `
     SELECT id_insumo, quantidade_necessaria
     FROM itemcardapioinsumo
@@ -574,10 +760,23 @@ app.post('/saida-venda', (req, res) => {
     });
   });
 });
+<<<<<<< HEAD
+=======
 
 
+// Deletando item do estoque
+app.delete('/estoqueDeletarIten/:id', async (req, res) => {
+  const id = req.params.id
+  console.log('Recebido para deletar id:', id)
 
-
+  connection.query('DELETE FROM insumos WHERE id_insumos = ?', [id], (error, results) => {
+    if (error) {
+      return res.status(500).json({ error: 'Erro ao deletar iten do estoque' })
+    }
+    res.status(200).json({ message: 'Insumo deletado com sucesso' })
+  })
+})
+>>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
 
 
 
@@ -589,6 +788,20 @@ app.get('/relatorios/diario', async (req, res) => {
     const dataInicio = new Date();
     dataInicio.setDate(dataInicio.getDate() - 7);
 
+<<<<<<< HEAD
+
+
+
+// REQUISIÇÕES PARA RELATÓRIOS
+app.get('/relatorios/diario', async (req, res) => {
+  try {
+    // Definir o período (últimos 7 dias)
+    const dataFim = new Date();
+    const dataInicio = new Date();
+    dataInicio.setDate(dataInicio.getDate() - 7);
+
+=======
+>>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
     // 1. Buscar vendas e faturamento por dia
     const vendasQuery = `
       SELECT 
@@ -674,7 +887,11 @@ app.get('/filtroCardapio/', async (req, res) => {
       }
     )
   } catch (err) {
+<<<<<<< HEAD
     console.log('Erro ao fazer requisição');
+=======
+    console.log(err, 'Erro ao fazer requisição');
+>>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
     res.status(500).json({ error: 'Erro interno no server' })
   }
 })
@@ -688,4 +905,8 @@ app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
 
+<<<<<<< HEAD
 export default app;
+=======
+export default app;
+>>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574

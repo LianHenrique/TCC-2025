@@ -1,6 +1,6 @@
 import { Button, Dropdown } from "react-bootstrap"
 
-const Filtro = (nome, lista) => {
+const Filtro = ({nome, lista}) => {
     return (
         <div 
         className="d-flex">

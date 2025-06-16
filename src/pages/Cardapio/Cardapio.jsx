@@ -1,3 +1,4 @@
+
 import { Container } from 'react-bootstrap';
 import NavBar from '../../components/NavBar/NavBar';
 import Pesquisa from '../../components/Pesquisa/Pesquisa';
@@ -6,6 +7,7 @@ import CardGeral from '../../components/Cards/CardGeral';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { Button } from 'react-bootstrap';
+import { useParams } from 'react-router-dom';
 
 const Cardapio = () => {
   const [cardapio, setCardapio] = useState([]);
@@ -143,7 +145,7 @@ const Cardapio = () => {
         <CardGeral
           filtro=""
           card={cardapio}
-          onCardClick={handleCardClick}
+          onCardClick={handleCardClick} 
           showButtons={false}
           imgHeight={250}
           customButton={item => (
