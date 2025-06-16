@@ -12,11 +12,14 @@ export const AuthProvider = ({children}) => {
   }, [])
 
   const login = (data) => {
-    console.log("Usuario:",data)
-    localStorage.setItem("userName",data.nome)
-    localStorage.setItem("email", data.email)
-    setUsuarioNome(data.nome)
-  }
+  const nome = data.nome_cliente || data.nome || "Visitante";
+  const email = data.email_cliente || data.email || "";
+
+  console.log("Usuário logado:", nome, email);
+  localStorage.setItem("userName", nome);
+  localStorage.setItem("email", email);
+  setUsuarioNome(nome);
+};
 
   const logout = () => {
     localStorage.removeItem("userName")

@@ -388,6 +388,26 @@ app.get('/produtos/estoque-baixo', (req, res) => {
   );
 });
 
+app.post('/login', (req, res) => {
+  const { email, senha } = req.body;
+
+  const query = `SELECT * FROM cliente WHERE email_cliente = ? AND senha_cliente = ?`;
+  
+  connection.query(query, [email, senha], (error, results) => {
+    if (error) {
+      console.error("Erro ao fazer login:", error);
+      return res.status(500).json({ error: 'Erro no servidor' });
+    }
+
+    if (results.length === 0) {
+      return res.status(401).json({ error: 'Email ou senha inválidos' });
+    }
+
+    // Se quiser, pode retornar dados do usuário ou token
+    return res.status(200).json({ message: 'Login bem-sucedido', usuario: results[0] });
+  });
+});
+
 // --- ROTAS CARDÁPIO ---
 
 // Buscar todos os itens do cardápio 

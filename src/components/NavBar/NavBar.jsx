@@ -8,7 +8,7 @@ import styles from "./NavBar.module.css"
 
 const NavBar = () => {
 
-  const { usuarioNome, logout } = useContext(AuthContext);
+  const { login, logout } = useContext(AuthContext);
 
   return (
 
@@ -24,7 +24,7 @@ const NavBar = () => {
           <Navbar.Toggle aria-controls="minha-nav" />
           <Navbar.Collapse id="minha-nav">
             {
-              usuarioNome === "Visitante" && 
+              login.email != "" && 
               ( 
                 <Nav className="me-auto">
                   <Nav.Link href="/relatorio"
@@ -46,7 +46,7 @@ const NavBar = () => {
               <Navbar.Text style={{ color: "white", marginRight: "5px" }}>
                 {/* Caso usuario tenha feito login, aparece sair, se não aparece entrar */}
                 {
-                  usuarioNome === "Visitante" ? (
+                  login.email === "" && (
                     <div className="d-flex align-items-center gap-3">
                       <Nav.Link 
                       href="/cadastro">
@@ -61,18 +61,6 @@ const NavBar = () => {
                         Login
                       </Button>
                     </div>
-                  ) : (
-                    <>
-                      Usuario: {usuarioNome}
-                      <Button 
-                        className="shadow"
-                        variant="danger" 
-                        href="/login"
-                        style={{ width: "100px", margin: "10px" }}
-                        onClick={logout}>
-                        Sair
-                      </Button>
-                    </>
                   )
                 }
               </Navbar.Text>
