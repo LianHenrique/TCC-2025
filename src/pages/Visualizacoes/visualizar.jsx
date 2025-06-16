@@ -194,7 +194,12 @@ const Visualizar = () => {
                                         Alterar
                                     </Button>
 
-                                    <Button variant="danger" onClick={() => handleDelete(id)}>
+                                    <Button variant="danger" onClick={() => {
+                                        const confirmar = window.confirm('Deseja deletar o insumo?')
+                                        if(confirmar){
+                                            handleDelete(id)
+                                        }
+                                    }}>
                                         Deletar
                                     </Button>
                                 </Col>
