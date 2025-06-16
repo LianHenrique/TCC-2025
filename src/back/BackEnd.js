@@ -8,10 +8,6 @@ app.use(cors());
 app.use(express.json());
 
 // --- ROTAS FUNCIONÁRIOS ---
-<<<<<<< HEAD
-
-=======
->>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
 // Buscar funcionário por nome via query param
 app.get('/funcionarios', (req, res) => {
   const { nome_funcionario } = req.query;
@@ -153,23 +149,9 @@ app.post("/insumos/insert", (req, res) => {
     imagem_url
   } = req.body;
 
-<<<<<<< HEAD
-  const sql =
-    `INSERT INTO insumos 
-  (
-  nome_insumos, 
-  valor_insumos,
-  quantidade_insumos, 
-  data_vencimento, 
-  descricao_insumos
-  ) VALUES (?, ?, ?, ?, ?)`;
-
-  connection.query(sql, [nome_insumos, valor_insumos, QTD_insumos, data_vencimento, descricao_insumos], (erro, data) => {
-=======
   const sql = `INSERT INTO insumos (nome_insumos, valor_insumos, categoria, quantidade_insumos, data_vencimento, descricao_insumos, imagem_url) VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
   connection.query(sql, [nome_insumos, valor_insumos, categoria, quantidade_insumos, data_vencimento, descricao_insumos, imagem_url], (erro, data) => {
->>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
     if (erro) {
       console.log(erro);
       return res.status(500).json({ error: 'Erro ao cadastrar insumo' });
@@ -188,11 +170,7 @@ app.post("/funcionarios/insert", (req, res) => {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
   }
 
-<<<<<<< HEAD
-  const sql = `INSERT INTO funcionario (nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario) VALUES (?, ?, ?, ?)`;
-=======
   const sql = `INSERT INTO funcionario (nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario, imagem_url) VALUES (?, ?, ?, ?, ?)`;
->>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
 
   connection.query(sql, [nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario, imagem_url], (error) => {
     if (error) {
@@ -284,11 +262,7 @@ app.put('/insumos_tudo_POST/:id_insumos', (req, res) => {
   const { nome_insumos } = req.body
   const { imagem_url } = req.body
 
-<<<<<<< HEAD
-  const query = 'UPDATE insumos SET quantidade_insumos = ? WHERE id_insumos = ?';
-=======
   const query = 'UPDATE insumos SET quantidade_insumos = ?, nome_insumos = ?, imagem_url = ? WHERE id_insumos = ?';
->>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
 
   connection.query(query, [quantidade_insumos, nome_insumos, imagem_url, id_insumos], (error, results) => {
     if (error) {
@@ -337,17 +311,6 @@ app.get('/insumos/:id_insumos', (req, res) => {
 
 // Inserir insumo
 app.post('/insumos/insert', (req, res) => {
-<<<<<<< HEAD
-  const { nome_produto, valor_produto, filtro, QTD_produto, data_vencimento, descricao_produto } = req.body;
-
-  if (!nome_produto || !valor_produto || !filtro || !QTD_produto || !data_vencimento || !descricao_produto) {
-    return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
-  }
-
-  const sql = `INSERT INTO insumos (nome_produto, valor_produto, filtro, QTD_produto, data_vencimento_prod, descricao_produto) VALUES (?, ?, ?, ?, ?, ?)`;
-
-  connection.query(sql, [nome_produto, valor_produto, filtro, QTD_produto, data_vencimento, descricao_produto], (error) => {
-=======
   const { nome_insumos, imagem_url, valor_insumos, categoria, quantidade_insumos, data_vencimento, descricao_insumos } = req.body;
 
   if (
@@ -365,7 +328,6 @@ app.post('/insumos/insert', (req, res) => {
   const sql = `INSERT INTO insumos (nome_insumos, imagem_url, valor_insumos, categoria, quantidade_insumos, data_vencimento_prod, descricao_produto) VALUES (?, ?, ?, ?, ?, ?, ?)`;
 
   connection.query(sql, [nome_insumos, imagem_url, valor_insumos, categoria, quantidade_insumos, data_vencimento, descricao_insumos], (error) => {
->>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
     if (error) {
       console.error(error);
       return res.status(500).json({ error: 'Erro ao cadastrar insumo' });
@@ -428,9 +390,6 @@ app.get('/cardapio/:id_cardapio', (req, res) => {
   });
 });
 
-<<<<<<< HEAD
-
-=======
 app.put('/AtualizarFuncionario/:id', (req, res) => {
   const { id_funcionario } = req.params;
   const { nome_funcionario, email_funcionario, cargo_funcionario, imagem_url } = req.body;
@@ -458,7 +417,6 @@ app.put('/AtualizarFuncionario/:id', (req, res) => {
     res.json({ message: 'Funcionário atualizado com sucesso' });
   });
 });
->>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
 
 // Rota para notificação de estoque baixo
 app.get('/produtos/estoque-baixo', (req, res) => {
@@ -479,10 +437,6 @@ app.get('/produtos/estoque-baixo', (req, res) => {
   );
 });
 
-<<<<<<< HEAD
-// --- ROTAS CARDÁPIO ---
-
-=======
 app.post('/login', (req, res) => {
   const { email, senha } = req.body;
 
@@ -505,7 +459,6 @@ app.post('/login', (req, res) => {
 
 // --- ROTAS CARDÁPIO ---
 
->>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
 // Buscar todos os itens do cardápio 
 app.get('/cardapio', (req, res) => {
   const sql = `
@@ -606,7 +559,7 @@ app.put('/AtualizarCardapio/:id', (req, res) => {
   connection.query(
     query,
     [imagem_url, nome_item, descricao_item, valor_item, id],
-    (error, results) => {
+    (error) => {
       if (error) {
         return res.status(500).json({ error: "Erro ao atualizar produto do cardápio." });
       }
@@ -615,27 +568,6 @@ app.put('/AtualizarCardapio/:id', (req, res) => {
   )
 })
 
-const sql = `INSERT INTO cliente (email_cliente, senha_cliente) VALUES (?, ?)`;
-
-connection.query(sql, [email, senha], (error) => {
-  if (error) {
-    console.error(error);
-    return res.status(500).json({ error: 'Erro ao cadastrar cliente' });
-  }
-  res.status(201).json({ message: 'Cliente cadastrado com sucesso' });
-});
-
-<<<<<<< HEAD
-// Pegando todos os itend de estoque
-app.get('/estoque', (req, res) => {
-  connection.query(
-    'select * from insumos',
-    (error, results) => {
-      if (error) return res.status(500).json({ error: 'Erro ao buscar estoque' });
-      res.json(results);
-    }
-  );
-=======
 // --- ROTA CLIENTE ---
 
 app.post('/cliente/insert', (req, res) => {
@@ -654,7 +586,6 @@ app.post('/cliente/insert', (req, res) => {
     }
     res.status(201).json({ message: 'Cliente cadastrado com sucesso' });
   });
->>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
 });
 
 
@@ -669,8 +600,6 @@ app.post('/saida-venda', (req, res) => {
 
   const data_saida = new Date().toISOString().slice(0, 10);
 
-<<<<<<< HEAD
-=======
 // --- ROTA ESTOQUE ---
 // Pegando todos os itend de estoque
 app.get('/estoque', (req, res) => {
@@ -682,7 +611,7 @@ app.get('/estoque', (req, res) => {
     }
   );
 });
-
+})
 
 
 // Rota para saída de venda
@@ -695,7 +624,6 @@ app.post('/saida-venda', (req, res) => {
 
   const data_saida = new Date().toISOString().slice(0, 10);
 
->>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
   const buscarInsumosQuery = `
     SELECT id_insumo, quantidade_necessaria
     FROM itemcardapioinsumo
@@ -759,9 +687,7 @@ app.post('/saida-venda', (req, res) => {
         });
     });
   });
-});
-<<<<<<< HEAD
-=======
+})
 
 
 // Deletando item do estoque
@@ -776,9 +702,6 @@ app.delete('/estoqueDeletarIten/:id', async (req, res) => {
     res.status(200).json({ message: 'Insumo deletado com sucesso' })
   })
 })
->>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
-
-
 
 // REQUISIÇÕES PARA RELATÓRIOS
 app.get('/relatorios/diario', async (req, res) => {
@@ -788,20 +711,6 @@ app.get('/relatorios/diario', async (req, res) => {
     const dataInicio = new Date();
     dataInicio.setDate(dataInicio.getDate() - 7);
 
-<<<<<<< HEAD
-
-
-
-// REQUISIÇÕES PARA RELATÓRIOS
-app.get('/relatorios/diario', async (req, res) => {
-  try {
-    // Definir o período (últimos 7 dias)
-    const dataFim = new Date();
-    const dataInicio = new Date();
-    dataInicio.setDate(dataInicio.getDate() - 7);
-
-=======
->>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
     // 1. Buscar vendas e faturamento por dia
     const vendasQuery = `
       SELECT 
@@ -887,11 +796,7 @@ app.get('/filtroCardapio/', async (req, res) => {
       }
     )
   } catch (err) {
-<<<<<<< HEAD
-    console.log('Erro ao fazer requisição');
-=======
     console.log(err, 'Erro ao fazer requisição');
->>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
     res.status(500).json({ error: 'Erro interno no server' })
   }
 })
@@ -905,8 +810,4 @@ app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
 
-<<<<<<< HEAD
 export default app;
-=======
-export default app;
->>>>>>> 33c305463d5239a6f4bd6ead3b0fa7e3abb95574
