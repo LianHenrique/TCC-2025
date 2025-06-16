@@ -1,20 +1,21 @@
-import { Container, FloatingLabel, Form } from "react-bootstrap"
+import { Button, Container, FloatingLabel, Form } from "react-bootstrap"
 import NavBar from "../../components/NavBar/NavBar"
 
 const RecSenha = () => {
     return (
         <div>
             <NavBar />
-            <Form
-                className='shadow'
-                style={{
-                    padding: "30px",
-                    margin: "100px",
-                    borderRadius: "20px",
-                    border: "1px blue solid"
-                }}>
-                <Container>
+            <Container>
+                <Form
+                    className='shadow'
+                    style={{
+                        padding: "30px",
+                        margin: "100px",
+                        borderRadius: "20px",
+                        border: "1px blue solid"
+                    }}>
                     <h1>Recuperação de senha</h1>
+
                     <FloatingLabel
                         controlId="floatingInput"
                         label="Palavra chave"
@@ -28,8 +29,12 @@ const RecSenha = () => {
                             }}
                         />
                     </FloatingLabel>
-                </Container>
-            </Form>
+
+                    <div className="d-flex justify-content-end mt-4">
+                        <Button>Enviar</Button>
+                    </div>
+                </Form>
+            </Container>
         </div>
     )
 }
