@@ -11,7 +11,7 @@ const Funcionarios = () => {
   const [filtro, setFiltro] = useState({ texto: '', filtro: '' });
   const navigate = useNavigate();
 
-  // Função para remover acentos e normalizar o texto
+  // Remove acentos de texto
   const removerAcentos = (texto) => {
     return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   };
@@ -20,19 +20,16 @@ const Funcionarios = () => {
   useEffect(() => {
     fetch('http://localhost:3000/funcionarios')
       .then(response => response.json())
-      .then(data => {
-        setTodosFuncionarios(data);
-        aplicarFiltro(data, filtro);
-      })
+      .then(data => setTodosFuncionarios(data))
       .catch(error => console.error('Erro ao buscar funcionários:', error));
   }, []);
 
-  // Aplica filtro sempre que o estado de filtro mudar
+  // Aplica filtro quando filtro mudar
   useEffect(() => {
     aplicarFiltro(todosFuncionarios, filtro);
-  }, [filtro]);
+  }, [filtro, todosFuncionarios]);
 
-  // Função para aplicar o filtro baseado em texto e cargo
+  // Aplica filtro de nome e cargo
   const aplicarFiltro = (dados, filtro) => {
     const { texto, filtro: cargoFiltro } = filtro;
 
@@ -60,7 +57,7 @@ const Funcionarios = () => {
     setFuncionarios(formatados);
   };
 
-  // Quando clicar no card, redireciona para visualização
+  // Navega ao clicar no card
   const handleCardClick = (id) => {
     navigate(`/visualizar_funcionario/${id}`);
   };
@@ -69,7 +66,8 @@ const Funcionarios = () => {
     <div>
       <NavBar />
       <Container>
-        <h1 style={{ marginTop: "100px" }}>Funcionário</h1>
+        <h1 style={{ marginTop: "100px" }}>Funcionários</h1>
+
         <Pesquisa
           nomeDrop="Cargo"
           navega="/cadastro_funcionario"
@@ -79,8 +77,8 @@ const Funcionarios = () => {
           ]}
           onFilterChange={setFiltro}
         />
+
         <CardGeral
-          filtro=""
           card={funcionarios}
           imgHeight={250}
           onCardClick={handleCardClick}

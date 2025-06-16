@@ -48,18 +48,17 @@ const Login = () => {
 
     <div
       style={{
-        marginTop: "150px"
+        marginTop: "100px"
       }}>
       <NavBar />
       <Container
         style={{
-          width: "650px"
+          maxWidth: "800px"
         }}>
         <Form
           className='shadow'
           style={{
             padding: "30px",
-            margin: "100px",
             borderRadius: "20px",
             border: "1px blue solid"
           }}>

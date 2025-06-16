@@ -49,10 +49,11 @@ const Cadastro = () => {
   };
 
   return (
-    <div style={{ marginTop: '150px' }}>
+    <div style={{ marginTop: '100px' }}>
       <NavBar />
-      <Container style={{ width: '650px' }}>
-        <Form onSubmit={handleSubmit} className="shadow" style={{ padding: '30px', margin: '100px', borderRadius: '20px', border: '1px blue solid' }}>
+      <Container style={{ maxWidth: '800px' }}>
+        <Form onSubmit={handleSubmit} className="shadow" 
+        style={{ padding: '30px', borderRadius: '20px', border: '1px blue solid' }}>
           <h1 style={{ textAlign: 'center' }}>Cadastro</h1>
 
           <FloatingLabel controlId="nome" label="Nome" className="m-2">
