@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Container, Form, FloatingLabel, Dropdown, Button, Badge } from 'react-bootstrap';
 import NavBar from '../../components/NavBar/NavBar';
 import { useParams, useNavigate } from 'react-router';
@@ -16,7 +16,6 @@ const Visualizar_Cardapio = () => {
 
   const unidades = ['g', 'Kg', 'ml', 'L', 'un'];
 
-  // Carregar o produto
   useEffect(() => {
     if (!id) return;
 
@@ -25,7 +24,6 @@ const Visualizar_Cardapio = () => {
       .then(data => {
         const item = Array.isArray(data) ? data[0] : data;
 
-        // Mapeia os insumos vinculados ao produto
         const insumosDoProduto = item.insumos?.map(insumo => ({
           id: insumo.id_insumo,
           nome: insumo.nome_insumos || '',
@@ -42,7 +40,6 @@ const Visualizar_Cardapio = () => {
       });
   }, [id]);
 
-  // Carregar todos os insumos disponíveis
   useEffect(() => {
     fetch('http://localhost:3000/insumos')
       .then(res => res.json())
@@ -120,6 +117,7 @@ const Visualizar_Cardapio = () => {
   if (error) return <p>Erro: {error}</p>;
   if (!produto) return <p>Produto não encontrado.</p>;
 
+  // Define URL da imagem com cache busting e fallback
   const imagemLink = produto.imagem_url?.trim()
     ? `${produto.imagem_url}?t=${new Date().getTime()}`
     : 'https://www.valuehost.com.br/blog/wp-content/uploads/2022/01/post_thumbnail-77d8f2a95f2f41b5863f3fba5a261d7e.jpeg.webp';
@@ -183,7 +181,19 @@ const Visualizar_Cardapio = () => {
               onChange={handleInputChange} />
           </FloatingLabel>
 
-          <img src={imagemLink} alt="Visualização" className="img-fluid rounded mb-4" style={{ maxHeight: '250px' }} />
+          {/* Imagem */}
+          <div className="text-center mb-4">
+            <img
+              src={imagemLink}
+              alt="Visualização do produto"
+              className="img-fluid rounded"
+              style={{ maxHeight: '250px', maxWidth: '100%', objectFit: 'contain' }}
+              onError={e => {
+                e.target.onerror = null;
+                e.target.src = 'https://www.valuehost.com.br/blog/wp-content/uploads/2022/01/post_thumbnail-77d8f2a95f2f41b5863f3fba5a261d7e.jpeg.webp';
+              }}
+            />
+          </div>
 
           <div className="d-flex align-items-center mb-3 gap-2">
             <Dropdown className="shadow rounded-5">
@@ -258,7 +268,7 @@ const Visualizar_Cardapio = () => {
             )}
           </div>
 
-          <Button type="submit" className="shadow mt-4" style={{ width: '100%', borderRadius: '30px' }}>
+          <Button type="submit" className="shadow mt-4" style={{ padding: '15px', width: '100%', borderRadius: '30px' }}>
             Salvar Alterações
           </Button>
 
@@ -267,7 +277,7 @@ const Visualizar_Cardapio = () => {
             type="button"
             onClick={() => navigate('/cardapio')}
             className="shadow mt-2"
-            style={{ width: '100%', borderRadius: '30px' }}>
+            style={{ padding: '15px', width: '100%', borderRadius: '30px' }}>
             Cancelar
           </Button>
         </Form>

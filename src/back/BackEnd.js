@@ -180,16 +180,17 @@ app.post("/insumos/insert", (req, res) => {
 
 
 
+// Inserir funcionário
 app.post("/funcionarios/insert", (req, res) => {
-  const { nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario } = req.body;
+  const { nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario, imagem_url } = req.body;
 
-  if (!nome_funcionario || !cargo_funcionario || !senha_funcionario || !email_funcionario) {
+  if (!nome_funcionario || !cargo_funcionario || !senha_funcionario || !email_funcionario || !imagem_url){
     return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
   }
 
-  const sql = `INSERT INTO funcionario (nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario) VALUES (?, ?, ?, ?)`;
+  const sql = `INSERT INTO funcionario (nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario, imagem_url) VALUES (?, ?, ?, ?, ?)`;
 
-  connection.query(sql, [nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario], (error) => {
+  connection.query(sql, [nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario, imagem_url], (error) => {
     if (error) {
       console.error(error);
       return res.status(500).json({ error: 'Erro ao cadastrar funcionário' });
@@ -197,6 +198,28 @@ app.post("/funcionarios/insert", (req, res) => {
     res.status(201).json({ message: 'Funcionário cadastrado com sucesso' });
   });
 });
+
+
+
+// Deletar funcionário
+app.delete("/deletarFuncionario/:id", (req, res) => {
+  const { id } = req.params;
+  connection.query('DELETE FROM funcionario WHERE id_funcionario = ?', [id],
+    (error, results) => {
+      if (error) {
+        console.error('Erro ao deletar funcionário');
+        return res.status(500).json({ error: 'Erro interno ao deletar funcionário' })
+      }
+
+      if(results.affectedRows === 0){
+        return res.status(404).json({message: 'Funcionário não encontrado'})
+      }
+
+      console.log('Funcionário deletado com sucesso')
+      return res.status(200).json({ message: 'Tudo certo' })
+    }
+  )
+})
 
 
 
@@ -211,6 +234,24 @@ app.get('/insumos', (req, res) => {
     }
   );
 });
+
+
+
+// Deletando os insumos por it
+app.delete('/InsumosDelete/:id', (req, res) => {
+  const {id} = req.params;
+
+  connection.query('DELETE FROM insumos WHERE id_insumos = ?', [id], (error, results) => {
+    if(error){
+      return res.status(500).json({message: console.log('Erro na requisição:', error)})
+    }
+      if(results.affectedRows === 0){
+          return res.status(404).json({message: 'Insumo não encontrado'})
+      }
+        return res.status(200).json({message: 'Insumo deletado com sucesso'})
+  })
+}) 
+
 
 
 // Buscando todos os insumos por id
@@ -367,7 +408,33 @@ app.get('/cardapio/:id_cardapio', (req, res) => {
   });
 });
 
+app.put('/AtualizarFuncionario/:id', (req, res) => {
+  const { id_funcionario } = req.params;
+  const { nome_funcionario, email_funcionario, cargo_funcionario, imagem_url } = req.body;
 
+  if (!nome_funcionario || !email_funcionario || !cargo_funcionario || !imagem_url) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+  }
+
+  const query = `
+    UPDATE funcionario 
+    SET nome_funcionario = ?, email_funcionario = ?, cargo_funcionario = ?, imagem_url = ?
+    WHERE id_funcionario = ?
+  `;
+
+  connection.query(query, [nome_funcionario, email_funcionario, cargo_funcionario, imagem_url, id_funcionario], (error, results) => {
+    if (error) {
+      console.error('Erro ao atualizar funcionário:', error);
+      return res.status(500).json({ error: 'Erro ao atualizar funcionário' });
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Funcionário não encontrado' });
+    }
+
+    res.json({ message: 'Funcionário atualizado com sucesso' });
+  });
+});
 
 // Rota para notificação de estoque baixo
 app.get('/produtos/estoque-baixo', (req, res) => {
@@ -744,7 +811,7 @@ app.get('/filtroCardapio/', async (req, res) => {
       }
     )
   } catch (err) {
-    console.log('Erro ao fazer requisição');
+    console.log(err, 'Erro ao fazer requisição');
     res.status(500).json({ error: 'Erro interno no server' })
   }
 })
