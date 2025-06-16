@@ -408,7 +408,33 @@ app.get('/cardapio/:id_cardapio', (req, res) => {
   });
 });
 
+app.put('/AtualizarFuncionario/:id', (req, res) => {
+  const { id_funcionario } = req.params;
+  const { nome_funcionario, email_funcionario, cargo_funcionario, imagem_url } = req.body;
 
+  if (!nome_funcionario || !email_funcionario || !cargo_funcionario || !imagem_url) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+  }
+
+  const query = `
+    UPDATE funcionario 
+    SET nome_funcionario = ?, email_funcionario = ?, cargo_funcionario = ?, imagem_url = ?
+    WHERE id_funcionario = ?
+  `;
+
+  connection.query(query, [nome_funcionario, email_funcionario, cargo_funcionario, imagem_url, id_funcionario], (error, results) => {
+    if (error) {
+      console.error('Erro ao atualizar funcionário:', error);
+      return res.status(500).json({ error: 'Erro ao atualizar funcionário' });
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Funcionário não encontrado' });
+    }
+
+    res.json({ message: 'Funcionário atualizado com sucesso' });
+  });
+});
 
 // Rota para notificação de estoque baixo
 app.get('/produtos/estoque-baixo', (req, res) => {
@@ -785,7 +811,7 @@ app.get('/filtroCardapio/', async (req, res) => {
       }
     )
   } catch (err) {
-    console.log('Erro ao fazer requisição');
+    console.log(err, 'Erro ao fazer requisição');
     res.status(500).json({ error: 'Erro interno no server' })
   }
 })
