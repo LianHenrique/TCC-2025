@@ -10,13 +10,14 @@ const Funcionarios = () => {
   const [senhaFuncionario, setSenhaFuncionario] = useState('');
   const [confSenhaFuncionario, setConfSenhaFuncionario] = useState('');
   const [cargoFuncionario, setCargoFuncionario] = useState('Cargo'); // Valor padrão
+  const [UrlFuncionario, setUrlFuncionario] = useState('');
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!nomeFuncionario || !emailFuncionario || !senhaFuncionario || !confSenhaFuncionario || cargoFuncionario === 'Cargo') {
+    if (!nomeFuncionario || !emailFuncionario || !senhaFuncionario || !confSenhaFuncionario || !UrlFuncionario || cargoFuncionario === 'Cargo') {
       console.log('Por favor, preencha todos os campos e selecione um cargo.');
       return;
     }
@@ -31,6 +32,7 @@ const Funcionarios = () => {
       email_funcionario: emailFuncionario,
       senha_funcionario: senhaFuncionario,
       cargo_funcionario: cargoFuncionario,
+      imagem_url: UrlFuncionario
     };
 
     try {
@@ -47,6 +49,7 @@ const Funcionarios = () => {
         setEmailFuncionario('');
         setSenhaFuncionario('');
         setConfSenhaFuncionario('');
+        setUrlFuncionario('');
         setCargoFuncionario('Cargo');
         navigate('/funcionarios');
       } else {
@@ -95,7 +98,7 @@ const Funcionarios = () => {
               onChange={(e) => setEmailFuncionario(e.target.value)}
               className="rounded-5 shadow mt-3"
               style={{ border: 'none' }}
-              showButtons = {false}
+              showButtons={false}
             />
           </FloatingLabel>
 
@@ -105,6 +108,18 @@ const Funcionarios = () => {
               placeholder="Senha"
               value={senhaFuncionario}
               onChange={(e) => setSenhaFuncionario(e.target.value)}
+              className="rounded-5 shadow mt-3"
+              style={{ border: 'none' }}
+            />
+          </FloatingLabel>
+
+          {/* URL funcionário */}
+          <FloatingLabel controlId="URl_funcionario" label="URl do funcionário" className="m-2">
+            <Form.Control
+              type="text"
+              placeholder="URL:"
+              value={UrlFuncionario}
+              onChange={(e) => setUrlFuncionario(e.target.value)}
               className="rounded-5 shadow mt-3"
               style={{ border: 'none' }}
             />
@@ -153,6 +168,7 @@ const Funcionarios = () => {
                 setEmailFuncionario('');
                 setSenhaFuncionario('');
                 setConfSenhaFuncionario('');
+                setUrlFuncionario('');
                 setCargoFuncionario('Cargo');
               }}
             >

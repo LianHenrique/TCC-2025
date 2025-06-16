@@ -165,8 +165,8 @@ const Visualizar = () => {
                                     type="number"
                                     name="Preco"
                                     style={{ height: "50px" }}
-                                    placeholder={`Preco atual: ${insumos[0]?.Preco}`}
-                                    value={novaQuantidade}
+                                    placeholder={`Alterar preço: ${insumos[0]?.Preco}`}
+                                    value={novoPreco}
                                     onChange={(e) => setNovaQuantidade(e.target.value)}
                                 />
                             </Form.Group>
