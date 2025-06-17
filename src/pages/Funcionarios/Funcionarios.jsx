@@ -8,7 +8,10 @@ import Button from 'react-bootstrap/Button';
 import { FaEdit, FaRegTrashAlt } from 'react-icons/fa';
 
 const Funcionarios = () => {
-  const [funcionarios, setFuncionarios] = useState([]);
+  const [todosFuncionarios, setTodosFuncionarios] = useState([]);  // Lista completa
+  const [funcionarios, setFuncionarios] = useState([]);          // Lista filtrada
+  const [filtro, setFiltro] = useState({ texto: '', filtro: '' }); // Estado filtro
+
   const navigate = useNavigate();
 
   // Remove acentos de texto
@@ -24,8 +27,9 @@ const Funcionarios = () => {
       .catch(error => console.error('Erro ao buscar funcionários:', error));
   }, []);
 
-  // Aplica filtro quando filtro mudar
+  // Aplica filtro quando filtro ou lista completa mudam
   useEffect(() => {
+    if (!todosFuncionarios.length) return;  // evita filtro antes de dados carregarem
     aplicarFiltro(todosFuncionarios, filtro);
   }, [filtro, todosFuncionarios]);
 
@@ -60,8 +64,7 @@ const Funcionarios = () => {
   // Navega ao clicar no card
   const handleCardClick = (id) => {
     navigate(`/visualizar_funcionario/${id}`);
-  }
-
+  };
 
   const handleDelete = (id) => {
     fetch(`http://localhost:3000/deletarFuncionario/${id}`, {
@@ -69,16 +72,16 @@ const Funcionarios = () => {
     })
       .then(response => {
         if (!response.ok) {
-          throw new Error('Erro ao deletar o funcionário')
+          throw new Error('Erro ao deletar o funcionário');
         }
-        console.log('Funcionário deletado com sucesso')
-        window.location.reload();
+        console.log('Funcionário deletado com sucesso');
+        // Atualiza a lista local para evitar reload da página
+        setTodosFuncionarios(prev => prev.filter(f => f.id_funcionario !== id));
       })
       .catch(error => {
-        console.error(error)
-      })
-  }
-
+        console.error(error);
+      });
+  };
 
   return (
     <div>
@@ -91,15 +94,11 @@ const Funcionarios = () => {
           nomeDrop="Cargo"
           navega="/cadastro_funcionario"
           lista={[
-            {
-              lista: "Gerente",
-              link: "#gerente"
-            },
-            {
-              lista: "Estoquista",
-              link: "#estoquista"
-            }
+            { texto: "Gerente", link: "#gerente" },
+            { texto: "Estoquista", link: "#estoquista" }
           ]}
+          filtro={filtro}
+          setFiltro={setFiltro}  // IMPORTANTE: passar o setter para Pesquisa atualizar filtro
         />
 
         <CardGeral
@@ -114,7 +113,7 @@ const Funcionarios = () => {
                 className='rounded-circle fs-5 text-center shadow m-1'
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (item.acoes && item.acoes[0]?.onClick) item.acoes[0].onClick();
+                  navigate(`/editar_funcionario/${item.id}`);
                 }}
               >
                 <FaEdit />
@@ -124,20 +123,15 @@ const Funcionarios = () => {
                 className='rounded-circle fs-5 text-center shadow m-1'
                 onClick={(e) => {
                   e.stopPropagation();
-                  {
-                    const confirmar = window.confirm('Deseja deletar o funcionário?')
-                    if (confirmar) {
-                      handleDelete(item.id);
-                    }
-                  } 
-                  if (item.acoes && item.acoes[1]?.onClick) item.acoes[1].onClick();
+                  if (window.confirm('Deseja deletar o funcionário?')) {
+                    handleDelete(item.id);
+                  }
                 }}
               >
                 <FaRegTrashAlt />
               </Button>
             </>
-          )
-          }
+          )}
         />
       </Container>
     </div>
