@@ -13,11 +13,47 @@ const Cadastro = () => {
   const [confSenha, setConfSenha] = useState('');
   const [cnpj, setCnpj] = useState('');
 
+    const validarEmail = (email) => {
+        const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+        return regex.test(email);
+       };
+
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
+  //validador de campus 
+  const validarCampos = () => {
+   
+    
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+     if (!nome || !email || !senha || !confSenha || !cnpj) {
+      alert('Todos os campos são obrigatórios!');
+      return false;
+    }
+
+    if (!validarEmail(email)) {
+      alert('Email inválido!');
+      return false;
+    }
+
+    if (senha.length < 6) {
+      alert('A senha deve ter pelo menos 6 caracteres!');
+      return false;
+    }
+
+    if (cnpj.length !== 14) {
+      alert('CNPJ deve ter 14 dígitos!');
+      return false;
+    }
+
+    if(nome.length < 4){
+      alert('O nome deve ter pello menos 4 caracteres!');
+      return false;
+    }
 
     if (senha !== confSenha) {
       alert('As senhas não coincidem!');
@@ -61,6 +97,8 @@ const Cadastro = () => {
       console.error(err);
       alert('Erro de rede ou servidor.');
     }
+
+    return true;
   };
 
   return (
@@ -127,6 +165,7 @@ const Cadastro = () => {
           </FloatingLabel>
 
           <Button
+            onClick ={validarCampos}
             type="submit"
             className="shadow mt-4"
             style={{ padding: '15px', width: '90%', borderRadius: '30px', marginLeft: '20px' }}>
