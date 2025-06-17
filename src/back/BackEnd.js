@@ -891,6 +891,19 @@ app.get('/filtroCardapio/', async (req, res) => {
 })
 
 
+//DELETANDO ITTEM DO CARDÁPIO
+app.delete('/delete/:id', async (req, res) => {
+  const id = req.params.id;
+
+  connection.query('DELETE FROM cardapio WHERE id_cardapio = ?', [id], (err, results) => {
+    if (err) {
+      console.error('Erro ao deletar item:', err);
+      return res.status(500).json({ error: 'Erro ao deletar item' });
+    }
+
+    return res.status(200).json({ message: 'Produto deletado com sucesso' });
+  });
+});
 
 
 // --- INICIANDO SERVIDOR ---
