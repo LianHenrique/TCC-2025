@@ -89,7 +89,7 @@ app.get('/produtos/:id_produto', (requisicao, resposta) => {
 
 app.get('/produtos', (req, res) => {
   connection.query(
-    'SELECT id_produto, nome_produto, imagem_url, categoria, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM insumos',
+    'SELECT id_insumos, nome_insumos, imagem_url, categoria, quantidade_insumos, unidade_medida, valor_insumos, data_vencimento FROM insumos',
     (error, resultados) => {
       if (error) {
         return res.status(500).json({ error: 'Erro ao buscar produtos' });
@@ -120,6 +120,24 @@ app.get('/produtos/notificacao', (req, res) => {
     }
   )
 });
+
+
+
+// Buscando todos os itens do cardápio
+// No select eu só peguei o que importa pra a parte fake 
+// app.get('/cardapio', (requisicao, resposta) => {
+//   connection.query(
+//     'SELECT * FROM cardapio',
+//     (error, resultados) => {
+//       if (error) {
+//         return resposta.status(500).json({ error: 'Erro ao buscar produtos' });
+//       }
+//       resposta.json(resultados);
+//     }
+//   );
+// });
+
+
 
 // cadastro adm
 app.post("/cliente/insert", (req, res) => {
@@ -209,14 +227,13 @@ app.delete("/deletarFuncionario/:id", (req, res) => {
 // Buscar todos insumos
 app.get('/insumos', (req, res) => {
   connection.query(
-    `SELECT * FROM insumos`,
+    'SELECT id_insumos, nome_insumos, descricao_insumos, quantidade_insumos, unidade_medida, valor_insumos, data_vencimento, imagem_url, categoria FROM insumos',
     (error, results) => {
       if (error) return res.status(500).json({ error: 'Erro ao buscar insumos' });
       res.json(results);
     }
   );
 });
-
 
 
 // Deletando os insumos por it
@@ -259,12 +276,13 @@ app.get('/insumos_tudo/:id_insumos', (req, res) => {
 app.put('/insumos_tudo_POST/:id_insumos', (req, res) => {
   const { id_insumos } = req.params;
   const { quantidade_insumos } = req.body;
-  const { nome_insumos } = req.body
-  const { imagem_url } = req.body
+  const { nome_insumos } = req.body;
+  const { categoria } = req.body;
+  const { imagem_url } = req.body;
 
-  const query = 'UPDATE insumos SET quantidade_insumos = ?, nome_insumos = ?, imagem_url = ? WHERE id_insumos = ?';
+  const query = 'UPDATE insumos SET quantidade_insumos = ?, nome_insumos = ?, categoria = ?, imagem_url = ? WHERE id_insumos = ?';
 
-  connection.query(query, [quantidade_insumos, nome_insumos, imagem_url, id_insumos], (error, results) => {
+  connection.query(query, [quantidade_insumos, nome_insumos, categoria, imagem_url, id_insumos], (error, results) => {
     if (error) {
       return res.status(500).json({ error: 'Erro ao atualizar insumo' });
     }
@@ -463,25 +481,25 @@ app.post('/login', (req, res) => {
 app.get('/cardapio', (req, res) => {
   const sql = `
     SELECT 
-  c.id_cardapio,
-  c.nome_item,
-  c.descricao_item,
-  c.valor_item,
-  c.imagem_url,
-  c.ativo,
-  c.data_cadastro,
-  c.categoria,
-  GROUP_CONCAT(
-    CONCAT(
-      '{"nome_insumo":"', IFNULL(i.nome_insumos, ''), '",',
-      '"quantidade":"', IFNULL(ici.quantidade_necessaria, ''), '",',
-      '"unidade_medida":"', IFNULL(ici.unidade_medida_receita, ''), '"}'
-    )
-  ) AS insumos
-FROM cardapio c
-LEFT JOIN itemcardapioinsumo ici ON ici.id_item_cardapio = c.id_cardapio
-LEFT JOIN insumos i ON i.id_insumos = ici.id_insumo
-GROUP BY c.id_cardapio
+      c.id_cardapio,
+      c.nome_item,
+      c.descricao_item,
+      c.valor_item,
+      c.imagem_url,
+      c.ativo,
+      c.data_cadastro,
+      c.categoria,
+      GROUP_CONCAT(
+        CONCAT(
+          '{"nome_insumo":"', IFNULL(i.nome_insumos, ''), '",',
+          '"quantidade":"', IFNULL(ici.quantidade_necessaria, ''), '",',
+          '"unidade_medida":"', IFNULL(ici.unidade_medida_receita, ''), '"}'
+        )
+      ) AS insumos
+    FROM Cardapio c
+    LEFT JOIN ItemCardapioInsumo ici ON ici.id_item_cardapio = c.id_cardapio
+    LEFT JOIN Insumos i ON i.id_insumos = ici.id_insumo
+    GROUP BY c.id_cardapio
   `;
 
   connection.query(sql, (error, results) => {
@@ -490,11 +508,13 @@ GROUP BY c.id_cardapio
       return res.status(500).json({ error: 'Erro ao buscar cardápio' });
     }
 
+    // Corrige o parse do campo insumos para array de objetos
     const formattedResults = results.map(item => ({
       ...item,
       insumos: (() => {
+        if (!item.insumos) return [];
         try {
-          return typeof item.insumos === 'string' ? JSON.parse(item.insumos) : item.insumos;
+          return JSON.parse(`[${item.insumos}]`);
         } catch {
           return [];
         }
@@ -554,19 +574,72 @@ app.post('/cardapio/insert', (req, res) => {
 // ROTA DO BOTÃO DE ALTERAR DA TELA DE CADASTRO DE VISUALIZAR CARDÁPIO (update)
 app.put('/AtualizarCardapio/:id', (req, res) => {
   const { id } = req.params;
-  const { imagem_url, nome_item, descricao_item, valor_item } = req.body;
-  const query = 'UPDATE cardapio SET imagem_url = ?, nome_item = ?, descricao_item = ?, valor_item = ? WHERE id_cardapio = ?'
+  const { imagem_url, nome_item, descricao_item, valor_item, insumos } = req.body;
+
+  console.log('Atualizando cardápio ID:', id);
+  console.log('Dados recebidos:', req.body);
+
+  const updateCardapioQuery = `
+    UPDATE cardapio 
+    SET imagem_url = ?, nome_item = ?, descricao_item = ?, valor_item = ? 
+    WHERE id_cardapio = ?
+  `;
+
   connection.query(
-    query,
+    updateCardapioQuery,
     [imagem_url, nome_item, descricao_item, valor_item, id],
-    (error) => {
+    (error, results) => {
       if (error) {
+        console.error('Erro ao atualizar cardápio:', error);
         return res.status(500).json({ error: "Erro ao atualizar produto do cardápio." });
       }
-      res.status(200).json({ message: 'Livro atualizado com sucesso!' })
+
+      // Deleta insumos antigos do item do cardápio
+      const deleteInsumosQuery = 'DELETE FROM ItemCardapioInsumo WHERE id_item_cardapio = ?';
+      connection.query(deleteInsumosQuery, [id], (error) => {
+        if (error) {
+          console.error('Erro ao deletar insumos antigos:', error);
+          return res.status(500).json({ error: "Erro ao remover insumos antigos." });
+        }
+
+        if (!Array.isArray(insumos) || insumos.length === 0) {
+          console.warn('Nenhum insumo recebido ou lista vazia:', insumos);
+          return res.status(200).json({ message: 'Produto atualizado sem insumos.' });
+        }
+
+        const values = insumos.map(insumo => {
+          console.log('Insumo processado:', insumo);
+          return [
+            id, // id_item_cardapio
+            insumo.id_insumo,
+            insumo.quantidade_necessaria,
+            insumo.unidade_medida_receita
+          ];
+        });
+
+        console.log('Valores para INSERT:', values);
+
+        const insertInsumoQuery = `
+          INSERT INTO ItemCardapioInsumo 
+          (id_item_cardapio, id_insumo, quantidade_necessaria, unidade_medida_receita)
+          VALUES ?
+        `;
+
+        connection.query(insertInsumoQuery, [values], (error) => {
+          if (error) {
+            console.error('❌ Erro ao inserir insumos:', error);
+            return res.status(500).json({ error: "Erro ao adicionar novos insumos." });
+          }
+
+          console.log('✅ Produto e insumos atualizados com sucesso!');
+          res.status(200).json({ message: 'Produto e insumos atualizados com sucesso!' });
+        });
+      });
     }
-  )
-})
+  );
+});
+
+
 
 // --- ROTA CLIENTE ---
 
@@ -590,19 +663,11 @@ app.post('/cliente/insert', (req, res) => {
 
 
 
-// Rota para saída de venda
-app.post('/saida-venda', (req, res) => {
-  const { id_cardapio } = req.body;
 
-  if (!id_cardapio) {
-    return res.status(400).json({ error: 'ID do item do cardápio não fornecido' });
-  }
 
-  const data_saida = new Date().toISOString().slice(0, 10);
 
 // --- ROTA ESTOQUE ---
 // Pegando todos os itend de estoque
-})
 
 app.get('/estoque', (req, res) => {
   connection.query(
@@ -615,6 +680,8 @@ app.get('/estoque', (req, res) => {
     }
   );
 });
+
+
 
 // Rota para saída de venda
 app.post('/saida-venda', (req, res) => {
@@ -689,97 +756,120 @@ app.post('/saida-venda', (req, res) => {
         });
     });
   });
-})
+});
 
 
 // Deletando item do estoque
-app.delete('/estoqueDeletarIten/:id', async (req, res) => {
-  const id = req.params.id
-  console.log('Recebido para deletar id:', id)
-
+app.delete('/insumos/:id', (req, res) => {
+  const { id } = req.params;
   connection.query('DELETE FROM insumos WHERE id_insumos = ?', [id], (error, results) => {
     if (error) {
-      return res.status(500).json({ error: 'Erro ao deletar iten do estoque' })
+      return res.status(500).json({ error: 'Erro ao deletar insumo do estoque' });
     }
-    res.status(200).json({ message: 'Insumo deletado com sucesso' })
-  })
-})
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ message: 'Insumo não encontrado' });
+    }
+    res.status(200).json({ message: 'Insumo deletado com sucesso' });
+  });
+});
+
+
 
 // REQUISIÇÕES PARA RELATÓRIOS
-app.get('/relatorios/diario', async (req, res) => {
+// Rota para relatório de insumos com maiores saídas por dia
+// Endpoint para relatório diário de insumos mais vendidos
+app.get('/relatorios/insumos-diario', async (req, res) => {
   try {
-    // Definir o período (últimos 7 dias)
-    const dataFim = new Date();
-    const dataInicio = new Date();
-    dataInicio.setDate(dataInicio.getDate() - 7);
-
-    // 1. Buscar vendas e faturamento por dia
-    const vendasQuery = `
+    const query = `
       SELECT 
-        DATE(data_saida) as dia,
-        COUNT(DISTINCT id_registro_saida) as qtd_vendas,
-        SUM(c.valor_item) as faturamento
+        DATE(r.data_saida) AS dia,
+        i.nome_insumos,
+        i.categoria,
+        SUM(r.quantidade_saida) AS quantidade_total,
+        i.unidade_medida
       FROM registrosaidaproduto r
-      JOIN itemcardapioinsumo ici ON ici.id_insumo = r.id_insumos_RegistroSaidaProduto
-      JOIN cardapio c ON c.id_cardapio = ici.id_item_cardapio
-      WHERE motivo_saida = 'Venda'
-        AND data_saida BETWEEN ? AND ?
-      GROUP BY DATE(data_saida)
-      ORDER BY dia ASC
+      JOIN insumos i ON r.id_insumos_registroSaidaProduto = i.id_insumos
+      WHERE r.motivo_saida = 'Venda'
+      GROUP BY DATE(r.data_saida), i.nome_insumos, i.categoria, i.unidade_medida
+      ORDER BY dia DESC, quantidade_total DESC
     `;
 
-    // 2. Buscar custos dos insumos por dia
-    const custosQuery = `
+    connection.query(query, (error, results) => {
+      if (error) {
+        console.error('Erro ao buscar relatório de insumos:', error);
+        return res.status(500).json({ error: 'Erro ao gerar relatório' });
+      }
+
+      // Organizar os dados por dia
+      const relatorioPorDia = {};
+      results.forEach(row => {
+        if (!relatorioPorDia[row.dia]) {
+          relatorioPorDia[row.dia] = [];
+        }
+        relatorioPorDia[row.dia].push({
+          nome: row.nome_insumos,
+          categoria: row.categoria,
+          quantidade: row.quantidade_total,
+          unidade: row.unidade_medida
+        });
+      });
+
+      res.json({
+        dias: Object.keys(relatorioPorDia),
+        dados: relatorioPorDia
+      });
+    });
+  } catch (err) {
+    console.error('Erro no relatório de insumos:', err);
+    res.status(500).json({ error: 'Erro interno no servidor' });
+  }
+});
+
+// Endpoint para relatório semanal de insumos mais vendidos
+app.get('/relatorios/insumos-semanal', async (req, res) => {
+  try {
+    const query = `
       SELECT 
-        DATE(data_saida) as dia,
-        SUM(i.valor_insumos * r.quantidade_saida) as custo_total,
-        COUNT(DISTINCT r.id_registro_saida) as qtd_vendas
+        YEARWEEK(r.data_saida) AS semana,
+        i.nome_insumos,
+        i.categoria,
+        SUM(r.quantidade_saida) AS quantidade_total,
+        i.unidade_medida
       FROM registrosaidaproduto r
-      JOIN itemcardapioinsumo ici ON ici.id_insumo = r.id_insumos_RegistroSaidaProduto
-      JOIN insumos i ON i.id_insumos = ici.id_insumo
-      WHERE motivo_saida = 'Venda'
-        AND data_saida BETWEEN ? AND ?
-      GROUP BY DATE(data_saida)
-      ORDER BY dia ASC
+      JOIN insumos i ON r.id_insumos_registroSaidaProduto = i.id_insumos
+      WHERE r.motivo_saida = 'Venda'
+      GROUP BY YEARWEEK(r.data_saida), i.nome_insumos, i.categoria, i.unidade_medida
+      ORDER BY semana DESC, quantidade_total DESC
     `;
 
-    const [vendas, custos] = await Promise.all([
-      new Promise((resolve) => connection.query(vendasQuery, [dataInicio, dataFim], (err, results) => resolve(results))),
-      new Promise((resolve) => connection.query(custosQuery, [dataInicio, dataFim], (err, results) => resolve(results)))
-    ]);
+    connection.query(query, (error, results) => {
+      if (error) {
+        console.error('Erro ao buscar relatório semanal de insumos:', error);
+        return res.status(500).json({ error: 'Erro ao gerar relatório semanal' });
+      }
 
-    // Combinar os resultados
-    const diasUnicos = [...new Set([
-      ...vendas.map(v => v.dia),
-      ...custos.map(c => c.dia)
-    ])].sort();
+      // Organizar os dados por semana
+      const relatorioPorSemana = {};
+      results.forEach(row => {
+        if (!relatorioPorSemana[row.semana]) {
+          relatorioPorSemana[row.semana] = [];
+        }
+        relatorioPorSemana[row.semana].push({
+          nome: row.nome_insumos,
+          categoria: row.categoria,
+          quantidade: row.quantidade_total,
+          unidade: row.unidade_medida
+        });
+      });
 
-    const response = {
-      dias: diasUnicos.map(dia => new Date(dia).toLocaleDateString('pt-BR')),
-      dados: diasUnicos.map(dia => {
-        const vendaDia = vendas.find(v => v.dia === dia) || {};
-        const custoDia = custos.find(c => c.dia === dia) || {};
-
-        const qtdClientes = vendaDia.qtd_vendas || 1; // Evitar divisão por zero
-        const custoMedioCliente = custoDia.custo_total ? custoDia.custo_total / qtdClientes : 0;
-        const lucroMedioCliente = vendaDia.faturamento ? (vendaDia.faturamento - (custoDia.custo_total || 0)) / qtdClientes : 0;
-
-        return {
-          dia,
-          qtd_clientes: qtdClientes,
-          custo_total: custoDia.custo_total || 0,
-          faturamento: vendaDia.faturamento || 0,
-          custo_medio_cliente: custoMedioCliente,
-          lucro_medio_cliente: lucroMedioCliente,
-          lucro_total: (vendaDia.faturamento || 0) - (custoDia.custo_total || 0)
-        };
-      })
-    };
-
-    res.json(response);
-  } catch (error) {
-    console.error('Erro no relatório diário:', error);
-    res.status(500).json({ error: 'Erro ao gerar relatório' });
+      res.json({
+        semanas: Object.keys(relatorioPorSemana),
+        dados: relatorioPorSemana
+      });
+    });
+  } catch (err) {
+    console.error('Erro no relatório semanal de insumos:', err);
+    res.status(500).json({ error: 'Erro interno no servidor' });
   }
 });
 
@@ -804,6 +894,19 @@ app.get('/filtroCardapio/', async (req, res) => {
 })
 
 
+//DELETANDO ITTEM DO CARDÁPIO
+app.delete('/delete/:id', async (req, res) => {
+  const id = req.params.id;
+
+  connection.query('DELETE FROM cardapio WHERE id_cardapio = ?', [id], (err, results) => {
+    if (err) {
+      console.error('Erro ao deletar item:', err);
+      return res.status(500).json({ error: 'Erro ao deletar item' });
+    }
+
+    return res.status(200).json({ message: 'Produto deletado com sucesso' });
+  });
+});
 
 
 // --- INICIANDO SERVIDOR ---

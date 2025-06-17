@@ -8,18 +8,15 @@ import Button from 'react-bootstrap/Button';
 import { FaEdit, FaRegTrashAlt } from 'react-icons/fa';
 
 const Funcionarios = () => {
-  const [todosFuncionarios, setTodosFuncionarios] = useState([]);  // Lista completa
-  const [funcionarios, setFuncionarios] = useState([]);          // Lista filtrada
-  const [filtro, setFiltro] = useState({ texto: '', filtro: '' }); // Estado filtro
-
+  const [todosFuncionarios, setTodosFuncionarios] = useState([]);
+  const [funcionarios, setFuncionarios] = useState([]);
+  const [filtro, setFiltro] = useState({ texto: '', filtro: '' });
   const navigate = useNavigate();
 
-  // Remove acentos de texto
   const removerAcentos = (texto) => {
     return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   };
 
-  // Carrega os funcionários ao iniciar
   useEffect(() => {
     fetch('http://localhost:3000/funcionarios')
       .then(response => response.json())
@@ -27,13 +24,11 @@ const Funcionarios = () => {
       .catch(error => console.error('Erro ao buscar funcionários:', error));
   }, []);
 
-  // Aplica filtro quando filtro ou lista completa mudam
   useEffect(() => {
     if (!todosFuncionarios.length) return;  // evita filtro antes de dados carregarem
     aplicarFiltro(todosFuncionarios, filtro);
   }, [filtro, todosFuncionarios]);
 
-  // Aplica filtro de nome e cargo
   const aplicarFiltro = (dados, filtro) => {
     const { texto, filtro: cargoFiltro } = filtro;
 
@@ -61,7 +56,6 @@ const Funcionarios = () => {
     setFuncionarios(formatados);
   };
 
-  // Navega ao clicar no card
   const handleCardClick = (id) => {
     navigate(`/visualizar_funcionario/${id}`);
   };
@@ -75,8 +69,7 @@ const Funcionarios = () => {
           throw new Error('Erro ao deletar o funcionário');
         }
         console.log('Funcionário deletado com sucesso');
-        // Atualiza a lista local para evitar reload da página
-        setTodosFuncionarios(prev => prev.filter(f => f.id_funcionario !== id));
+        window.location.reload();
       })
       .catch(error => {
         console.error(error);
@@ -94,11 +87,13 @@ const Funcionarios = () => {
           nomeDrop="Cargo"
           navega="/cadastro_funcionario"
           lista={[
-            { texto: "Gerente", link: "#gerente" },
-            { texto: "Estoquista", link: "#estoquista" }
+            { texto: "Gerente", value: "Gerente" },
+            { texto: "ADM", value: "ADM" },
+            { texto: "Funcionario", value: "Funcionario" }
           ]}
-          filtro={filtro}
-          setFiltro={setFiltro}  // IMPORTANTE: passar o setter para Pesquisa atualizar filtro
+          onFilterChange={(filtroSelecionado) =>
+            setFiltro({ ...filtro, filtro: filtroSelecionado })
+          }
         />
 
         <CardGeral
@@ -106,14 +101,14 @@ const Funcionarios = () => {
           imgHeight={250}
           onCardClick={handleCardClick}
           showButtons={false}
-          customButton={item => (
+          customButton={(item) => (
             <>
               <Button
                 variant='warning'
                 className='rounded-circle fs-5 text-center shadow m-1'
                 onClick={(e) => {
                   e.stopPropagation();
-                  navigate(`/editar_funcionario/${item.id}`);
+                  navigate(`/visualizar_funcionario/${item.id}`);
                 }}
               >
                 <FaEdit />

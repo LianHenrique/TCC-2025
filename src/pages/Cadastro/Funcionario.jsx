@@ -1,17 +1,18 @@
-import { useState } from 'react';
-import '../Style/login.css'; // Importa o CSS
+import { useState, useEffect } from 'react';
+import '../Style/login.css';
 import NavBar from '../../components/NavBar/NavBar';
 import { Button, Container, FloatingLabel, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router';
+import Pesquisa from '../../components/Pesquisa/Pesquisa'; // Certifique-se de importar corretamente
 
 const Funcionarios = () => {
   const [nomeFuncionario, setNomeFuncionario] = useState('');
   const [emailFuncionario, setEmailFuncionario] = useState('');
   const [senhaFuncionario, setSenhaFuncionario] = useState('');
   const [confSenhaFuncionario, setConfSenhaFuncionario] = useState('');
-  const [cargoFuncionario, setCargoFuncionario] = useState('Cargo'); // Valor padrão
-  const [urlFuncionario, setUrlFuncionario] = useState('');
-  const [error, setError] = useState('');
+  const [cargoFuncionario, setCargoFuncionario] = useState('Cargo');
+  const [UrlFuncionario, setUrlFuncionario] = useState('');
+  const [filtro, setFiltro] = useState('Todos');
 
   const navigate = useNavigate();
 
@@ -47,7 +48,6 @@ const Funcionarios = () => {
 
       if (res.ok) {
         console.log('Funcionário cadastrado com sucesso!');
-        // Resetar o formulário
         setNomeFuncionario('');
         setEmailFuncionario('');
         setSenhaFuncionario('');
@@ -67,16 +67,23 @@ const Funcionarios = () => {
   return (
     <div style={{ marginTop: '100px' }}>
       <NavBar />
+      <Pesquisa
+        nomeDrop="Cargo"
+        navega="/cadastro_funcionario"
+        onFilterChange={setFiltro}
+        lista={[
+          { texto: "ADM", value: "ADM" },
+          { texto: "Gerente", value: "Gerente" },
+          { texto: "Funcionario", value: "Funcionario" },
+        ]}
+      />
+
       <Container style={{ maxWidth: "800px" }}>
         <Form
           onSubmit={handleSubmit}
           className="shadow"
-          style={{
-            padding: '30px',
-            borderRadius: '20px',
-            border: '1px blue solid',
-          }}
-        >
+          style={{ padding: '30px', borderRadius: '20px', border: '1px blue solid' }}>
+
           <h1 style={{ textAlign: 'center' }}>Cadastro</h1>
 
           {error && (
@@ -118,7 +125,7 @@ const Funcionarios = () => {
             />
           </FloatingLabel>
 
-          <FloatingLabel controlId="urlFuncionario" label="URL do funcionário" className="m-2">
+          <FloatingLabel controlId="URl_funcionario" label="URl do funcionário" className="m-2">
             <Form.Control
               type="text"
               placeholder="URL:"
@@ -154,6 +161,22 @@ const Funcionarios = () => {
           </Form.Select>
 
           <div className="d-flex m-2" style={{ alignContent: 'center' }}>
+            <Dropdown className="d-flex shadow rounded-5 mt-2" style={{ width: '150px', height: '60px' }}>
+              <Dropdown.Toggle variant="outline-primary rounded-5" style={{ width: '150px', height: '60px' }}>
+                {cargoFuncionario}
+              </Dropdown.Toggle>
+              <Dropdown.Menu className="rounded-3">
+                {['Gerente', 'Estoquista', 'Geral'].map((cargo) => (
+                  <Dropdown.Item
+                    key={cargo}
+                    onClick={() => setCargoFuncionario(cargo)}
+                    className="dropdown-item rounded-5"
+                  >
+                    {cargo}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
             <Button
               className="rounded-5 m-2 mt-2 fs-5"
               style={{ width: '100px', height: '60px' }}
@@ -174,16 +197,15 @@ const Funcionarios = () => {
           <Button
             type="submit"
             className="shadow mt-4"
-            style={{ padding: '15px', width: '90%', borderRadius: '30px', marginLeft: '20px' }}
-          >
+            style={{ padding: '15px', width: '90%', borderRadius: '30px', marginLeft: '20px' }}>
             Cadastrar
           </Button>
+
           <Button
             className="shadow mt-4"
             variant="outline-primary"
             onClick={() => navigate('/funcionarios')}
-            style={{ padding: '15px', width: '90%', borderRadius: '30px', marginLeft: '20px' }}
-          >
+            style={{ padding: '15px', width: '90%', borderRadius: '30px', marginLeft: '20px' }}>
             Cancelar
           </Button>
         </Form>

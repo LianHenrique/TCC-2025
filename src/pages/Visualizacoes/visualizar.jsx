@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import '../Style/login.css';
 import NavBar from '../../components/NavBar/NavBar';
-import { Button, Container, FloatingLabel, Form } from 'react-bootstrap';
+import { Button, Container, FloatingLabel, Form, Spinner } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 
 const Visualizar = () => {
@@ -10,6 +10,7 @@ const Visualizar = () => {
 
     const [nome, setNome] = useState('');
     const [quantidade, setQuantidade] = useState('');
+    const [filtro, setFiltro] = useState('');
     const [url, setUrl] = useState('');
     const [preco, setPreco] = useState('');
     const [imagemAtual, setImagemAtual] = useState('');
@@ -31,6 +32,7 @@ const Visualizar = () => {
                 setPreco(insumo.valor_insumos);
                 setUrl(insumo.imagem_url);
                 setImagemAtual(insumo.imagem_url);
+                setFiltro(insumo.categoria); // Corrigido aqui
                 setLoading(false);
             })
             .catch(error => {
@@ -50,8 +52,9 @@ const Visualizar = () => {
                 body: JSON.stringify({
                     nome_insumos: nome,
                     quantidade_insumos: quantidade,
+                    categoria: filtro,
                     imagem_url: url,
-                    Preco: preco
+                    valor_insumos: preco
                 })
             });
 
@@ -61,14 +64,22 @@ const Visualizar = () => {
             }
 
             alert('Insumo atualizado com sucesso!');
-            navigate('/estoque')
+            navigate('/estoque');
         } catch (error) {
             alert(`Erro: ${error.message}`);
         }
     };
 
-    if (loading) return <p>Carregando insumo...</p>;
-    if (error) return <p>{error}</p>;
+    if (loading) {
+        return (
+            <div className="text-center mt-5">
+                <Spinner animation="border" role="status" />
+                <p className="mt-3">Carregando insumo...</p>
+            </div>
+        );
+    }
+
+    if (error) return <p className="text-danger text-center mt-5">{error}</p>;
 
     return (
         <div style={{ marginTop: '100px' }}>
@@ -121,6 +132,31 @@ const Visualizar = () => {
                         />
                     </FloatingLabel>
 
+                    <FloatingLabel controlId="categoria" label="Categoria" className="mb-3">
+                        <Form.Select
+                            value={filtro}
+                            onChange={(e) => setFiltro(e.target.value)}
+                            className="rounded-5 shadow"
+                            required
+                        >
+                            <option value="Carnes">Carnes</option>
+                            <option value="Perecíveis">Perecíveis</option>
+                            <option value="Molhos">Molhos</option>
+                            <option value="Congelados">Congelados</option>
+                        </Form.Select>
+                    </FloatingLabel>
+
+                    <FloatingLabel controlId="url" label="URL da Imagem" className="mb-3">
+                        <Form.Control
+                            type="text"
+                            placeholder="URL da imagem"
+                            value={url}
+                            onChange={(e) => setUrl(e.target.value)}
+                            className="rounded-5 shadow"
+                            required
+                        />
+                    </FloatingLabel>
+
                     {url && (
                         <div className="text-center mb-4">
                             <img
@@ -140,17 +176,6 @@ const Visualizar = () => {
                             />
                         </div>
                     )}
-
-                    <FloatingLabel controlId="url" label="URL da Imagem" className="mb-3">
-                        <Form.Control
-                            type="text"
-                            placeholder="URL da imagem"
-                            value={url}
-                            onChange={(e) => setUrl(e.target.value)}
-                            className="rounded-5 shadow"
-                            required
-                        />
-                    </FloatingLabel>
 
                     <Button
                         type="submit"

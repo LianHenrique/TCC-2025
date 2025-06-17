@@ -113,6 +113,30 @@ const Visualizar_Cardapio = () => {
     }
   };
 
+
+  const handleDelete = async () => {
+    const confirm = window.confirm('Deseja desativar o produto?')
+    if (confirm) {
+      try {
+        const response = await fetch(`http://localhost:3000/delete/${id}`, {
+          method: 'DELETE'
+        });
+
+        if (!response.ok) {
+          throw new Error('Erro ao deletar o cardápio');
+        }
+
+        const data = await response.json();
+        alert(data.message || 'Produto desativado com sucesso');
+        navigate('/cardapio');
+      } catch (error) {
+        console.error('Erro ao excluir:', error);
+        alert('Erro ao tentar excluir o item do cardápio.');
+      }
+    };
+  }
+
+
   if (loading) return <p>Carregando...</p>;
   if (error) return <p>Erro: {error}</p>;
   if (!produto) return <p>Produto não encontrado.</p>;
@@ -270,6 +294,11 @@ const Visualizar_Cardapio = () => {
 
           <Button type="submit" className="shadow mt-4" style={{ padding: '15px', width: '100%', borderRadius: '30px' }}>
             Salvar Alterações
+          </Button>
+
+          <Button type="button" variant='danger' className="shadow mt-4" style={{ padding: '15px', width: '100%', borderRadius: '30px' }}
+            onClick={() => handleDelete()}>
+            Desativar Cardapio
           </Button>
 
           <Button
