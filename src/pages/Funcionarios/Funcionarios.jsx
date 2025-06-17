@@ -25,6 +25,7 @@ const Funcionarios = () => {
   }, []);
 
   useEffect(() => {
+    if (!todosFuncionarios.length) return;  // evita filtro antes de dados carregarem
     aplicarFiltro(todosFuncionarios, filtro);
   }, [filtro, todosFuncionarios]);
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import '../Style/login.css';
 import NavBar from '../../components/NavBar/NavBar';
-import { Button, Container, Dropdown, FloatingLabel, Form } from 'react-bootstrap';
+import { Button, Container, FloatingLabel, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router';
 import Pesquisa from '../../components/Pesquisa/Pesquisa'; // Certifique-se de importar corretamente
 
@@ -19,22 +19,24 @@ const Funcionarios = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!nomeFuncionario || !emailFuncionario || !senhaFuncionario || !confSenhaFuncionario || !UrlFuncionario || cargoFuncionario === 'Cargo') {
-      console.log('Por favor, preencha todos os campos e selecione um cargo.');
+    if (!nomeFuncionario || !emailFuncionario || !senhaFuncionario || !confSenhaFuncionario || !urlFuncionario || cargoFuncionario === 'Cargo') {
+      setError('Por favor, preencha todos os campos e selecione um cargo.');
       return;
     }
 
     if (senhaFuncionario !== confSenhaFuncionario) {
-      console.log('As senhas não coincidem!');
+      setError('As senhas não coincidem!');
       return;
     }
+
+    setError('');
 
     const dados = {
       nome_funcionario: nomeFuncionario,
       email_funcionario: emailFuncionario,
       senha_funcionario: senhaFuncionario,
       cargo_funcionario: cargoFuncionario,
-      imagem_url: UrlFuncionario
+      imagem_url: urlFuncionario
     };
 
     try {
@@ -54,11 +56,11 @@ const Funcionarios = () => {
         setCargoFuncionario('Cargo');
         navigate('/funcionarios');
       } else {
-        console.log('Erro ao cadastrar funcionário.');
+        setError('Erro ao cadastrar funcionário.');
       }
     } catch (error) {
       console.error(error);
-      console.log('Erro de rede ou servidor.');
+      setError('Erro de rede ou servidor.');
     }
   };
 
@@ -83,6 +85,12 @@ const Funcionarios = () => {
           style={{ padding: '30px', borderRadius: '20px', border: '1px blue solid' }}>
 
           <h1 style={{ textAlign: 'center' }}>Cadastro</h1>
+
+          {error && (
+            <div className="alert alert-danger" style={{ margin: '10px 0' }}>
+              {error}
+            </div>
+          )}
 
           <FloatingLabel controlId="nomeFuncionario" label="Nome" className="m-2">
             <Form.Control
@@ -121,7 +129,7 @@ const Funcionarios = () => {
             <Form.Control
               type="text"
               placeholder="URL:"
-              value={UrlFuncionario}
+              value={urlFuncionario}
               onChange={(e) => setUrlFuncionario(e.target.value)}
               className="rounded-5 shadow mt-3"
               style={{ border: 'none' }}
@@ -138,6 +146,19 @@ const Funcionarios = () => {
               style={{ border: 'none' }}
             />
           </FloatingLabel>
+
+          <Form.Select
+            aria-label="Selecione o cargo"
+            value={cargoFuncionario}
+            onChange={(e) => setCargoFuncionario(e.target.value)}
+            className="rounded-5 m-2"
+            style={{ height: '60px' }}
+          >
+            <option value="Cargo" disabled>Selecione o cargo</option>
+            <option value="Gerente">Gerente</option>
+            <option value="Estoquista">Estoquista</option>
+            <option value="Geral">Geral</option>
+          </Form.Select>
 
           <div className="d-flex m-2" style={{ alignContent: 'center' }}>
             <Dropdown className="d-flex shadow rounded-5 mt-2" style={{ width: '150px', height: '60px' }}>
@@ -157,8 +178,8 @@ const Funcionarios = () => {
               </Dropdown.Menu>
             </Dropdown>
             <Button
-              className="rounded-5 m-2 mt-2 fs-2"
-              style={{ width: '60px', height: '60px' }}
+              className="rounded-5 m-2 mt-2 fs-5"
+              style={{ width: '100px', height: '60px' }}
               onClick={() => {
                 setNomeFuncionario('');
                 setEmailFuncionario('');
@@ -166,9 +187,10 @@ const Funcionarios = () => {
                 setConfSenhaFuncionario('');
                 setUrlFuncionario('');
                 setCargoFuncionario('Cargo');
+                setError('');
               }}
             >
-              +
+              Limpar
             </Button>
           </div>
 

@@ -649,11 +649,14 @@ app.post('/cliente/insert', (req, res) => {
 
 // --- ROTA ESTOQUE ---
 // Pegando todos os itend de estoque
+
 app.get('/estoque', (req, res) => {
   connection.query(
-    'select * from insumos',
+    'SELECT * FROM insumos',
     (error, results) => {
-      if (error) return res.status(500).json({ error: 'Erro ao buscar estoque' });
+      if (error) {
+        return res.status(500).json({ error: 'Erro ao buscar estoque' });
+      }
       res.json(results);
     }
   );
