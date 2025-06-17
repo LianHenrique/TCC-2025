@@ -5,18 +5,21 @@ import { FaSearch } from "react-icons/fa";
 
 const Pesquisa = ({ lista, nomeDrop, navega, onFilterChange }) => {
   const { register, handleSubmit } = useForm();
-  const [filtroSelecionado, setFiltroSelecionado] = useState("");
+  const [filtroSelecionado, setFiltroSelecionado] = useState(nomeDrop);
+
+  const handleDropdownSelect = (value) => {
+    setFiltroSelecionado(value);
+    // Chama imediatamente o filtro quando seleciona uma categoria
+    onFilterChange(value === nomeDrop ? 'Todos' : value);
+  };
 
   const onSubmit = (data) => {
-    onFilterChange({
-      texto: data.pesquisa || "",
-      filtro: filtroSelecionado
-    });
+    // Implementação da pesquisa por texto (se necessário)
+    console.log("Texto pesquisado:", data.pesquisa);
   };
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit)} 
-    style={{ marginTop: "100x" }}>
+    <Form onSubmit={handleSubmit(onSubmit)} style={{ marginTop: "100px" }}>
       <FloatingLabel
         controlId="floatingInput"
         label="Pesquisa"
@@ -29,21 +32,18 @@ const Pesquisa = ({ lista, nomeDrop, navega, onFilterChange }) => {
           {...register("pesquisa")}
           style={{ border: "none" }}
         />
-        <Dropdown
-          className="d-flex shadow rounded-5"
-        >
-          <Dropdown.Toggle
-            variant="outline-primary rounded-5"
-          >
-            {filtroSelecionado || nomeDrop}
+        <Dropdown>
+          <Dropdown.Toggle variant="outline-primary rounded-5">
+            {filtroSelecionado}
           </Dropdown.Toggle>
           <Dropdown.Menu className="rounded-3">
+            <Dropdown.Item onClick={() => handleDropdownSelect(nomeDrop)}>
+              Todos
+            </Dropdown.Item>
             {lista.map((item, index) => (
               <Dropdown.Item
                 key={index}
-                onClick={() => {
-                  setFiltroSelecionado(item.texto);
-                }}
+                onClick={() => handleDropdownSelect(item.value)}
               >
                 {item.texto}
               </Dropdown.Item>
@@ -53,10 +53,7 @@ const Pesquisa = ({ lista, nomeDrop, navega, onFilterChange }) => {
         <Button
           type="submit"
           className="shadow rounded-5"
-          style={{ 
-            padding: "15px",
-            width: "70px"
-          }}
+          style={{ padding: "15px", width: "70px" }}
         >
           <FaSearch />
         </Button>

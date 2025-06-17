@@ -49,13 +49,18 @@ CREATE TABLE Insumos (
     data_ultima_modificacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (id_funcionario_cadastro) REFERENCES Funcionario(id_funcionario) ON DELETE SET NULL -- Permite manter o insumo se o funcionário for deletado
 );
-INSERT INTO insumos (nome_insumos, descricao_insumos, quantidade_insumos, unidade_medida, valor_insumos, data_vencimento, imagem_url) VALUES
+
+
+ALTER TABLE Insumos 
+MODIFY COLUMN categoria ENUM('Carnes', 'Perecíveis', 'Molhos', 'Congelados') NOT NULL;
+
+INSERT INTO insumos (nome_insumos, descricao_insumos, quantidade_insumos, unidade_medida, valor_insumos, data_vencimento, imagem_url, categoria) VALUES
 ('Hamburguer de carne', 'Hambúrguer bovino congelado', 20, 'unidades', 9.90, '2025-04-17', 'https://organic4.com.br/wp-content/uploads/2023/04/img-site-1-lanches-burger-carne.jpg', 'Carnes'),
 ('Pão', 'Pão de hambúrguer tradicional', 5, 'unidades', 14.00, '2025-11-17', 'https://guiadacozinha.com.br/wp-content/uploads/2018/10/paofrancesfolhado.jpg', 'Carnes'),
 ('Queijo Cheddar Fatiado', 'Queijo cheddar fatiado para lanches', 40, 'unidades', 1.50, '2025-11-19', 'https://cdn.awsli.com.br/600x700/510/510640/produto/43196021/570ee096e3.jpg', 'Perecíveis'),
 ('Bacon Fatiado', 'Bacon defumado fatiado 500g', 17, 'kg', 16.50, '2025-12-19', 'https://feed.com.br/wp-content/uploads/2021/09/Bacon-Fatiado.jpg', 'Carnes'),
 ('Molho Barbecue', 'Molho barbecue 300ml', 10, 'unidades', 7.90, '2025-12-10', 'https://www.sabornamesa.com.br/media/k2/items/cache/4cd4eaee1c7cc4757d3345959114de7_XL.jpg', 'Molhos'),
-('Batata Palito Congelada', 'Batata pré-frita congelada 2kg', 10, 'kg', 18.90, '2026-02-11', 'https://www.bernardaoemcasa.com.br/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/whatsapp_image_2024-08-20_at_13.18.42.jpeg'),
+('Batata Palito Congelada', 'Batata pré-frita congelada 2kg', 10, 'kg', 18.90, '2026-02-11', 'https://www.bernardaoemcasa.com.br/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/whatsapp_image_2024-08-20_at_13.18.42.jpeg', 'Congelados'),
 ('Alface Crespa', 'Alface fresca crespa', 75, 'unidades', 2.50, '2026-01-01', 'https://organicosinbox.com.br/wp-content/uploads/2020/11/alface-crespa-organica.jpg', 'Congelados'),
 ('Tomate Italiano', 'Tomate italiano fresco', 55, 'unidades', 3.20, '2025-12-19', 'https://www.biosementes.com.br/loja/product_images/p/805/tomateitaliano_paramolhos__47507_zoom.jpg.webp', 'Perecíveis');
 
@@ -80,6 +85,7 @@ CREATE TABLE Cardapio (
     ativo BOOLEAN DEFAULT TRUE, -- Se o item está ativo no cardápio
     data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 INSERT INTO Cardapio (nome_item, descricao_item, valor_item, imagem_url)
 VALUES 
 ('Hambúrguer Simples', 'Pão, carne, queijo, alface', 20.00, 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/NCI_Visuals_Food_Hamburger.jpg/960px-NCI_Visuals_Food_Hamburger.jpg'),
@@ -120,31 +126,32 @@ CREATE TABLE RegistroSaidaProduto (
     FOREIGN KEY ( id_insumos_RegistroSaidaProduto ) REFERENCES Insumos(id_insumos) ON DELETE RESTRICT, -- Impede deletar insumo se houver registros de saída
     FOREIGN KEY (id_funcionario_responsavel) REFERENCES Funcionario(id_funcionario) ON DELETE SET NULL
 );
+-- Corrigindo os IDs para usar apenas os existentes (1 a 8)
 INSERT INTO RegistroSaidaProduto (id_insumos_RegistroSaidaProduto, quantidade_saida, data_saida, motivo_saida, id_funcionario_responsavel)
 VALUES
-(12, 1, '2025-06-10', 'Venda', 1),
-(13, 2, '2025-06-10', 'Venda', 2),
-(14, 3, '2025-06-10', 'Venda', 3),
-(15, 4, '2025-06-10', 'Venda', 4),
-(16, 5, '2025-06-11', 'Venda', 5),
-(17, 1, '2025-06-11', 'Venda', 1),
-(12, 2, '2025-06-11', 'Venda', 2),
-(13, 3, '2025-06-11', 'Venda', 3),
-(14, 4, '2025-06-12', 'Venda', 4),
-(15, 5, '2025-06-12', 'Venda', 5),
-(16, 1, '2025-06-12', 'Venda', 1),
-(17, 2, '2025-06-12', 'Venda', 2),
-(12, 3, '2025-06-13', 'Venda', 3),
-(13, 4, '2025-06-13', 'Venda', 4),
-(14, 5, '2025-06-13', 'Venda', 5),
-(15, 1, '2025-06-13', 'Venda', 1),
-(16, 2, '2025-06-14', 'Venda', 2),
-(17, 3, '2025-06-14', 'Venda', 3),
-(12, 4, '2025-06-14', 'Venda', 4),
-(13, 5, '2025-06-14', 'Venda', 5);
+(1, 1, '2025-06-10', 'Venda', 1),
+(2, 2, '2025-06-10', 'Venda', 2),
+(3, 3, '2025-06-10', 'Venda', 3),
+(4, 4, '2025-06-10', 'Venda', 4),
+(5, 5, '2025-06-11', 'Venda', 5),
+(6, 1, '2025-06-11', 'Venda', 1),
+(7, 2, '2025-06-11', 'Venda', 2),
+(8, 3, '2025-06-11', 'Venda', 3),
+(1, 4, '2025-06-12', 'Venda', 4),
+(2, 5, '2025-06-12', 'Venda', 5),
+(3, 1, '2025-06-12', 'Venda', 1),
+(4, 2, '2025-06-12', 'Venda', 2),
+(5, 3, '2025-06-13', 'Venda', 3),
+(6, 4, '2025-06-13', 'Venda', 4),
+(7, 5, '2025-06-13', 'Venda', 5),
+(8, 1, '2025-06-13', 'Venda', 1),
+(1, 2, '2025-06-14', 'Venda', 2),
+(2, 3, '2025-06-14', 'Venda', 3),
+(3, 4, '2025-06-14', 'Venda', 4),
+(4, 5, '2025-06-14', 'Venda', 5);
 
 
 -- Adicionando Índices para Otimização (Exemplos)
-CREATE INDEX idx_insumos_nome ON Insumos(nome_produto);
+CREATE INDEX idx_insumos_nome ON Insumos(nome_insumos);
 CREATE INDEX idx_cardapio_nome ON Cardapio(nome_item);
 CREATE INDEX idx_cliente_email ON Cliente(email_cliente);

@@ -8,11 +8,22 @@ import { FaEdit, FaRegTrashAlt } from 'react-icons/fa';
 
 const Estoque = () => {
   const [produtos, setProdutos] = useState({});
+  const [produtosFiltrados, setProdutosFiltrados] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [filtroAtivo, setFiltroAtivo] = useState('Todos');
   const navigate = useNavigate();
 
-  // Definindo todas as funções no início do componente
+  // Função segura para normalizar strings
+  const normalizeString = (str) => {
+    if (!str) return '';
+    return String(str)
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+  };
+
   const handleCardClick = (id) => {
     navigate(`/visualizar/${id}`);
   };
@@ -30,14 +41,24 @@ const Estoque = () => {
       }
 
       const data = await response.json();
-      console.log("Item deletado com sucesso", data);
-      
+
       setProdutos(prev => {
-        const newProdutos = {...prev};
-        for (const categoria in newProdutos) {
-          newProdutos[categoria] = newProdutos[categoria].filter(p => p.id !== id);
-          if (newProdutos[categoria].length === 0) {
-            delete newProdutos[categoria];
+        const newProdutos = { ...prev };
+        for (const categoriaKey in newProdutos) {
+          newProdutos[categoriaKey].items = newProdutos[categoriaKey].items.filter(p => p.id !== id);
+          if (newProdutos[categoriaKey].items.length === 0) {
+            delete newProdutos[categoriaKey];
+          }
+        }
+        return newProdutos;
+      });
+
+      setProdutosFiltrados(prev => {
+        const newProdutos = { ...prev };
+        for (const categoriaKey in newProdutos) {
+          newProdutos[categoriaKey].items = newProdutos[categoriaKey].items.filter(p => p.id !== id);
+          if (newProdutos[categoriaKey].items.length === 0) {
+            delete newProdutos[categoriaKey];
           }
         }
         return newProdutos;
@@ -53,6 +74,29 @@ const Estoque = () => {
     navigate(`/editar/${id}`);
   };
 
+  const handleFiltroChange = (filtroSelecionado) => {
+    if (!filtroSelecionado) return;
+
+    setFiltroAtivo(filtroSelecionado);
+
+    if (filtroSelecionado === 'Todos') {
+      setProdutosFiltrados(produtos);
+      return;
+    }
+
+    const filtroNormalizado = normalizeString(filtroSelecionado);
+    const filtrados = {};
+
+    // Iterate over the normalized keys of 'produtos'
+    for (const normalizedCategoryKey in produtos) {
+      if (normalizedCategoryKey === filtroNormalizado) {
+        filtrados[normalizedCategoryKey] = produtos[normalizedCategoryKey];
+      }
+    }
+
+    setProdutosFiltrados(filtrados);
+  };
+
   useEffect(() => {
     const fetchProdutos = async () => {
       try {
@@ -60,56 +104,54 @@ const Estoque = () => {
         if (!response.ok) {
           throw new Error(`Erro HTTP: ${response.status}`);
         }
-        
+
         const data = await response.json();
-        
+
         if (!Array.isArray(data)) {
           throw new Error("Resposta inesperada da API - esperado array");
         }
 
         const agrupados = data.reduce((acc, insumo) => {
-          const cat = insumo.categoria?.trim() || 'Outros';
-          
-          if (!acc[cat]) {
-            acc[cat] = [];
-          }
+          const originalCat = insumo.categoria?.trim() || 'Outros';
+          const normalizedCatKey = normalizeString(originalCat);  
 
-          const entradaFormatada = insumo.data_entrada_insumos
-            ? new Date(insumo.data_entrada_insumos).toLocaleDateString('pt-BR')
-            : 'Data desconhecida';
+          if (!acc[normalizedCatKey]) {
+            acc[normalizedCatKey] = {
+              displayName: originalCat,  
+              items: []
+            };
+          } 
 
           const vencimentoFormatado = insumo.data_vencimento
             ? new Date(insumo.data_vencimento).toLocaleDateString('pt-BR')
             : 'Sem data';
 
           const valorNumerico = parseFloat(insumo.valor_insumos) || 0;
-          const valorFormatado = isNaN(valorNumerico) 
-            ? 'Valor inválido' 
+          const valorFormatado = isNaN(valorNumerico)
+            ? 'Valor inválido'
             : `R$ ${valorNumerico.toFixed(2)}`;
 
-          const statusEstoque = insumo.quantidade_insumos <= 5 
-            ? 'danger' 
-            : insumo.quantidade_insumos <= 10 
-              ? 'warning' 
+          const statusEstoque = insumo.quantidade_insumos <= 5
+            ? 'danger'
+            : insumo.quantidade_insumos <= 10
+              ? 'warning'
               : 'success';
 
-          acc[cat].push({
+          acc[normalizedCatKey].items.push({
             id: insumo.id_insumos,
-            nome: insumo.nome_insumos,
-            dataEntrada: entradaFormatada,
+            nome: insumo.nome_insumos, 
             dataVencimento: vencimentoFormatado,
             quantidade: insumo.quantidade_insumos,
             unidade: insumo.unidade_medida,
             valor: valorNumerico,
             statusEstoque,
-            link: insumo.imagem_url || 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
+            link: insumo.imagem_url || 'https://cdn.melhoreshospedagem.com.br/wp/wp-content/uploads/2023/07/erro-404.jpg',
             descricao: [
-              { 
+              {
                 texto: `Quantidade: ${insumo.quantidade_insumos} ${insumo.unidade_medida}`,
                 badge: statusEstoque
               },
-              { texto: `Valor unitário: ${valorFormatado}` },
-              { texto: `Entrada: ${entradaFormatada}` },
+              { texto: `Valor unitário: ${valorFormatado}` }, 
               { texto: `Vencimento: ${vencimentoFormatado}` }
             ]
           });
@@ -118,6 +160,7 @@ const Estoque = () => {
         }, {});
 
         setProdutos(agrupados);
+        setProdutosFiltrados(agrupados);
       } catch (err) {
         console.error('Erro ao buscar produtos:', err);
         setError(err.message);
@@ -156,31 +199,34 @@ const Estoque = () => {
       <NavBar />
       <Container className="my-4">
         <h1 style={{ marginTop: "100px" }}>Estoque</h1>
-        
+
         <Pesquisa
           nomeDrop="Filtrar por"
           navega="/cadastro_insumos"
           textoBotao="Adicionar Insumo"
           lista={[
-            { texto: "Todos", link: "#" },
-            { texto: "Carnes", link: "#carnes" },
-            { texto: "Perecíveis", link: "#pereciveis" },
-            { texto: "Molhos", link: "#molhos" },
-            { texto: "Congelados", link: "#congelados" },
-            { texto: "Outros", link: "#outros" }
+            { texto: "Carnes", value: "Carnes" },
+            { texto: "Perecíveis", value: "Perecíveis" },
+            { texto: "Molhos", value: "Molhos" },
+            { texto: "Congelados", value: "Congelados" },
+            { texto: "Outros", value: "Outros" }
           ]}
+          onFilterChange={handleFiltroChange}
         />
 
-        {Object.entries(produtos)
-          .sort(([catA], [catB]) => catA.localeCompare(catB, 'pt-BR'))
-          .map(([categoria, produtosDaCategoria]) => (
-            <div key={categoria} id={categoria.toLowerCase()} className="mb-5">
+        {Object.entries(produtosFiltrados)
+          .sort(([keyA], [keyB]) => keyA.localeCompare(keyB, 'pt-BR')) // Sort by normalized key
+          .map(([normalizedCategoryKey, categoryData]) => (
+            <div key={normalizedCategoryKey} id={normalizedCategoryKey} className="mb-5">
               <div className="d-flex justify-content-between align-items-center mb-3">
-                <h2>{categoria}</h2> 
+                <h2>{categoryData.displayName}</h2> {/* Use the stored display name */}
+                <Badge bg="secondary">
+                  {categoryData.items.length} itens
+                </Badge>
               </div>
-              
+
               <CardGeral
-                card={[...produtosDaCategoria].sort((a, b) =>
+                card={[...categoryData.items].sort((a, b) =>
                   a.nome.localeCompare(b.nome, 'pt-BR')
                 )}
                 onCardClick={handleCardClick}
@@ -215,16 +261,16 @@ const Estoque = () => {
               />
             </div>
           ))}
-          
-        {Object.keys(produtos).length === 0 && !loading && (
+
+        {Object.keys(produtosFiltrados).length === 0 && !loading && (
           <div className="text-center py-5">
-            <h4>Nenhum item encontrado no estoque</h4>
-            <Button 
-              variant="primary" 
+            <h4>Nenhum item encontrado{filtroAtivo !== 'Todos' ? ` na categoria ${filtroAtivo}` : ' no estoque'}</h4>
+            <Button
+              variant="primary"
               onClick={() => navigate('/cadastro_insumos')}
               className="mt-3"
             >
-              Adicionar Primeiro Item
+              Adicionar Novo Item
             </Button>
           </div>
         )}
