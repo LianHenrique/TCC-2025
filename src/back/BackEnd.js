@@ -89,7 +89,7 @@ app.get('/produtos/:id_produto', (requisicao, resposta) => {
 
 app.get('/produtos', (req, res) => {
   connection.query(
-    'SELECT id_produto, nome_produto, imagem_url, categoria, QTD_produto, QTD_entrada_produto, data_vencimento_prod FROM insumos',
+    'SELECT id_insumos, nome_insumos, imagem_url, categoria, quantidade_insumos, unidade_medida, valor_insumos, data_vencimento FROM insumos',
     (error, resultados) => {
       if (error) {
         return res.status(500).json({ error: 'Erro ao buscar produtos' });
@@ -227,14 +227,13 @@ app.delete("/deletarFuncionario/:id", (req, res) => {
 // Buscar todos insumos
 app.get('/insumos', (req, res) => {
   connection.query(
-    `SELECT * FROM insumos`,
+    'SELECT id_insumos, nome_insumos, descricao_insumos, quantidade_insumos, unidade_medida, valor_insumos, data_vencimento, imagem_url, categoria FROM insumos',
     (error, results) => {
       if (error) return res.status(500).json({ error: 'Erro ao buscar insumos' });
       res.json(results);
     }
   );
 });
-
 
 
 // Deletando os insumos por it
@@ -481,25 +480,25 @@ app.post('/login', (req, res) => {
 app.get('/cardapio', (req, res) => {
   const sql = `
     SELECT 
-  c.id_cardapio,
-  c.nome_item,
-  c.descricao_item,
-  c.valor_item,
-  c.imagem_url,
-  c.ativo,
-  c.data_cadastro,
-  c.categoria,
-  GROUP_CONCAT(
-    CONCAT(
-      '{"nome_insumo":"', IFNULL(i.nome_insumos, ''), '",',
-      '"quantidade":"', IFNULL(ici.quantidade_necessaria, ''), '",',
-      '"unidade_medida":"', IFNULL(ici.unidade_medida_receita, ''), '"}'
-    )
-  ) AS insumos
-FROM cardapio c
-LEFT JOIN itemcardapioinsumo ici ON ici.id_item_cardapio = c.id_cardapio
-LEFT JOIN insumos i ON i.id_insumos = ici.id_insumo
-GROUP BY c.id_cardapio
+      c.id_cardapio,
+      c.nome_item,
+      c.descricao_item,
+      c.valor_item,
+      c.imagem_url,
+      c.ativo,
+      c.data_cadastro,
+      c.categoria,
+      GROUP_CONCAT(
+        CONCAT(
+          '{"nome_insumo":"', IFNULL(i.nome_insumos, ''), '",',
+          '"quantidade":"', IFNULL(ici.quantidade_necessaria, ''), '",',
+          '"unidade_medida":"', IFNULL(ici.unidade_medida_receita, ''), '"}'
+        )
+      ) AS insumos
+    FROM Cardapio c
+    LEFT JOIN ItemCardapioInsumo ici ON ici.id_item_cardapio = c.id_cardapio
+    LEFT JOIN Insumos i ON i.id_insumos = ici.id_insumo
+    GROUP BY c.id_cardapio
   `;
 
   connection.query(sql, (error, results) => {
@@ -508,11 +507,13 @@ GROUP BY c.id_cardapio
       return res.status(500).json({ error: 'Erro ao buscar cardápio' });
     }
 
+    // Corrige o parse do campo insumos para array de objetos
     const formattedResults = results.map(item => ({
       ...item,
       insumos: (() => {
+        if (!item.insumos) return [];
         try {
-          return typeof item.insumos === 'string' ? JSON.parse(item.insumos) : item.insumos;
+          return JSON.parse(`[${item.insumos}]`);
         } catch {
           return [];
         }
@@ -572,19 +573,70 @@ app.post('/cardapio/insert', (req, res) => {
 // ROTA DO BOTÃO DE ALTERAR DA TELA DE CADASTRO DE VISUALIZAR CARDÁPIO (update)
 app.put('/AtualizarCardapio/:id', (req, res) => {
   const { id } = req.params;
-  const { imagem_url, nome_item, descricao_item, valor_item } = req.body;
-  const query = 'UPDATE cardapio SET imagem_url = ?, nome_item = ?, descricao_item = ?, valor_item = ? WHERE id_cardapio = ?'
+  const { imagem_url, nome_item, descricao_item, valor_item, insumos } = req.body;
+
+  console.log('➡️ Atualizando cardápio ID:', id);
+  console.log('📦 Dados recebidos:', req.body);
+
+  const updateCardapioQuery = `
+    UPDATE cardapio 
+    SET imagem_url = ?, nome_item = ?, descricao_item = ?, valor_item = ? 
+    WHERE id_cardapio = ?
+  `;
+
   connection.query(
-    query,
+    updateCardapioQuery,
     [imagem_url, nome_item, descricao_item, valor_item, id],
     (error, results) => {
       if (error) {
+        console.error('❌ Erro ao atualizar cardápio:', error);
         return res.status(500).json({ error: "Erro ao atualizar produto do cardápio." });
       }
-      res.status(200).json({ message: 'Livro atualizado com sucesso!' })
+
+      // Deleta insumos antigos do item do cardápio
+      const deleteInsumosQuery = 'DELETE FROM ItemCardapioInsumo WHERE id_item_cardapio = ?';
+      connection.query(deleteInsumosQuery, [id], (error) => {
+        if (error) {
+          console.error('❌ Erro ao deletar insumos antigos:', error);
+          return res.status(500).json({ error: "Erro ao remover insumos antigos." });
+        }
+
+        if (!Array.isArray(insumos) || insumos.length === 0) {
+          console.warn('⚠️ Nenhum insumo recebido ou lista vazia:', insumos);
+          return res.status(200).json({ message: 'Produto atualizado sem insumos.' });
+        }
+
+        const values = insumos.map(insumo => {
+          console.log('🔍 Insumo processado:', insumo);
+          return [
+            id, // id_item_cardapio
+            insumo.id_insumo,
+            insumo.quantidade_necessaria,
+            insumo.unidade_medida_receita
+          ];
+        });
+
+        console.log('📥 Valores para INSERT:', values);
+
+        const insertInsumoQuery = `
+          INSERT INTO ItemCardapioInsumo 
+          (id_item_cardapio, id_insumo, quantidade_necessaria, unidade_medida_receita)
+          VALUES ?
+        `;
+
+        connection.query(insertInsumoQuery, [values], (error) => {
+          if (error) {
+            console.error('❌ Erro ao inserir insumos:', error);
+            return res.status(500).json({ error: "Erro ao adicionar novos insumos." });
+          }
+
+          console.log('✅ Produto e insumos atualizados com sucesso!');
+          res.status(200).json({ message: 'Produto e insumos atualizados com sucesso!' });
+        });
+      });
     }
-  )
-})
+  );
+});
 
 
 

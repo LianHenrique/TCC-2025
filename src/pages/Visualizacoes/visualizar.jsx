@@ -121,6 +121,17 @@ const Visualizar = () => {
                         />
                     </FloatingLabel>
 
+                    <FloatingLabel controlId="url" label="URL da Imagem" className="mb-3">
+                        <Form.Control
+                            type="text"
+                            placeholder="URL da imagem"
+                            value={url}
+                            onChange={(e) => setUrl(e.target.value)}
+                            className="rounded-5 shadow"
+                            required
+                        />
+                    </FloatingLabel>
+
                     {url && (
                         <div className="text-center mb-4">
                             <img
@@ -139,18 +150,7 @@ const Visualizar = () => {
                                 }}
                             />
                         </div>
-                    )}
-
-                    <FloatingLabel controlId="url" label="URL da Imagem" className="mb-3">
-                        <Form.Control
-                            type="text"
-                            placeholder="URL da imagem"
-                            value={url}
-                            onChange={(e) => setUrl(e.target.value)}
-                            className="rounded-5 shadow"
-                            required
-                        />
-                    </FloatingLabel>
+                    )}v
 
                     <Button
                         type="submit"

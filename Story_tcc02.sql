@@ -43,21 +43,21 @@ CREATE TABLE Insumos (
     data_entrada_insumos DATE, -- Última data de entrada significativa
     data_vencimento DATE,
     imagem_url VARCHAR(2083), -- URL da imagem do produto
-    categoria VARCHAR(35),
+    categoria VARCHAR(35), -- mudar para um ENUM depois
     id_funcionario_cadastro INT, -- Funcionário que cadastrou
     data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_ultima_modificacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (id_funcionario_cadastro) REFERENCES Funcionario(id_funcionario) ON DELETE SET NULL -- Permite manter o insumo se o funcionário for deletado
 );
 INSERT INTO insumos (nome_insumos, descricao_insumos, quantidade_insumos, unidade_medida, valor_insumos, data_vencimento, imagem_url) VALUES
-('Hamburguer de carne', 'Hambúrguer bovino congelado', 20, 'unidades', 9.90, '2025-04-17', 'https://organic4.com.br/wp-content/uploads/2023/04/img-site-1-lanches-burger-carne.jpg'),
-('Pão', 'Pão de hambúrguer tradicional', 5, 'unidades', 14.00, '2025-11-17', 'https://guiadacozinha.com.br/wp-content/uploads/2018/10/paofrancesfolhado.jpg'),
-('Queijo Cheddar Fatiado', 'Queijo cheddar fatiado para lanches', 40, 'unidades', 1.50, '2025-11-19', 'https://cdn.awsli.com.br/600x700/510/510640/produto/43196021/570ee096e3.jpg'),
-('Bacon Fatiado', 'Bacon defumado fatiado 500g', 17, 'kg', 16.50, '2025-12-19', 'https://feed.com.br/wp-content/uploads/2021/09/Bacon-Fatiado.jpg'),
-('Molho Barbecue', 'Molho barbecue 300ml', 10, 'unidades', 7.90, '2025-12-10', 'https://www.sabornamesa.com.br/media/k2/items/cache/4cd4eaee1c7cc4757d3345959114de7_XL.jpg'),
+('Hamburguer de carne', 'Hambúrguer bovino congelado', 20, 'unidades', 9.90, '2025-04-17', 'https://organic4.com.br/wp-content/uploads/2023/04/img-site-1-lanches-burger-carne.jpg', 'Carnes'),
+('Pão', 'Pão de hambúrguer tradicional', 5, 'unidades', 14.00, '2025-11-17', 'https://guiadacozinha.com.br/wp-content/uploads/2018/10/paofrancesfolhado.jpg', 'Carnes'),
+('Queijo Cheddar Fatiado', 'Queijo cheddar fatiado para lanches', 40, 'unidades', 1.50, '2025-11-19', 'https://cdn.awsli.com.br/600x700/510/510640/produto/43196021/570ee096e3.jpg', 'Perecíveis'),
+('Bacon Fatiado', 'Bacon defumado fatiado 500g', 17, 'kg', 16.50, '2025-12-19', 'https://feed.com.br/wp-content/uploads/2021/09/Bacon-Fatiado.jpg', 'Carnes'),
+('Molho Barbecue', 'Molho barbecue 300ml', 10, 'unidades', 7.90, '2025-12-10', 'https://www.sabornamesa.com.br/media/k2/items/cache/4cd4eaee1c7cc4757d3345959114de7_XL.jpg', 'Molhos'),
 ('Batata Palito Congelada', 'Batata pré-frita congelada 2kg', 10, 'kg', 18.90, '2026-02-11', 'https://www.bernardaoemcasa.com.br/media/catalog/product/cache/1/image/9df78eab33525d08d6e5fb8d27136e95/whatsapp_image_2024-08-20_at_13.18.42.jpeg'),
-('Alface Crespa', 'Alface fresca crespa', 75, 'unidades', 2.50, '2026-01-01', 'https://organicosinbox.com.br/wp-content/uploads/2020/11/alface-crespa-organica.jpg'),
-('Tomate Italiano', 'Tomate italiano fresco', 55, 'unidades', 3.20, '2025-12-19', 'https://www.biosementes.com.br/loja/product_images/p/805/tomateitaliano_paramolhos__47507_zoom.jpg.webp');
+('Alface Crespa', 'Alface fresca crespa', 75, 'unidades', 2.50, '2026-01-01', 'https://organicosinbox.com.br/wp-content/uploads/2020/11/alface-crespa-organica.jpg', 'Congelados'),
+('Tomate Italiano', 'Tomate italiano fresco', 55, 'unidades', 3.20, '2025-12-19', 'https://www.biosementes.com.br/loja/product_images/p/805/tomateitaliano_paramolhos__47507_zoom.jpg.webp', 'Perecíveis');
 
         
 -- Tabela de Ligação Fornecedor-Insumo (Muitos-para-Muitos)
@@ -76,13 +76,16 @@ CREATE TABLE Cardapio (
     descricao_item TEXT,
     valor_item DECIMAL(10, 2) NOT NULL, -- Preço de venda
    imagem_url VARCHAR (250),
+   categoria VARCHAR (50),
     ativo BOOLEAN DEFAULT TRUE, -- Se o item está ativo no cardápio
     data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-insert into Cardapio( nome_item,  descricao_item, valor_item,   imagem_url)
-values("Hamburger simples ","Vai pão,carne,queijo,alface","20.00","https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/NCI_Visuals_Food_Hamburger.jpg/960px-NCI_Visuals_Food_Hamburger.jpg"),
-	  ("X-duploHamburger ","Vai pão,2-carne,2-queijo,alface","40.00","https://img.freepik.com/fotos-premium/hamburguer-duplo-delicioso-com-pepinos-de-bacon-de-carne-e-tomates-isolados_524291-2260.jpg"),
-      ("X-bacoon ","Vai pão,carne,queijo,alface, bacon","35.00","https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2iq1NJAbIYJHdnOj10joXxG1hGOQlo4_M5g&s");
+INSERT INTO Cardapio (nome_item, descricao_item, valor_item, imagem_url)
+VALUES 
+('Hambúrguer Simples', 'Pão, carne, queijo, alface', 20.00, 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/NCI_Visuals_Food_Hamburger.jpg/960px-NCI_Visuals_Food_Hamburger.jpg'),
+('X-Duplo Hambúrguer', 'Pão, 2 carnes, 2 queijos, alface', 40.00, 'https://img.freepik.com/fotos-premium/hamburguer-duplo-delicioso-com-pepinos-de-bacon-de-carne-e-tomates-isolados_524291-2260.jpg'),
+('X-Bacon', 'Pão, carne, queijo, alface, bacon', 35.00, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2iq1NJAbIYJHdnOj10joXxG1hGOQlo4_M5g&s');
+
 
 -- Tabela de Ligação ItemCardapio-Insumo (Muitos-para-Muitos - Receita)
 CREATE TABLE ItemCardapioInsumo (
