@@ -6,12 +6,12 @@ const connection = mysql.createConnection({
     host:'localhost',
     user: 'root',
     // Não tem senha, é super seguro
-    database: 'tcc_estoque' //mudar p/storybox (tem q ser o exato nome do banco)
+    database: 'story_box' //mudar p/storybox (tem q ser o exato nome do banco)
 })
 
 connection.connect((error) => {
     if(error){
-        console.error("Erro ao tentar se conectar com o banco dedados", error);
+        console.error("Erro ao tentar se conectar com o banco de dados", error);
     return;
     }
     else{

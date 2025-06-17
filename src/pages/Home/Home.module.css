@@ -1,34 +1,9 @@
-/* Reset básico para evitar espaçamentos indesejados */
+/* Reset básico */
 html, body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-}
-
-/* Fonte padrão do body */
-body {
   font-family: 'Alexandria', sans-serif;
-}
-
-/* Estilos de fontes personalizadas */
-.alexandria {
-  font-family: 'Alexandria', sans-serif;
-  font-weight: 600;
-}
-
-.alexandria2 {
-  font-family: 'Alexandria', sans-serif;
-  font-weight: 600;
-}
-
-/* Negrito */
-.bold {
-  font-weight: bold;
-}
-
-/* Destaque em azul */
-.destaque {
-  color: #3858FF;
 }
 
 /* Temas */
@@ -44,64 +19,174 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Botão de alternância de tema */
-.theme-toggle-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  margin: 1rem auto;
-  padding: 5px;
-  position: relative;
-  z-index: 999;
-}
-
-/* Navbar fixa no topo */
-.navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 60px; /* altura da navbar */
-  z-index: 1000;
-  background-color: #fff;
-  box-shadow: 0 4px 2px -2px gray;
-}
-
-/* Container principal */
+/* App container */
 .App {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   min-height: 100vh;
+  padding-top: 60px;
+}
+
+/* Título e descrição */
+.header {
+  text-align: left;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  padding-left: 2rem;
+  transform: translateX(-150px);
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  font-weight: bold;
+  transform: translateX(-10px);
+}
+
+.header p {
+  font-size: 1.1rem;
+  color: #444;
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: justify;
+  padding-top: 20px;
+}
+
+/* Destaque azul */
+.destaque {
+  color: #3858FF;
+}
+
+/* Negrito */
+.bold {
+  font-weight: bold;
+}
+
+/* Container do botão e frase */
+.testeGratisContainer {
+  margin-top: 1rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+  transform: translateX(-350px);
+}
+
+/* Alinhamento para a esquerda */
+.alinharEsquerda {
+  justify-content: flex-start;
+  padding-left: 3rem;
+}
+
+/* Botões principais */
+.botaoTesteGratis,
+.botaoTesteGratis1,
+.botaoTesteGratis2 {
+  background-color: #3858FF;
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  display: inline-block;
   text-align: center;
-  box-sizing: border-box;
-  padding-top: 60px; /* compensação para navbar fixa */
-}
-/* Estilo para o botão "Teste grátis" */
-.botaoTesteGratis {
-  background-color: #3858FF; /* Cor de fundo azul padrão */
-  color: white; /* Cor do texto */
-  border: none; /* Sem borda */
-  border-radius: 20px; /* Bordas arredondadas */
-  padding: 10px 20px; /* Distância interna do botão */
-  font-size: 16px; /* Tamanho da fonte */
-  cursor: pointer; /* Cursor de ponteiro para indicar interatividade */
-  transition: background-color 0.3s ease, transform 0.2s ease; /* Transição suave para a cor e animação */
 }
 
-/* Efeito de hover */
-.botaoTesteGratis:hover {
-  background-color: #1a42d1; /* Azul mais escuro */
-  transform: scale(1.05); /* Um pequeno aumento no tamanho do botão para efeito visual */
+.botaoTesteGratis1 {
+  margin-top: 21.5vh;
 }
 
-/* Efeito de foco no botão */
-.botaoTesteGratis:focus {
-  outline: none; /* Remover a borda de foco padrão */
+.botaoTesteGratis2 {
+  margin-top: 50px;
 }
 
+.botaoTesteGratis:hover,
+.botaoTesteGratis1:hover,
+.botaoTesteGratis2:hover {
+  background-color: #1a42d1;
+  transform: scale(1.05);
+}
 
+.botaoTesteGratis:focus,
+.botaoTesteGratis1:focus,
+.botaoTesteGratis2:focus {
+  outline: none;
+}
 
+/* Benefícios rápidos */
+.beneficios {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 3rem;
+  margin: 2.5rem 0;
+  font-weight: 600;
+  padding: 2rem 1rem;
+  border-radius: 18px;
+}
 
+.beneficioCard {
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  padding: 1rem 1.5rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2rem;
+  transition: transform 0.3s ease;
+  min-width: 180px;
+}
 
+/* Movimento individual */
+.beneficio1 { transform: translateX(-150px); }
+.beneficio2 { transform: translateX(0px); }
+.beneficio3 { transform: translateX(150px); }
+
+.beneficioCard:hover {
+  transform: translateY(-8px) scale(1.03);
+}
+
+/* Cartões dos planos */
+.planos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: stretch;
+  gap: 3rem;
+  padding: 3rem 0;
+}
+
+.card {
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  padding: 1.5rem;
+  width: 340px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 12px 32px rgba(56, 88, 255, 0.15);
+}
+
+.card h3 {
+  font-size: 1.5rem;
+}
+
+.cardText {
+  font-size: 1.05rem;
+  color: #333;
+  text-align: left;
+  flex: 1;
+}

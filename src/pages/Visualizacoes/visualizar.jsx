@@ -1,100 +1,202 @@
-import React, { useState, useEffect } from 'react'
-import Navbar from '../../components/NavBar/NavBar'
-import CardGeral from '../../components/Cards/CardGeral'
-import { Container } from 'react-bootstrap'
-import style from './visualizar.module.css'
-import { useParams } from 'react-router'
+import { useState, useEffect } from 'react';
+import '../Style/login.css';
+import NavBar from '../../components/NavBar/NavBar';
+import { Button, Container, FloatingLabel, Form, Spinner } from 'react-bootstrap';
+import { useNavigate, useParams } from 'react-router-dom';
 
-// tem que pegar o id da tela de cardápio, props.
 const Visualizar = () => {
-
-    // Depois eu vou colocar o id como useparams() quando ela for integrada com a tela de estoque e funcionários, não fiz agora pq tava muito difícil pra fazer os testes.
-
-    // Eu personalizei essse código apenas para testar se a requisição tá certa e fazer a bomba do css logo, por que ele não tá integrado nem com funcionário e nem com cardápio , pq fazer isso sem ter o código pronto é difícl demais. :/
-
     const { id } = useParams();
-    const [produtos, setProdutos] = useState([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(null)
+    const navigate = useNavigate();
+
+    const [nome, setNome] = useState('');
+    const [quantidade, setQuantidade] = useState('');
+    const [filtro, setFiltro] = useState('');
+    const [url, setUrl] = useState('');
+    const [preco, setPreco] = useState('');
+    const [imagemAtual, setImagemAtual] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     useEffect(() => {
-        console.log("Use effect disparou. id igual a:", id);
+        if (!id) return;
 
-        if (!id) {
-            setProdutos([]);
-            setLoading(false);
-            return;
-        }
-
-        fetch(`http://localhost:3000/produto/${id}`)
-            .then(response => {
-                if (!response.ok) throw new Error('Produto não encontrado');
-                return response.json();
+        fetch(`http://localhost:3000/insumos_tudo/${id}`)
+            .then(res => {
+                if (!res.ok) throw new Error('Produto não encontrado');
+                return res.json();
             })
             .then(data => {
-                console.log('Data bruto recebido:', data);
-
-                // Corrige se o backend retornou apenas um objeto
-                const produto = Array.isArray(data) ? data[0] : data;
-
-                const imagemValida = produto.imagem_url && produto.imagem_url.trim() !== ''
-                    ? `${produto.imagem_url}?t=${new Date().getTime()}`
-                    : 'https://www.valuehost.com.br/blog/wp-content/uploads/2022/01/post_thumbnail-77d8f2a95f2f41b5863f3fba5a261d7e.jpeg.webp';
-
-                const produtoFormatado = {
-                    nome: produto.nome_produto || 'Sem nome',
-                    link: imagemValida,
-                    descricao: [
-                        { texto: `Quantidade: ${produto.QTD_produto ?? 'N/A'}` },
-                        { texto: `Entrada: ${produto.QTD_entrada_produto ? new Date(produto.QTD_entrada_produto).toLocaleDateString() : 'N/A'}` },
-                        { texto: `Vencimento: ${produto.data_vencimento_prod ? new Date(produto.data_vencimento_prod).toLocaleDateString() : 'N/A'}` },
-                        { texto: `Descrição: ${produto.descricao_produto ?? 'N/A'}` }
-                    ]
-                };
-
-                console.log('Dados recebidos formatados:', produtoFormatado);
-                setProdutos([produtoFormatado]); // coloca em array porque CardGeral espera um array
+                const insumo = Array.isArray(data) ? data[0] : data;
+                setNome(insumo.nome_insumos);
+                setQuantidade(insumo.quantidade_insumos);
+                setPreco(insumo.valor_insumos);
+                setUrl(insumo.imagem_url);
+                setImagemAtual(insumo.imagem_url);
+                setFiltro(insumo.categoria); // Corrigido aqui
                 setLoading(false);
-                setError(null);
             })
             .catch(error => {
-                console.log("Erro ao buscar produto", error);
-                setProdutos([]);
-                setLoading(false);
                 setError(error.message);
+                setLoading(false);
             });
     }, [id]);
 
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch(`http://localhost:3000/insumos_tudo_POST/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    nome_insumos: nome,
+                    quantidade_insumos: quantidade,
+                    categoria: filtro,
+                    imagem_url: url,
+                    valor_insumos: preco
+                })
+            });
 
-    if (loading) return <p>Carregando produto...</p>
-    if (error) return <p>{error}</p>
+            if (!response.ok) {
+                const data = await response.json();
+                throw new Error(data.error || 'Erro ao atualizar insumo');
+            }
+
+            alert('Insumo atualizado com sucesso!');
+            navigate('/estoque');
+        } catch (error) {
+            alert(`Erro: ${error.message}`);
+        }
+    };
+
+    if (loading) {
+        return (
+            <div className="text-center mt-5">
+                <Spinner animation="border" role="status" />
+                <p className="mt-3">Carregando insumo...</p>
+            </div>
+        );
+    }
+
+    if (error) return <p className="text-danger text-center mt-5">{error}</p>;
 
     return (
+        <div style={{ marginTop: '100px' }}>
+            <NavBar />
+            <Container style={{ maxWidth: '800px' }}>
+                <Form
+                    onSubmit={handleSubmit}
+                    className="shadow"
+                    style={{
+                        padding: '30px',
+                        borderRadius: '20px',
+                        border: '1px solid blue',
+                        marginBottom: '10px'
+                    }}
+                >
+                    <h1 style={{ textAlign: 'center' }}>Editar Insumo</h1>
 
-        <div>
-            <Navbar />
-            <Container className={style.Container}>
-                {/* Se o id for vazio, então: */}
-                {!id ? (
-                    <section>
-                        <img src="https://www.freeiconspng.com/thumbs/no-image-icon/no-image-icon-6.png" alt='Sem produtos relacionados a ele.' />
-                    </section>
-                ) : (
-                    <CardGeral
-                        filtro={null}
-                        card={produtos}
-                        ClassNameCard={style.corpo_card}
-                        ClassImg={style.img}
-                        enableOverflow={false}
-                        Desc={style.desc}
-                        ClassTitulo={style.titulo}
-                    />
-                )}
+                    <FloatingLabel controlId="nome" label="Nome" className="mb-3">
+                        <Form.Control
+                            type="text"
+                            placeholder="Nome"
+                            value={nome}
+                            onChange={(e) => setNome(e.target.value)}
+                            className="rounded-5 shadow"
+                            required
+                        />
+                    </FloatingLabel>
+
+                    <FloatingLabel controlId="quantidade" label="Quantidade" className="mb-3">
+                        <Form.Control
+                            type="number"
+                            placeholder="Quantidade"
+                            value={quantidade}
+                            onChange={(e) => setQuantidade(e.target.value)}
+                            className="rounded-5 shadow"
+                            min="0"
+                            required
+                        />
+                    </FloatingLabel>
+
+                    <FloatingLabel controlId="preco" label="Preço (R$)" className="mb-3">
+                        <Form.Control
+                            type="number"
+                            step="0.01"
+                            placeholder="Preço"
+                            value={preco}
+                            onChange={(e) => setPreco(e.target.value)}
+                            className="rounded-5 shadow"
+                            required
+                        />
+                    </FloatingLabel>
+
+                    <FloatingLabel controlId="categoria" label="Categoria" className="mb-3">
+                        <Form.Select
+                            value={filtro}
+                            onChange={(e) => setFiltro(e.target.value)}
+                            className="rounded-5 shadow"
+                            required
+                        >
+                            <option value="Carnes">Carnes</option>
+                            <option value="Perecíveis">Perecíveis</option>
+                            <option value="Molhos">Molhos</option>
+                            <option value="Congelados">Congelados</option>
+                        </Form.Select>
+                    </FloatingLabel>
+
+                    <FloatingLabel controlId="url" label="URL da Imagem" className="mb-3">
+                        <Form.Control
+                            type="text"
+                            placeholder="URL da imagem"
+                            value={url}
+                            onChange={(e) => setUrl(e.target.value)}
+                            className="rounded-5 shadow"
+                            required
+                        />
+                    </FloatingLabel>
+
+                    {url && (
+                        <div className="text-center mb-4">
+                            <img
+                                src={imagemAtual}
+                                alt="Imagem do insumo"
+                                style={{
+                                    maxWidth: '300px',
+                                    width: '100%',
+                                    height: 'auto',
+                                    borderRadius: '10px',
+                                    boxShadow: '0 0 10px rgba(0,0,0,0.2)'
+                                }}
+                                onError={(e) => {
+                                    e.target.onerror = null;
+                                    e.target.src = 'https://www.valuehost.com.br/blog/wp-content/uploads/2022/01/post_thumbnail-77d8f2a95f2f41b5863f3fba5a261d7e.jpeg.webp';
+                                }}
+                            />
+                        </div>
+                    )}
+
+                    <Button
+                        type="submit"
+                        className="shadow mt-4"
+                        style={{ padding: '15px', width: '100%', borderRadius: '30px' }}
+                    >
+                        Confirmar Alterações
+                    </Button>
+
+                    <Button
+                        variant="outline-primary"
+                        onClick={() => navigate('/estoque')}
+                        className="shadow mt-2"
+                        style={{ padding: '15px', width: '100%', borderRadius: '30px' }}
+                    >
+                        Cancelar
+                    </Button>
+                </Form>
             </Container>
-            <p className={style.title}>Descrição do insumo:</p>
         </div>
+    );
+};
 
-    )
-}
-
-export default Visualizar
+export default Visualizar;
