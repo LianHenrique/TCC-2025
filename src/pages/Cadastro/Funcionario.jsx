@@ -4,6 +4,7 @@ import NavBar from '../../components/NavBar/NavBar';
 import { Button, Container, FloatingLabel, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router';
 import Pesquisa from '../../components/Pesquisa/Pesquisa'; // Certifique-se de importar corretamente
+import { Dropdown } from 'react-bootstrap';
 
 const Funcionarios = () => {
   const [nomeFuncionario, setNomeFuncionario] = useState('');
@@ -12,14 +13,16 @@ const Funcionarios = () => {
   const [confSenhaFuncionario, setConfSenhaFuncionario] = useState('');
   const [cargoFuncionario, setCargoFuncionario] = useState('Cargo');
   const [UrlFuncionario, setUrlFuncionario] = useState('');
-  const [filtro, setFiltro] = useState('Todos');
+  const [Filtro, setFiltro] = useState('Todos');
+
+  const [error, setError] = useState(null);
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!nomeFuncionario || !emailFuncionario || !senhaFuncionario || !confSenhaFuncionario || !urlFuncionario || cargoFuncionario === 'Cargo') {
+    if (!nomeFuncionario || !emailFuncionario || !senhaFuncionario || !confSenhaFuncionario || !UrlFuncionario || cargoFuncionario === 'Cargo') {
       setError('Por favor, preencha todos os campos e selecione um cargo.');
       return;
     }
@@ -36,7 +39,7 @@ const Funcionarios = () => {
       email_funcionario: emailFuncionario,
       senha_funcionario: senhaFuncionario,
       cargo_funcionario: cargoFuncionario,
-      imagem_url: urlFuncionario
+      imagem_url: UrlFuncionario
     };
 
     try {
@@ -59,10 +62,35 @@ const Funcionarios = () => {
         setError('Erro ao cadastrar funcionário.');
       }
     } catch (error) {
-      console.error(error);
+      console.error(error); // .erro caso de ruim
       setError('Erro de rede ou servidor.');
     }
+
+    //valida funcionario
+    if (nomeFuncionario.length < 4) {
+      setError('O nome deve ter pelo menos 4 caracteres!');
+      return false;
+    }
+
+    if (!emailFuncionario.includes('@')) {
+      setError('Email inválido!');
+      return false;
+    }
+
+    if (senhaFuncionario.length < 6) {
+      setError('A senha deve ter pelo menos 6 caracteres!');
+      return false;
+    }
+
+    if (UrlFuncionario.length < 10) {
+      setError('URL inválida!');
+      return false;
+    }
+
+    return true;
+
   };
+
 
   return (
     <div style={{ marginTop: '100px' }}>
@@ -129,7 +157,7 @@ const Funcionarios = () => {
             <Form.Control
               type="text"
               placeholder="URL:"
-              value={urlFuncionario}
+              value={UrlFuncionario}
               onChange={(e) => setUrlFuncionario(e.target.value)}
               className="rounded-5 shadow mt-3"
               style={{ border: 'none' }}

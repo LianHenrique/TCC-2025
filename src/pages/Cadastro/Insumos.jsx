@@ -77,24 +77,9 @@ const Insumos = () => {
       console.error("Erro de rede ou servidor", error);
       alert("Erro de rede ou servidor.");
     }
-  };
 
-  // Reset do formulário
-  const handleReset = () => {
-    setFormData({
-      nome_insumos: '',
-      valor_insumos: '',
-      categoria: 'Outros',
-      quantidade_insumos: 0,
-      data_vencimento: '',
-      descricao_insumos: '',
-      imagem_url: ''
-    });
-  };
-
-  //valida insumos
-  const validarInsumos = () =>{
-    if (formData.nome_insumos.length < 3) {
+    //valida campos 
+     if (formData.nome_insumos.length < 3) {
       alert('O nome do insumo deve ter pelo menos 3 caracteres.');
       return false;
     }
@@ -123,7 +108,23 @@ const Insumos = () => {
       return false;
     }
     return true;
-  }
+  };
+
+  // Reset do formulário
+  const handleReset = () => {
+    setFormData({
+      nome_insumos: '',
+      valor_insumos: '',
+      categoria: 'Outros',
+      quantidade_insumos: 0,
+      data_vencimento: '',
+      descricao_insumos: '',
+      imagem_url: ''
+    });
+  };
+
+
+  
 
   return (
     <div style={{ marginTop: '100px' }}>

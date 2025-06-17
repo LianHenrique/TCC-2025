@@ -20,27 +20,6 @@ const Login = () => {
       return;
     }
 
-<<<<<<< HEAD
-    return(
-        
-         <div className="login-bg">
-            <div className="login-box">
-        <NavBar/>
-        <h2>Login</h2>
-            <Form>
-                  <Form.Group className="mb-3" controlId="formGroupEmail">
-                             <Form.Label>Email</Form.Label>
-                             <Form.Control type="email" placeholder="Digite o email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                  </Form.Group>
-                  <Form.Group className="mb-3" controlId="formGroupPassword">
-                            <Form.Label>Senha</Form.Label>
-                            <Form.Control type="password" placeholder="Digite sua senha" value={senha} onChange={(e) => setSenha(e.target.value)} required />
-                  </Form.Group>
-                 
-            </Form>
-             
-            <button variant="primary" style={{ width: '100%', backgroundColor: '#3840BA',color: '#fff' }}>Entrar</button>
-=======
     try {
       const response = await fetch("http://localhost:3000/login", {
         method: "POST",
@@ -49,7 +28,6 @@ const Login = () => {
         },
         body: JSON.stringify({ email, senha })
       });
->>>>>>> main
 
       const data = await response.json();
 

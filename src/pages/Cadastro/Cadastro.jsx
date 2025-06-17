@@ -100,7 +100,8 @@ const Cadastro = () => {
     <div style={{ marginTop: '100px' }}>
       <NavBar />
       <Container style={{ maxWidth: '800px' }}>
-        <Form onSubmit={handleSubmit} className="shadow" 
+        <Form 
+        onSubmit={handleSubmit} className="shadow" 
         style={{ padding: '30px', borderRadius: '20px', border: '1px blue solid' }}>
           <h1 style={{ textAlign: 'center' }}>Cadastro</h1>
 
@@ -160,7 +161,6 @@ const Cadastro = () => {
           </FloatingLabel>
 
           <Button
-            onClick ={validarCampos}
             type="submit"
             className="shadow mt-4"
             style={{ padding: '15px', width: '90%', borderRadius: '30px', marginLeft: '20px' }}>
