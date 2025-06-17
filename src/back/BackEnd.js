@@ -184,7 +184,7 @@ app.post("/insumos/insert", (req, res) => {
 app.post("/funcionarios/insert", (req, res) => {
   const { nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario, imagem_url } = req.body;
 
-  if (!nome_funcionario || !cargo_funcionario || !senha_funcionario || !email_funcionario || !imagem_url){
+  if (!nome_funcionario || !cargo_funcionario || !senha_funcionario || !email_funcionario || !imagem_url) {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
   }
 
@@ -211,8 +211,8 @@ app.delete("/deletarFuncionario/:id", (req, res) => {
         return res.status(500).json({ error: 'Erro interno ao deletar funcionário' })
       }
 
-      if(results.affectedRows === 0){
-        return res.status(404).json({message: 'Funcionário não encontrado'})
+      if (results.affectedRows === 0) {
+        return res.status(404).json({ message: 'Funcionário não encontrado' })
       }
 
       console.log('Funcionário deletado com sucesso')
@@ -238,18 +238,18 @@ app.get('/insumos', (req, res) => {
 
 // Deletando os insumos por it
 app.delete('/InsumosDelete/:id', (req, res) => {
-  const {id} = req.params;
+  const { id } = req.params;
 
   connection.query('DELETE FROM insumos WHERE id_insumos = ?', [id], (error, results) => {
-    if(error){
-      return res.status(500).json({message: console.log('Erro na requisição:', error)})
+    if (error) {
+      return res.status(500).json({ message: console.log('Erro na requisição:', error) })
     }
-      if(results.affectedRows === 0){
-          return res.status(404).json({message: 'Insumo não encontrado'})
-      }
-        return res.status(200).json({message: 'Insumo deletado com sucesso'})
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ message: 'Insumo não encontrado' })
+    }
+    return res.status(200).json({ message: 'Insumo deletado com sucesso' })
   })
-}) 
+})
 
 
 
@@ -373,18 +373,14 @@ app.get('/cardapio/:id_cardapio', (req, res) => {
       c.ativo,
       c.data_cadastro,
       c.categoria,
-      GROUP_CONCAT(
-        CONCAT(
-          '{"nome_insumo":"', IFNULL(i.nome_insumos, ''), '",',
-          '"quantidade":"', IFNULL(ici.quantidade_necessaria, ''), '",',
-          '"unidade_medida":"', IFNULL(ici.unidade_medida_receita, ''), '"}'
-        )
-      ) AS insumos
+      i.id_insumos AS id_insumo,
+      i.nome_insumos,
+      ici.quantidade_necessaria,
+      ici.unidade_medida_receita
     FROM cardapio c
     LEFT JOIN itemcardapioinsumo ici ON ici.id_item_cardapio = c.id_cardapio
     LEFT JOIN insumos i ON i.id_insumos = ici.id_insumo
     WHERE c.id_cardapio = ?
-    GROUP BY c.id_cardapio
   `;
 
   connection.query(sql, [id_cardapio], (error, results) => {
@@ -397,42 +393,27 @@ app.get('/cardapio/:id_cardapio', (req, res) => {
       return res.status(404).json({ error: 'Produto não encontrado' });
     }
 
-    const item = results[0];
-    try {
-      item.insumos = item.insumos ? JSON.parse(`[${item.insumos}]`) : [];
-    } catch (e) {
-      item.insumos = [];
-    }
+    const base = results[0];
+    const insumos = results.map(row => ({
+      id_insumo: row.id_insumo,
+      nome_insumos: row.nome_insumos,
+      quantidade_necessaria: row.quantidade_necessaria,
+      unidade_medida_receita: row.unidade_medida_receita
+    })).filter(i => i.id_insumo !== null);
+
+    const item = {
+      id_cardapio: base.id_cardapio,
+      nome_item: base.nome_item,
+      descricao_item: base.descricao_item,
+      valor_item: base.valor_item,
+      imagem_url: base.imagem_url,
+      ativo: base.ativo,
+      data_cadastro: base.data_cadastro,
+      categoria: base.categoria,
+      insumos
+    };
 
     res.json(item);
-  });
-});
-
-app.put('/AtualizarFuncionario/:id', (req, res) => {
-  const { id_funcionario } = req.params;
-  const { nome_funcionario, email_funcionario, cargo_funcionario, imagem_url } = req.body;
-
-  if (!nome_funcionario || !email_funcionario || !cargo_funcionario || !imagem_url) {
-    return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
-  }
-
-  const query = `
-    UPDATE funcionario 
-    SET nome_funcionario = ?, email_funcionario = ?, cargo_funcionario = ?, imagem_url = ?
-    WHERE id_funcionario = ?
-  `;
-
-  connection.query(query, [nome_funcionario, email_funcionario, cargo_funcionario, imagem_url, id_funcionario], (error, results) => {
-    if (error) {
-      console.error('Erro ao atualizar funcionário:', error);
-      return res.status(500).json({ error: 'Erro ao atualizar funcionário' });
-    }
-
-    if (results.affectedRows === 0) {
-      return res.status(404).json({ error: 'Funcionário não encontrado' });
-    }
-
-    res.json({ message: 'Funcionário atualizado com sucesso' });
   });
 });
 
@@ -459,7 +440,7 @@ app.post('/login', (req, res) => {
   const { email, senha } = req.body;
 
   const query = `SELECT * FROM cliente WHERE email_cliente = ? AND senha_cliente = ?`;
-  
+
   connection.query(query, [email, senha], (error, results) => {
     if (error) {
       console.error("Erro ao fazer login:", error);

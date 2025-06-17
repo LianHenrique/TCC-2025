@@ -92,6 +92,39 @@ const Insumos = () => {
     });
   };
 
+  //valida insumos
+  const validarInsumos = () =>{
+    if (formData.nome_insumos.length < 3) {
+      alert('O nome do insumo deve ter pelo menos 3 caracteres.');
+      return false;
+    }
+    if (formData.valor_insumos <= 0) {
+      alert('O valor por unidade deve ser maior que zero.');
+      return false;
+    }
+    if (formData.quantidade_insumos < 0) {
+      alert('A quantidade em estoque não pode ser negativa.');
+      return false;
+    }
+    if (!formData.data_vencimento) {
+      alert('A data de validade é obrigatória.');
+      return false;
+    }
+    if (new Date(formData.data_vencimento) < new Date(today)) {
+      alert('A data de validade deve ser hoje ou uma data futura.');
+      return false;
+    }
+    if (!formData.imagem_url) {
+      alert('A URL da imagem é obrigatória.');
+      return false;
+    }
+    if (formData.descricao_insumos.length < 10) {
+      alert('A descrição do produto deve ter pelo menos 10 caracteres.');
+      return false;
+    }
+    return true;
+  }
+
   return (
     <div style={{ marginTop: '100px' }}>
       <NavBar />

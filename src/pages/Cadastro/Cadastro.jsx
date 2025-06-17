@@ -21,12 +21,7 @@ const Cadastro = () => {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
-  //validador de campus 
-  const validarCampos = () => {
-   
-    
-  }
-
+  //validador de campus funciona 
   const handleSubmit = async (e) => {
     e.preventDefault();
 

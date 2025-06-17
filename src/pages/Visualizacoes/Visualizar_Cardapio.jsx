@@ -24,12 +24,28 @@ const Visualizar_Cardapio = () => {
       .then(data => {
         const item = Array.isArray(data) ? data[0] : data;
 
-        const insumosDoProduto = item.insumos?.map(insumo => ({
+        let insumosArray = [];
+
+        if (typeof item.insumos === 'string') {
+          try {
+            const parsed = JSON.parse(item.insumos);
+            insumosArray = Array.isArray(parsed) ? parsed : [parsed];
+          } catch {
+            insumosArray = [];
+          }
+        } else if (Array.isArray(item.insumos)) {
+          insumosArray = item.insumos;
+        } else if (typeof item.insumos === 'object' && item.insumos !== null) {
+          insumosArray = [item.insumos];
+        }
+
+        const insumosDoProduto = insumosArray.map(insumo => ({
           id: insumo.id_insumo,
           nome: insumo.nome_insumos || '',
-          quantidade_necessaria: insumo.quantidade_necessaria,
-          unidade_medida_receita: insumo.unidade_medida_receita,
-        })) || [];
+          quantidade_necessaria: insumo.quantidade || insumo.quantidade_necessaria || '',
+          unidade_medida_receita: insumo.unidade_medida || insumo.unidade_medida_receita || '',
+        }));
+
 
         setProduto(item);
         setInsumosSelecionados(insumosDoProduto);
@@ -273,6 +289,7 @@ const Visualizar_Cardapio = () => {
             </Button>
           </div>
 
+          {/* Campo azul falando os insumos relacionados */}
           <div className="mb-3">
             {insumosSelecionados.length > 0 ? (
               insumosSelecionados.map((i) => (
@@ -291,6 +308,7 @@ const Visualizar_Cardapio = () => {
               <p className="text-muted">Nenhum insumo adicionado</p>
             )}
           </div>
+
 
           <Button type="submit" className="shadow mt-4" style={{ padding: '15px', width: '100%', borderRadius: '30px' }}>
             Salvar Alterações
