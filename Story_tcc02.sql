@@ -97,13 +97,12 @@ VALUES
 CREATE TABLE ItemCardapioInsumo (
     id_item_cardapio INT NOT NULL,
     id_insumo INT NOT NULL,
-    quantidade_necessaria DECIMAL(10, 3) NOT NULL, -- Quantidade do insumo para fazer 1 unidade do item
-    unidade_medida_receita VARCHAR(20), -- Unidade específica da receita (pode diferir da unidade de estoque)
+    quantidade_necessaria DECIMAL(10, 3) NOT NULL,
+    unidade_medida_receita VARCHAR(20),
     PRIMARY KEY (id_item_cardapio, id_insumo),
     FOREIGN KEY (id_item_cardapio) REFERENCES Cardapio(id_cardapio) ON DELETE CASCADE,
-    FOREIGN KEY (id_insumo) REFERENCES Insumos(id_insumos) ON DELETE RESTRICT -- Impede deletar insumo se estiver em uso em uma receita
+    FOREIGN KEY (id_insumo) REFERENCES Insumos(id_insumos) ON DELETE CASCADE
 );
-
 
 -- Tabela de Clientes
 CREATE TABLE Cliente (
@@ -119,13 +118,14 @@ CREATE TABLE Cliente (
 CREATE TABLE RegistroSaidaProduto (
     id_registro_saida INT PRIMARY KEY AUTO_INCREMENT,
     id_insumos_RegistroSaidaProduto INT NOT NULL,
-    quantidade_saida INT NOT NULL, -- Quantidade que saiu
-    data_saida TIMESTAMP DEFAULT CURRENT_TIMESTAMP, -- Momento da saída
-    motivo_saida VARCHAR(100), -- Ex: 'Venda', 'Consumo Interno', 'Perda'
-    id_funcionario_responsavel INT, -- Funcionário que registrou a saída (opcional)
-    FOREIGN KEY ( id_insumos_RegistroSaidaProduto ) REFERENCES Insumos(id_insumos) ON DELETE RESTRICT, -- Impede deletar insumo se houver registros de saída
+    quantidade_saida INT NOT NULL,
+    data_saida TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    motivo_saida VARCHAR(100),
+    id_funcionario_responsavel INT,
+    FOREIGN KEY (id_insumos_RegistroSaidaProduto) REFERENCES Insumos(id_insumos) ON DELETE CASCADE,
     FOREIGN KEY (id_funcionario_responsavel) REFERENCES Funcionario(id_funcionario) ON DELETE SET NULL
 );
+
 -- Corrigindo os IDs para usar apenas os existentes (1 a 8)
 INSERT INTO RegistroSaidaProduto (id_insumos_RegistroSaidaProduto, quantidade_saida, data_saida, motivo_saida, id_funcionario_responsavel)
 VALUES

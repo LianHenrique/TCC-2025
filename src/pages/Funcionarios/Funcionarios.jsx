@@ -8,15 +8,15 @@ import Button from 'react-bootstrap/Button';
 import { FaEdit, FaRegTrashAlt } from 'react-icons/fa';
 
 const Funcionarios = () => {
+  const [todosFuncionarios, setTodosFuncionarios] = useState([]);
   const [funcionarios, setFuncionarios] = useState([]);
+  const [filtro, setFiltro] = useState({ texto: '', filtro: '' });
   const navigate = useNavigate();
 
-  // Remove acentos de texto
   const removerAcentos = (texto) => {
     return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   };
 
-  // Carrega os funcionários ao iniciar
   useEffect(() => {
     fetch('http://localhost:3000/funcionarios')
       .then(response => response.json())
@@ -24,12 +24,10 @@ const Funcionarios = () => {
       .catch(error => console.error('Erro ao buscar funcionários:', error));
   }, []);
 
-  // Aplica filtro quando filtro mudar
   useEffect(() => {
     aplicarFiltro(todosFuncionarios, filtro);
   }, [filtro, todosFuncionarios]);
 
-  // Aplica filtro de nome e cargo
   const aplicarFiltro = (dados, filtro) => {
     const { texto, filtro: cargoFiltro } = filtro;
 
@@ -57,11 +55,9 @@ const Funcionarios = () => {
     setFuncionarios(formatados);
   };
 
-  // Navega ao clicar no card
   const handleCardClick = (id) => {
     navigate(`/visualizar_funcionario/${id}`);
-  }
-
+  };
 
   const handleDelete = (id) => {
     fetch(`http://localhost:3000/deletarFuncionario/${id}`, {
@@ -69,16 +65,15 @@ const Funcionarios = () => {
     })
       .then(response => {
         if (!response.ok) {
-          throw new Error('Erro ao deletar o funcionário')
+          throw new Error('Erro ao deletar o funcionário');
         }
-        console.log('Funcionário deletado com sucesso')
+        console.log('Funcionário deletado com sucesso');
         window.location.reload();
       })
       .catch(error => {
-        console.error(error)
-      })
-  }
-
+        console.error(error);
+      });
+  };
 
   return (
     <div>
@@ -91,15 +86,13 @@ const Funcionarios = () => {
           nomeDrop="Cargo"
           navega="/cadastro_funcionario"
           lista={[
-            {
-              lista: "Gerente",
-              link: "#gerente"
-            },
-            {
-              lista: "Estoquista",
-              link: "#estoquista"
-            }
+            { texto: "Gerente", value: "Gerente" },
+            { texto: "ADM", value: "ADM" },
+            { texto: "Funcionario", value: "Funcionario" }
           ]}
+          onFilterChange={(filtroSelecionado) =>
+            setFiltro({ ...filtro, filtro: filtroSelecionado })
+          }
         />
 
         <CardGeral
@@ -107,14 +100,14 @@ const Funcionarios = () => {
           imgHeight={250}
           onCardClick={handleCardClick}
           showButtons={false}
-          customButton={item => (
+          customButton={(item) => (
             <>
               <Button
                 variant='warning'
                 className='rounded-circle fs-5 text-center shadow m-1'
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (item.acoes && item.acoes[0]?.onClick) item.acoes[0].onClick();
+                  navigate(`/visualizar_funcionario/${item.id}`);
                 }}
               >
                 <FaEdit />
@@ -124,20 +117,15 @@ const Funcionarios = () => {
                 className='rounded-circle fs-5 text-center shadow m-1'
                 onClick={(e) => {
                   e.stopPropagation();
-                  {
-                    const confirmar = window.confirm('Deseja deletar o funcionário?')
-                    if (confirmar) {
-                      handleDelete(item.id);
-                    }
-                  } 
-                  if (item.acoes && item.acoes[1]?.onClick) item.acoes[1].onClick();
+                  if (window.confirm('Deseja deletar o funcionário?')) {
+                    handleDelete(item.id);
+                  }
                 }}
               >
                 <FaRegTrashAlt />
               </Button>
             </>
-          )
-          }
+          )}
         />
       </Container>
     </div>

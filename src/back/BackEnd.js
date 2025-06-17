@@ -121,6 +121,24 @@ app.get('/produtos/notificacao', (req, res) => {
   )
 });
 
+
+
+// Buscando todos os itens do cardápio
+// No select eu só peguei o que importa pra a parte fake 
+// app.get('/cardapio', (requisicao, resposta) => {
+//   connection.query(
+//     'SELECT * FROM cardapio',
+//     (error, resultados) => {
+//       if (error) {
+//         return resposta.status(500).json({ error: 'Erro ao buscar produtos' });
+//       }
+//       resposta.json(resultados);
+//     }
+//   );
+// });
+
+
+
 // cadastro adm
 app.post("/cliente/insert", (req, res) => {
   const email = req.body.email
@@ -570,7 +588,7 @@ app.put('/AtualizarCardapio/:id', (req, res) => {
   connection.query(
     updateCardapioQuery,
     [imagem_url, nome_item, descricao_item, valor_item, id],
-    (error) => {
+    (error, results) => {
       if (error) {
         console.error('Erro ao atualizar cardápio:', error);
         return res.status(500).json({ error: "Erro ao atualizar produto do cardápio." });
@@ -621,6 +639,8 @@ app.put('/AtualizarCardapio/:id', (req, res) => {
   );
 });
 
+
+
 // --- ROTA CLIENTE ---
 
 app.post('/cliente/insert', (req, res) => {
@@ -643,15 +663,8 @@ app.post('/cliente/insert', (req, res) => {
 
 
 
-// Rota para saída de venda
-app.post('/saida-venda', (req, res) => {
-  const { id_cardapio } = req.body;
 
-  if (!id_cardapio) {
-    return res.status(400).json({ error: 'ID do item do cardápio não fornecido' });
-  }
 
-  const data_saida = new Date().toISOString().slice(0, 10);
 
 // --- ROTA ESTOQUE ---
 // Pegando todos os itend de estoque
@@ -664,7 +677,7 @@ app.get('/estoque', (req, res) => {
     }
   );
 });
-})
+
 
 
 // Rota para saída de venda
@@ -740,21 +753,24 @@ app.post('/saida-venda', (req, res) => {
         });
     });
   });
-})
+});
 
 
 // Deletando item do estoque
-app.delete('/estoqueDeletarIten/:id', async (req, res) => {
-  const id = req.params.id
-  console.log('Recebido para deletar id:', id)
-
+app.delete('/insumos/:id', (req, res) => {
+  const { id } = req.params;
   connection.query('DELETE FROM insumos WHERE id_insumos = ?', [id], (error, results) => {
     if (error) {
-      return res.status(500).json({ error: 'Erro ao deletar iten do estoque' })
+      return res.status(500).json({ error: 'Erro ao deletar insumo do estoque' });
     }
-    res.status(200).json({ message: 'Insumo deletado com sucesso' })
-  })
-})
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ message: 'Insumo não encontrado' });
+    }
+    res.status(200).json({ message: 'Insumo deletado com sucesso' });
+  });
+});
+
+
 
 // REQUISIÇÕES PARA RELATÓRIOS
 // Rota para relatório de insumos com maiores saídas por dia

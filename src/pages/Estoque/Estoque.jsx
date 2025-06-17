@@ -29,10 +29,13 @@ const Estoque = () => {
   };
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Deseja realmente deletar este item do estoque?')) return;
+    const confirm = window.confirm('Deseja realmente deletar este item do estoque?');
+    if (confirm){
+      alert('Insumo desativado com sucesso!')
+    }
 
     try {
-      const response = await fetch(`http://localhost:3000/estoqueDeletarItem/${id}`, {
+      const response = await await fetch(`http://localhost:3000/insumos/${id}`, {
         method: 'DELETE'
       });
 
@@ -69,6 +72,7 @@ const Estoque = () => {
       alert('Erro ao deletar item: ' + error.message);
     }
   };
+
 
   const handleEdit = (id) => {
     navigate(`/editar/${id}`);
@@ -113,14 +117,14 @@ const Estoque = () => {
 
         const agrupados = data.reduce((acc, insumo) => {
           const originalCat = insumo.categoria?.trim() || 'Outros';
-          const normalizedCatKey = normalizeString(originalCat);  
+          const normalizedCatKey = normalizeString(originalCat);
 
           if (!acc[normalizedCatKey]) {
             acc[normalizedCatKey] = {
-              displayName: originalCat,  
+              displayName: originalCat,
               items: []
             };
-          } 
+          }
 
           const vencimentoFormatado = insumo.data_vencimento
             ? new Date(insumo.data_vencimento).toLocaleDateString('pt-BR')
@@ -139,7 +143,7 @@ const Estoque = () => {
 
           acc[normalizedCatKey].items.push({
             id: insumo.id_insumos,
-            nome: insumo.nome_insumos, 
+            nome: insumo.nome_insumos,
             dataVencimento: vencimentoFormatado,
             quantidade: insumo.quantidade_insumos,
             unidade: insumo.unidade_medida,
@@ -151,7 +155,7 @@ const Estoque = () => {
                 texto: `Quantidade: ${insumo.quantidade_insumos} ${insumo.unidade_medida}`,
                 badge: statusEstoque
               },
-              { texto: `Valor unitário: ${valorFormatado}` }, 
+              { texto: `Valor unitário: ${valorFormatado}` },
               { texto: `Vencimento: ${vencimentoFormatado}` }
             ]
           });
