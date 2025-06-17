@@ -11,7 +11,7 @@ import { useParams } from 'react-router-dom';
 
 const Cardapio = () => {
   const [cardapio, setCardapio] = useState([]);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetch(`http://localhost:3000/cardapio`)
@@ -108,21 +108,24 @@ const Cardapio = () => {
       },
       body: JSON.stringify({ id_cardapio })
     })
-      .then(res => res.json())
-      .then(data => {
-        if (data.error) {
-          alert('Erro ao registrar pedido: ' + data.error);
-        } else {
-          alert('Pedido registrado com sucesso!');
-          navigate(`/Visualizar_Cardapio${id}`)
-          
+      .then(async res => {
+        const data = await res.json();
+        if (!res.ok) {
+          const msg = data.error || 'Erro desconhecido';
+          throw new Error(msg);
         }
+        return data;
+      })
+      .then(data => {
+        alert(data.message || 'Pedido registrado com sucesso!');
       })
       .catch(error => {
-        console.error('Erro ao registrar pedido:', error);
-        alert('Erro na comunicação com o servidor');
+        console.error('Erro ao registrar pedido:', error.message);
+        alert(`Não foi possível concluir o pedido:\n\n${error.message}`);
       });
   }
+
+
 
   return (
     <div>
@@ -145,7 +148,7 @@ const Cardapio = () => {
         <CardGeral
           filtro=""
           card={cardapio}
-          onCardClick={handleCardClick} 
+          onCardClick={handleCardClick}
           showButtons={false}
           imgHeight={250}
           customButton={item => (

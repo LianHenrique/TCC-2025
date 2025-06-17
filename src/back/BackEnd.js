@@ -675,19 +675,28 @@ app.post('/saida-venda', (req, res) => {
   const data_saida = new Date().toISOString().slice(0, 10);
 
   const buscarInsumosQuery = `
-    SELECT id_insumo, quantidade_necessaria
-    FROM itemcardapioinsumo
-    WHERE id_item_cardapio = ?
+    SELECT ici.id_insumo, ici.quantidade_necessaria, i.quantidade_insumos, i.nome_insumos
+    FROM itemcardapioinsumo ici
+    JOIN insumos i ON i.id_insumos = ici.id_insumo
+    WHERE ici.id_item_cardapio = ?
   `;
 
   connection.query(buscarInsumosQuery, [id_cardapio], (err, insumos) => {
     if (err) {
-      console.error('Erro ao buscar insumos do item:', err);
-      return res.status(500).json({ error: 'Erro ao buscar insumos' });
+      console.error('Erro ao buscar insumos:', err);
+      return res.status(500).json({ error: 'Erro interno ao buscar insumos.' });
     }
 
     if (insumos.length === 0) {
-      return res.status(404).json({ error: 'Nenhum insumo relacionado a este item' });
+      return res.status(404).json({ error: 'Nenhum insumo relacionado a este item.' });
+    }
+
+    // Verifica se todos os insumos têm quantidade suficiente
+    const insuficientes = insumos.filter(insumo => insumo.quantidade_insumos < insumo.quantidade_necessaria);
+
+    if (insuficientes.length > 0) {
+      const nomes = insuficientes.map(i => i.nome_insumos).join(', ');
+      return res.status(400).json({ error: `Estoque insuficiente para: ${nomes}` });
     }
 
     const registros = insumos.map(insumo => [
@@ -706,19 +715,20 @@ app.post('/saida-venda', (req, res) => {
     connection.query(insertSaidaQuery, [registros], (errInsert) => {
       if (errInsert) {
         console.error('Erro ao registrar saída:', errInsert);
-        return res.status(500).json({ error: 'Erro ao registrar saída' });
+        return res.status(500).json({ error: 'Erro ao registrar a saída.' });
       }
 
-      // atualiza o estoque, e só depois disso retorna a resposta
+      // Atualiza o estoque para cada insumo
       const updates = insumos.map(insumo => {
         return new Promise((resolve, reject) => {
           const updateQuery = `
-            UPDATE insumos SET quantidade_insumos = quantidade_insumos - ?
+            UPDATE insumos 
+            SET quantidade_insumos = quantidade_insumos - ?
             WHERE id_insumos = ?
           `;
           connection.query(updateQuery, [insumo.quantidade_necessaria, insumo.id_insumo], (errUpdate) => {
             if (errUpdate) {
-              console.error('Erro ao atualizar estoque:', errUpdate);
+              console.error(`Erro ao atualizar estoque do insumo ${insumo.id_insumo}:`, errUpdate);
               reject(errUpdate);
             } else {
               resolve();
@@ -729,15 +739,19 @@ app.post('/saida-venda', (req, res) => {
 
       Promise.all(updates)
         .then(() => {
-          res.status(201).json({ message: 'Saída registrada e estoque atualizado com sucesso!' });
+          return res.status(201).json({ message: 'Saída registrada e estoque atualizado com sucesso!' });
         })
         .catch(err => {
-          console.error('Erro ao atualizar estoque:', err);
-          res.status(500).json({ error: 'Erro ao atualizar o estoque' });
+          console.error('Erro durante atualização de estoque:', err);
+          if (!res.headersSent) {
+            return res.status(500).json({ error: 'Erro ao atualizar estoque após registrar saída.' });
+          }
         });
     });
   });
 });
+
+
 
 
 // Deletando item do estoque
