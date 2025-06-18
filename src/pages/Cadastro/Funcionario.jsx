@@ -98,8 +98,8 @@ const Funcionarios = () => {
       <Container style={{ maxWidth: "500px" }}>
         <Form
           onSubmit={handleSubmit}
-          className="shadow"
-          style={{ padding: '30px', borderRadius: '20px', border: '1px blue solid' }}>
+          className="shadow rounded"
+          style={{ padding: '30px', border: '1px blue solid' }}>
 
           <h1 style={{ textAlign: 'center' }}>Cadastro</h1>
 
@@ -115,7 +115,7 @@ const Funcionarios = () => {
               placeholder="Nome"
               value={nomeFuncionario}
               onChange={(e) => setNomeFuncionario(e.target.value)}
-              className="rounded-5 shadow mt-3"
+              className="rounded shadow mt-3"
               style={{ border: 'none' }}
             />
           </FloatingLabel>
@@ -126,7 +126,7 @@ const Funcionarios = () => {
               placeholder="Email"
               value={emailFuncionario}
               onChange={(e) => setEmailFuncionario(e.target.value)}
-              className="rounded-5 shadow mt-3"
+              className="rounded shadow mt-3"
               style={{ border: 'none' }}
             />
           </FloatingLabel>
@@ -137,7 +137,7 @@ const Funcionarios = () => {
               placeholder="Senha"
               value={senhaFuncionario}
               onChange={(e) => setSenhaFuncionario(e.target.value)}
-              className="rounded-5 shadow mt-3"
+              className="rounded shadow mt-3"
               style={{ border: 'none' }}
             />
           </FloatingLabel>
@@ -148,7 +148,7 @@ const Funcionarios = () => {
               placeholder="URL:"
               value={UrlFuncionario}
               onChange={(e) => setUrlFuncionario(e.target.value)}
-              className="rounded-5 shadow mt-3"
+              className="rounded shadow mt-3"
               style={{ border: 'none' }}
             />
           </FloatingLabel>
@@ -159,7 +159,7 @@ const Funcionarios = () => {
               placeholder="Confirmar senha"
               value={confSenhaFuncionario}
               onChange={(e) => setConfSenhaFuncionario(e.target.value)}
-              className="rounded-5 shadow mt-3"
+              className="rounded shadow mt-3"
               style={{ border: 'none' }}
             />
           </FloatingLabel>
@@ -168,7 +168,7 @@ const Funcionarios = () => {
             aria-label="Selecione o cargo"
             value={cargoFuncionario}
             onChange={(e) => setCargoFuncionario(e.target.value)}
-            className="rounded-5 m-2"
+            className="rounded m-2"
             style={{ height: '60px' }}
           >
             <option value="Cargo" disabled>Selecione o cargo</option>
@@ -178,8 +178,8 @@ const Funcionarios = () => {
           </Form.Select>
 
           <div className="d-flex m-2" style={{ alignContent: 'center' }}>
-            <Dropdown className="d-flex shadow rounded-5 mt-2" style={{ width: '150px', height: '60px' }}>
-              <Dropdown.Toggle variant="outline-primary rounded-5" style={{ width: '150px', height: '60px' }}>
+            <Dropdown className="d-flex shadow rounded mt-2" style={{ width: '150px', height: '60px' }}>
+              <Dropdown.Toggle variant="outline-primary rounded" style={{ width: '150px', height: '60px' }}>
                 {cargoFuncionario}
               </Dropdown.Toggle>
               <Dropdown.Menu className="rounded-3">
@@ -187,7 +187,7 @@ const Funcionarios = () => {
                   <Dropdown.Item
                     key={cargo}
                     onClick={() => setCargoFuncionario(cargo)}
-                    className="dropdown-item rounded-5"
+                    className="dropdown-item rounded"
                   >
                     {cargo}
                   </Dropdown.Item>
@@ -195,7 +195,7 @@ const Funcionarios = () => {
               </Dropdown.Menu>
             </Dropdown>
             {/* <Button
-              className="rounded-5 m-2 mt-2 fs-5"
+              className="rounded m-2 mt-2 fs-5"
               style={{ width: '100px', height: '60px' }}
               onClick={() => {
                 setNomeFuncionario('');
@@ -211,20 +211,22 @@ const Funcionarios = () => {
             </Button> */}
           </div>
 
-          <Button
+          <div className="d-flex justify-content-center gap-3"
+          style={{width: "100%", margin: "auto"}}>
+            <Button
             type="submit"
             className="shadow mt-4"
-            style={{ padding: '15px', width: '90%', borderRadius: '30px', marginLeft: '20px' }}>
+            style={{ padding: '15px', width: '100%', marginLeft: '20px' }}>
             Cadastrar
           </Button>
-
-          <Button
-            className="shadow mt-4"
+             <Button
+            className="shadow mt-4 rounded"
             variant="outline-primary"
             onClick={() => navigate('/funcionarios')}
-            style={{ padding: '15px', width: '90%', borderRadius: '30px', marginLeft: '20px' }}>
+            style={{ padding: '15px', width: '100%', marginLeft: '20px' }}>
             Cancelar
           </Button>
+          </div>
         </Form>
       </Container>
     </div>
