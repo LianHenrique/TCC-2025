@@ -17,10 +17,12 @@ function Home() {
 
       <div className={styles.App}>
         <div className={styles.header}>
-          <h1>
+          <h2 style={{
+            marginTop: "50px"
+          }}>
             Gerencie o <span className={styles.destaque}>estoque</span> do seu <br />
             negócio de maneira ágil
-          </h1>
+          </h2>
           <p>
             A StoryBox é uma solução completa para o gerenciamento de estoques, oferecendo ferramentas intuitivas
             e recursos avançados que otimizam processos, reduzem erros e aumentam a eficiência operacional.
@@ -40,9 +42,9 @@ function Home() {
         </div>
 
         <div className={styles.beneficios}>
-          <div className={`${styles.beneficioCard} ${styles.beneficio1}`}>Acesso em tempo real</div>
+          <div className={`${styles.beneficioCard} ${styles.beneficio2}`}>Acesso em tempo real</div>
           <div className={`${styles.beneficioCard} ${styles.beneficio2}`}>Redução de erros</div>
-          <div className={`${styles.beneficioCard} ${styles.beneficio3}`}>Relatórios detalhados</div>
+          <div className={`${styles.beneficioCard} ${styles.beneficio2}`}>Relatórios detalhados</div>
         </div>
 
         <div className={styles.planos}>

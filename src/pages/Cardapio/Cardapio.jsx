@@ -131,7 +131,7 @@ const Cardapio = () => {
         <h1
           style={{
             marginTop: "100px"
-          }}>Cardapio</h1>
+          }}>Produto</h1>
         <Pesquisa
           nomeDrop="Filtro"
           navega="/cadastro_produto"

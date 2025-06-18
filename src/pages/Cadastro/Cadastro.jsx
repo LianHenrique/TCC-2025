@@ -66,7 +66,7 @@ const Cadastro = () => {
   return (
     <div style={{ marginTop: '100px' }}>
       <NavBar />
-      <Container style={{ maxWidth: '800px' }}>
+      <Container style={{ maxWidth: '500px' }}>
         <Form onSubmit={handleSubmit} className="shadow" 
         style={{ padding: '30px', borderRadius: '20px', border: '1px blue solid' }}>
           <h1 style={{ textAlign: 'center' }}>Cadastro</h1>
@@ -77,7 +77,7 @@ const Cadastro = () => {
               placeholder="Nome"
               value={nome}
               onChange={(e) => setNome(e.target.value)}
-              className="rounded-5 shadow mt-3"
+              className="rounded-3 shadow mt-3"
               style={{ border: 'none' }}
             />
           </FloatingLabel>
@@ -88,7 +88,7 @@ const Cadastro = () => {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="rounded-5 shadow mt-3"
+              className="rounded-3 shadow mt-3"
               style={{ border: 'none' }}
             />
           </FloatingLabel>
@@ -99,7 +99,7 @@ const Cadastro = () => {
               placeholder="Senha"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
-              className="rounded-5 shadow mt-3"
+              className="rounded-3 shadow mt-3"
               style={{ border: 'none' }}
             />
           </FloatingLabel>
@@ -110,7 +110,7 @@ const Cadastro = () => {
               placeholder="Confirmação de senha"
               value={confSenha}
               onChange={(e) => setConfSenha(e.target.value)}
-              className="rounded-5 shadow mt-3"
+              className="rounded-3 shadow mt-3"
               style={{ border: 'none' }}
             />
           </FloatingLabel>
@@ -121,7 +121,7 @@ const Cadastro = () => {
               placeholder="CNPJ"
               value={cnpj}
               onChange={(e) => setCnpj(e.target.value)}
-              className="rounded-5 shadow mt-3"
+              className="rounded-3 shadow mt-3"
               style={{ border: 'none' }}
             />
           </FloatingLabel>
@@ -129,7 +129,7 @@ const Cadastro = () => {
           <Button
             type="submit"
             className="shadow mt-4"
-            style={{ padding: '15px', width: '90%', borderRadius: '30px', marginLeft: '20px' }}>
+            style={{ padding: '15px', width: '90%', marginLeft: '20px' }}>
             Cadastrar
           </Button>
 
@@ -137,7 +137,7 @@ const Cadastro = () => {
             className="shadow mt-4"
             variant="outline-primary"
             href="/"
-            style={{ padding: '15px', width: '90%', borderRadius: '30px', marginLeft: '20px' }}>
+            style={{ padding: '15px', width: '90%', marginLeft: '20px' }}>
             Voltar
           </Button>
 

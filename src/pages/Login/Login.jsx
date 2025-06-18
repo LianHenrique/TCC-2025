@@ -52,18 +52,17 @@ const Login = () => {
 
     <div
       style={{
-        marginTop: "100px"
+        marginTop: "200px"
       }}>
       <NavBar />
       <Container
         style={{
-          maxWidth: "800px"
+          maxWidth: "500px"
         }}>
         <Form
-          className='shadow'
+          className='shadow rounded-4'
           style={{
             padding: "30px",
-            borderRadius: "20px",
             border: "1px blue solid"
           }}>
           <h1 style={{
@@ -80,7 +79,7 @@ const Login = () => {
               placeholder="Email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="rounded-5 shadow mt-3"
+              className="rounded-3 shadow mt-3"
               style={{ border: "none" }}
             />
           </FloatingLabel>
@@ -94,7 +93,7 @@ const Login = () => {
               placeholder="Senha"
               value={senha}
               onChange={(e) => setSenha(e.target.value)}
-              className="rounded-5 shadow mt-3"
+              className="rounded-3 shadow mt-3"
               style={{ border: "none" }}
             />
           </FloatingLabel>
@@ -105,21 +104,29 @@ const Login = () => {
             style={{
               padding: "15px",
               width: "90%",
-              borderRadius: "30px",
               marginLeft: "20px"
             }}>
             Entrar
           </Button>
-          <Button
-            href="/recuperar_senha"
+          <div className="d-flex"
             style={{
-              background: "none",
-              color: "black",
-              border: "none",
-              marginLeft: "20px"
+              alignContent: "center"
             }}>
-            Esqueceu a senha? recuperar senha
-          </Button>
+            <p
+              style={{
+                marginLeft: "20px",
+                marginBottom: "0"
+              }}>Esqueceu a senha? <a
+                href="/recuperar_senha"
+                style={{
+                  background: "none",
+                  color: "black",
+                  border: "none",
+                  padding: "0",
+                }}>
+                recuperar senha
+              </a></p>
+          </div>
           <Button
             className="shadow mt-4"
             variant='outline-primary'
@@ -127,21 +134,29 @@ const Login = () => {
             style={{
               padding: "15px",
               width: "90%",
-              borderRadius: "30px",
               marginLeft: "20px"
             }}>
             Voltar
           </Button>
-          <Button
-            href="/cadastro"
+
+          <div className="d-flex"
             style={{
-              background: "none",
-              color: "black",
-              border: "none",
-              marginLeft: "20px"
+              alignContent: "center"
             }}>
-            Ainda não cadastrou? cadastre-se
-          </Button>
+            <p
+              style={{
+                marginLeft: "20px"
+              }}>Ainda não cadastrou? <a
+                href="/cadastro"
+                style={{
+                  background: "none",
+                  color: "black",
+                  border: "none",
+                  padding: "0",
+                }}>
+                cadastre-se
+              </a></p>
+          </div>
         </Form>
       </Container>
     </div>

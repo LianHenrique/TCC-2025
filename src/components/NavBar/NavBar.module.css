@@ -1,17 +1,21 @@
 .Titulo{
-    transition: transform 0.2s;
     font-size: 40px;
 }
-.Titulo:hover{
-    transform: translateY(-8px) scale(1.03);
+
+.botaoCadastro:hover {
+  text-decoration: underline;
 }
 
-.button{
+/* .Titulo:hover{
+    transform: translateY(-8px) scale(1.03);
+} */
+
+/* .button{
     transition: transform 0.2s;
 }
 .button:hover{
     transform: translateY(-8px) scale(1.03);
-}
+} */
 
 /* .exemplo {
   transition: transform 0.2s;
