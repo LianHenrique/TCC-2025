@@ -11,7 +11,7 @@ const Cadastro = () => {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [confSenha, setConfSenha] = useState('');
-  const [cnpj, setCnpj] = useState('');
+  // const [cnpj, setCnpj] = useState('');
 
     const validarEmail = (email) => {
         const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
@@ -25,7 +25,7 @@ const Cadastro = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-     if (!nome || !email || !senha || !confSenha || !cnpj) {
+     if (!nome || !email || !senha || !confSenha){ //removido cnpj
       alert('Todos os campos são obrigatórios!');
       return false;
     }
@@ -61,7 +61,7 @@ const Cadastro = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ nome, email, senha, cnpj }),
+        body: JSON.stringify({ nome, email, senha }), //removido cnpj
       });
 
       if (res.ok) {

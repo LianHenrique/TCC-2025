@@ -654,17 +654,16 @@ app.put('/AtualizarCardapio/:id', (req, res) => {
 
 
 // --- ROTA CLIENTE ---
-
 app.post('/cliente/insert', (req, res) => {
-  const { email, senha } = req.body;
+  const { nome, email, senha } = req.body;
 
-  if (!email || !senha) {
-    return res.status(400).json({ error: 'Email e senha são obrigatórios' });
+  if (!nome || !email || !senha) {
+    return res.status(400).json({ error: 'Nome, email e senha são obrigatórios' });
   }
 
-  const sql = `INSERT INTO cliente (email_cliente, senha_cliente) VALUES (?, ?)`;
+  const sql = `INSERT INTO cliente (nome_cliente, email_cliente, senha_cliente) VALUES (?, ?, ?)`;
 
-  connection.query(sql, [email, senha], (error) => {
+  connection.query(sql, [nome, email, senha], (error) => {
     if (error) {
       console.error(error);
       return res.status(500).json({ error: 'Erro ao cadastrar cliente' });
@@ -672,8 +671,6 @@ app.post('/cliente/insert', (req, res) => {
     res.status(201).json({ message: 'Cliente cadastrado com sucesso' });
   });
 });
-
-
 
 
 
