@@ -40,10 +40,10 @@ const Cadastro = () => {
       return false;
     }
 
-    if (cnpj.length !== 14) {
-      alert('CNPJ deve ter 14 dígitos!');
-      return false;
-    }
+    // if (cnpj.length !== 14) {
+    //   alert('CNPJ deve ter 14 dígitos!');
+    //   return false;
+    // }
 
     if(nome.length < 4){
       alert('O nome deve ter pello menos 4 caracteres!');
@@ -78,7 +78,7 @@ const Cadastro = () => {
 
         if (loginRes.ok && loginData.usuario) {
           login(loginData.usuario); // Atualiza o contexto
-          alert("Cadastro e login realizados com sucesso!");
+          alert("Cadastro realizados com sucesso!");
           navigate("/estoque");
         } else {
           alert("Cadastro feito, mas houve um problema ao fazer login automático.");
@@ -148,7 +148,7 @@ const Cadastro = () => {
             />
           </FloatingLabel>
 
-          <FloatingLabel controlId="cnpj" label="CNPJ" className="m-2">
+          {/* <FloatingLabel controlId="cnpj" label="CNPJ" className="m-2">
             <Form.Control
               type="text"
               placeholder="CNPJ"
@@ -157,10 +157,9 @@ const Cadastro = () => {
               className="rounded-3 shadow mt-3"
               style={{ border: 'none' }}
             />
-          </FloatingLabel>
+          </FloatingLabel> */}
 
           <Button
-            onClick ={validarCampos}
             type="submit"
             className="shadow mt-4"
             style={{ padding: '15px', width: '90%', marginLeft: '20px' }}>

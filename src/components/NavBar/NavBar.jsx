@@ -10,13 +10,22 @@ const NavBar = () => {
 
   const { usuarioNome, logout } = useContext(AuthContext);
 
+  let tit;
+
+  if(usuarioNome==""){
+    tit="/home"
+  }
+  else{
+    tit="/estoque"
+  }
+
   return (
 
     <div>
       {/* Coloquei fixed-top na navbar */}
       <Navbar expand="lg" bg="primary" data-bs-theme="dark" fixed="top">
         <Container>
-          <Navbar.Brand className={styles.Titulo} href="/home">
+          <Navbar.Brand className={styles.Titulo} href={tit}>
             StoryBox
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="minha-nav" />
