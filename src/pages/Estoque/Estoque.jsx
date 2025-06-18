@@ -202,7 +202,7 @@ const Estoque = () => {
     <div>
       <NavBar />
       <Container className="my-4">
-        <h1 style={{ marginTop: "100px" }}>Estoque</h1>
+        <h1 style={{ marginTop: "100px" }}>Insumos</h1>
 
         <Pesquisa
           nomeDrop="Filtrar por"
