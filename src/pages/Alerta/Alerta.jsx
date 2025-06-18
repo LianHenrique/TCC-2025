@@ -78,7 +78,7 @@ const Alerta = () => {
                         // Renderiza cada insumo
                         return (
                             <div key={insumo.id}
-                                className='shadow rounded-5 d-flex gap-3 align-items-center'
+                                className='shadow rounded d-flex gap-3 align-items-center'
                                 style={{
                                     width: '100%',
                                     maxWidth: '625px',

@@ -185,21 +185,21 @@ const Funcionarios = () => {
             </Button> */}
           </div>
 
-          <div className="d-flex justify-content-center gap-3"
-          style={{width: "100%", margin: "auto"}}>
+          <div className="d-flex gap-3"
+            style={{ width: "95%", margin: "auto"}}>
             <Button
-            type="submit"
-            className="shadow mt-4"
-            style={{ padding: '15px', width: '100%', marginLeft: '20px' }}>
-            Cadastrar
-          </Button>
-             <Button
-            className="shadow mt-4 rounded"
-            variant="outline-primary"
-            onClick={() => navigate('/funcionarios')}
-            style={{ padding: '15px', width: '100%', marginLeft: '20px' }}>
-            Cancelar
-          </Button>
+              type="submit"
+              className="shadow mt-4"
+              style={{ padding: '15px', width: '50%', margin: "auto"}}>
+              Cadastrar
+            </Button>
+            <Button
+              className="shadow mt-4 rounded"
+              variant="outline-primary"
+              onClick={() => navigate('/funcionarios')}
+              style={{ padding: '15px', width: '50%', margin: "auto" }}>
+              Cancelar
+            </Button>
           </div>
         </Form>
       </Container>
