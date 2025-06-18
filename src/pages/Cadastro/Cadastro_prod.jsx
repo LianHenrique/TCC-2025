@@ -1,11 +1,19 @@
-import { useState } from 'react';
+import { use, useState } from 'react';
 import Form from 'react-bootstrap/Form';
 import NavBar from '../../components/NavBar/NavBar';
 import '../Style/login.css'; // Importa o CSS
 
 const Cadastroprod = () => {
+
+
+
     const [senha, setSenha] = useState(""); // alterado para numero de ingredientes
     const [nome, setNomeprod] = useState(""); // mantem e muda para nomeProd
+    const [urlproduto, setUrlProtuto] = useState(""); // mantem e muda para urlProduto
+    const[valorprod, setValorProd]= useState(""); // mantem e muda para valorProd
+    const[descritprod, setDescriProd]= useState("")// mantem e muda para descriProd
+
+    const navigate = useNavigate();
 
     const Cadastrosprod = () => {
         const users = JSON.parse(localStorage.getItem("users")) || [];
@@ -37,6 +45,26 @@ const Cadastroprod = () => {
         alert("Cadastro realizado com sucesso!");
         setNomeprod("");
         setSenha("");
+
+         if (!nome || !senha || !urlproduto || !valorprod || !descritprod) {
+            alert("Preencha todos os campos");
+            return false;
+        }
+
+        if (senha.length < 1) {
+            alert("A quantidade deve ser maior que 0");
+            return false;
+        }
+
+        if (valorprod <= 0) {
+            alert("O valor do produto deve ser maior que 0");
+            return false;
+        }
+        if(nome.length < 4){
+         alert('O nome deve ter pello menos 4 caracteres!');
+         return false;
+         }
+        return true;
     }
 
     return (
