@@ -201,6 +201,37 @@ app.post("/funcionarios/insert", (req, res) => {
 
 
 
+// Editando funcionário
+app.put('/AtualizarFuncionario/:id', (req, res) => {
+  const { id } = req.params;
+  const { nome_funcionario, email_funcionario, cargo_funcionario, imagem_url } = req.body;
+
+  if (!nome_funcionario || !email_funcionario || !cargo_funcionario || !imagem_url) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
+  }
+
+  const sql = `
+    UPDATE funcionario 
+    SET nome_funcionario = ?, email_funcionario = ?, cargo_funcionario = ?, imagem_url = ? 
+    WHERE id_funcionario = ?
+  `;
+
+  connection.query(sql, [nome_funcionario, email_funcionario, cargo_funcionario, imagem_url, id], (error, results) => {
+    if (error) {
+      console.error('Erro ao atualizar funcionário:', error);
+      return res.status(500).json({ error: 'Erro no backend ao atualizar funcionário' });
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Funcionário não encontrado' });
+    }
+
+    res.status(200).json({ message: 'Funcionário atualizado com sucesso' });
+  });
+});
+
+
+
 // Deletar funcionário
 app.delete("/deletarFuncionario/:id", (req, res) => {
   const { id } = req.params;
