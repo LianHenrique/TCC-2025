@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import '../Style/login.css';
 import NavBar from '../../components/NavBar/NavBar';
-import { Button, Container, FloatingLabel, Form } from 'react-bootstrap';
+import { Button, Container, Dropdown, FloatingLabel, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router';
 import Pesquisa from '../../components/Pesquisa/Pesquisa'; // Certifique-se de importar corretamente
-import { Dropdown } from 'react-bootstrap';
+// import { Dropdown } from 'react-bootstrap';
 
 const Funcionarios = () => {
   const [nomeFuncionario, setNomeFuncionario] = useState('');
@@ -12,10 +12,9 @@ const Funcionarios = () => {
   const [senhaFuncionario, setSenhaFuncionario] = useState('');
   const [confSenhaFuncionario, setConfSenhaFuncionario] = useState('');
   const [cargoFuncionario, setCargoFuncionario] = useState('Cargo');
-  const [UrlFuncionario, setUrlFuncionario] = useState('');
-  const [Filtro, setFiltro] = useState('Todos');
-
-  const [error, setError] = useState(null);
+  const [urlFuncionario, setUrlFuncionario] = useState('');
+  const [filtro, setFiltro] = useState('Todos');
+  const [error, setError] = useState('');
 
   const navigate = useNavigate();
 
@@ -95,18 +94,8 @@ const Funcionarios = () => {
   return (
     <div style={{ marginTop: '100px' }}>
       <NavBar />
-      <Pesquisa
-        nomeDrop="Cargo"
-        navega="/cadastro_funcionario"
-        onFilterChange={setFiltro}
-        lista={[
-          { texto: "ADM", value: "ADM" },
-          { texto: "Gerente", value: "Gerente" },
-          { texto: "Funcionario", value: "Funcionario" },
-        ]}
-      />
 
-      <Container style={{ maxWidth: "800px" }}>
+      <Container style={{ maxWidth: "500px" }}>
         <Form
           onSubmit={handleSubmit}
           className="shadow"
@@ -205,7 +194,7 @@ const Funcionarios = () => {
                 ))}
               </Dropdown.Menu>
             </Dropdown>
-            <Button
+            {/* <Button
               className="rounded-5 m-2 mt-2 fs-5"
               style={{ width: '100px', height: '60px' }}
               onClick={() => {
@@ -219,7 +208,7 @@ const Funcionarios = () => {
               }}
             >
               Limpar
-            </Button>
+            </Button> */}
           </div>
 
           <Button

@@ -201,6 +201,37 @@ app.post("/funcionarios/insert", (req, res) => {
 
 
 
+// Editando funcionário
+app.put('/AtualizarFuncionario/:id', (req, res) => {
+  const { id } = req.params;
+  const { nome_funcionario, email_funcionario, cargo_funcionario, imagem_url } = req.body;
+
+  if (!nome_funcionario || !email_funcionario || !cargo_funcionario || !imagem_url) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
+  }
+
+  const sql = `
+    UPDATE funcionario 
+    SET nome_funcionario = ?, email_funcionario = ?, cargo_funcionario = ?, imagem_url = ? 
+    WHERE id_funcionario = ?
+  `;
+
+  connection.query(sql, [nome_funcionario, email_funcionario, cargo_funcionario, imagem_url, id], (error, results) => {
+    if (error) {
+      console.error('Erro ao atualizar funcionário:', error);
+      return res.status(500).json({ error: 'Erro no backend ao atualizar funcionário' });
+    }
+
+    if (results.affectedRows === 0) {
+      return res.status(404).json({ error: 'Funcionário não encontrado' });
+    }
+
+    res.status(200).json({ message: 'Funcionário atualizado com sucesso' });
+  });
+});
+
+
+
 // Deletar funcionário
 app.delete("/deletarFuncionario/:id", (req, res) => {
   const { id } = req.params;
@@ -623,17 +654,16 @@ app.put('/AtualizarCardapio/:id', (req, res) => {
 
 
 // --- ROTA CLIENTE ---
-
 app.post('/cliente/insert', (req, res) => {
-  const { email, senha } = req.body;
+  const { nome, email, senha } = req.body;
 
-  if (!email || !senha) {
-    return res.status(400).json({ error: 'Email e senha são obrigatórios' });
+  if (!nome || !email || !senha) {
+    return res.status(400).json({ error: 'Nome, email e senha são obrigatórios' });
   }
 
-  const sql = `INSERT INTO cliente (email_cliente, senha_cliente) VALUES (?, ?)`;
+  const sql = `INSERT INTO cliente (nome_cliente, email_cliente, senha_cliente) VALUES (?, ?, ?)`;
 
-  connection.query(sql, [email, senha], (error) => {
+  connection.query(sql, [nome, email, senha], (error) => {
     if (error) {
       console.error(error);
       return res.status(500).json({ error: 'Erro ao cadastrar cliente' });
@@ -641,8 +671,6 @@ app.post('/cliente/insert', (req, res) => {
     res.status(201).json({ message: 'Cliente cadastrado com sucesso' });
   });
 });
-
-
 
 
 
@@ -675,19 +703,28 @@ app.post('/saida-venda', (req, res) => {
   const data_saida = new Date().toISOString().slice(0, 10);
 
   const buscarInsumosQuery = `
-    SELECT id_insumo, quantidade_necessaria
-    FROM itemcardapioinsumo
-    WHERE id_item_cardapio = ?
+    SELECT ici.id_insumo, ici.quantidade_necessaria, i.quantidade_insumos, i.nome_insumos
+    FROM itemcardapioinsumo ici
+    JOIN insumos i ON i.id_insumos = ici.id_insumo
+    WHERE ici.id_item_cardapio = ?
   `;
 
   connection.query(buscarInsumosQuery, [id_cardapio], (err, insumos) => {
     if (err) {
-      console.error('Erro ao buscar insumos do item:', err);
-      return res.status(500).json({ error: 'Erro ao buscar insumos' });
+      console.error('Erro ao buscar insumos:', err);
+      return res.status(500).json({ error: 'Erro interno ao buscar insumos.' });
     }
 
     if (insumos.length === 0) {
-      return res.status(404).json({ error: 'Nenhum insumo relacionado a este item' });
+      return res.status(404).json({ error: 'Nenhum insumo relacionado a este item.' });
+    }
+
+    // Verifica se todos os insumos têm quantidade suficiente
+    const insuficientes = insumos.filter(insumo => insumo.quantidade_insumos < insumo.quantidade_necessaria);
+
+    if (insuficientes.length > 0) {
+      const nomes = insuficientes.map(i => i.nome_insumos).join(', ');
+      return res.status(400).json({ error: `Estoque insuficiente para: ${nomes}` });
     }
 
     const registros = insumos.map(insumo => [
@@ -706,19 +743,20 @@ app.post('/saida-venda', (req, res) => {
     connection.query(insertSaidaQuery, [registros], (errInsert) => {
       if (errInsert) {
         console.error('Erro ao registrar saída:', errInsert);
-        return res.status(500).json({ error: 'Erro ao registrar saída' });
+        return res.status(500).json({ error: 'Erro ao registrar a saída.' });
       }
 
-      // atualiza o estoque, e só depois disso retorna a resposta
+      // Atualiza o estoque para cada insumo
       const updates = insumos.map(insumo => {
         return new Promise((resolve, reject) => {
           const updateQuery = `
-            UPDATE insumos SET quantidade_insumos = quantidade_insumos - ?
+            UPDATE insumos 
+            SET quantidade_insumos = quantidade_insumos - ?
             WHERE id_insumos = ?
           `;
           connection.query(updateQuery, [insumo.quantidade_necessaria, insumo.id_insumo], (errUpdate) => {
             if (errUpdate) {
-              console.error('Erro ao atualizar estoque:', errUpdate);
+              console.error(`Erro ao atualizar estoque do insumo ${insumo.id_insumo}:`, errUpdate);
               reject(errUpdate);
             } else {
               resolve();
@@ -729,15 +767,19 @@ app.post('/saida-venda', (req, res) => {
 
       Promise.all(updates)
         .then(() => {
-          res.status(201).json({ message: 'Saída registrada e estoque atualizado com sucesso!' });
+          return res.status(201).json({ message: 'Saída registrada e estoque atualizado com sucesso!' });
         })
         .catch(err => {
-          console.error('Erro ao atualizar estoque:', err);
-          res.status(500).json({ error: 'Erro ao atualizar o estoque' });
+          console.error('Erro durante atualização de estoque:', err);
+          if (!res.headersSent) {
+            return res.status(500).json({ error: 'Erro ao atualizar estoque após registrar saída.' });
+          }
         });
     });
   });
 });
+
+
 
 
 // Deletando item do estoque

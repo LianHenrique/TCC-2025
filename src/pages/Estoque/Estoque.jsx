@@ -30,7 +30,7 @@ const Estoque = () => {
 
   const handleDelete = async (id) => {
     const confirm = window.confirm('Deseja realmente deletar este item do estoque?');
-    if (confirm){
+    if (confirm) {
       alert('Insumo desativado com sucesso!')
     }
 
@@ -116,7 +116,7 @@ const Estoque = () => {
         }
 
         const agrupados = data.reduce((acc, insumo) => {
-          const originalCat = insumo.categoria?.trim() || 'Outros';
+          const originalCat = insumo.categoria || 'Outros';
           const normalizedCatKey = normalizeString(originalCat);
 
           if (!acc[normalizedCatKey]) {
@@ -202,7 +202,7 @@ const Estoque = () => {
     <div>
       <NavBar />
       <Container className="my-4">
-        <h1 style={{ marginTop: "100px" }}>Estoque</h1>
+        <h1 style={{ marginTop: "100px" }}>Insumos</h1>
 
         <Pesquisa
           nomeDrop="Filtrar por"
@@ -212,8 +212,7 @@ const Estoque = () => {
             { texto: "Carnes", value: "Carnes" },
             { texto: "Perecíveis", value: "Perecíveis" },
             { texto: "Molhos", value: "Molhos" },
-            { texto: "Congelados", value: "Congelados" },
-            { texto: "Outros", value: "Outros" }
+            { texto: "Congelados", value: "Congelados" }
           ]}
           onFilterChange={handleFiltroChange}
         />

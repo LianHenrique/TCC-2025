@@ -19,7 +19,7 @@ const Pesquisa = ({ lista, nomeDrop, navega, onFilterChange }) => {
   };
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit)} style={{ marginTop: "100px" }}>
+    <Form onSubmit={handleSubmit(onSubmit)}>
       <FloatingLabel
         controlId="floatingInput"
         label="Pesquisa"
@@ -28,16 +28,20 @@ const Pesquisa = ({ lista, nomeDrop, navega, onFilterChange }) => {
         <Form.Control
           type="text"
           placeholder="Pesquisa"
-          className="rounded-5 shadow"
+          className="rounded-3 shadow"
           {...register("pesquisa")}
           style={{ border: "none" }}
         />
         <Dropdown>
-          <Dropdown.Toggle variant="outline-primary rounded-5">
+          <Dropdown.Toggle variant="outline-primary rounded-3"
+          style={{
+            minHeight: "58px"
+          }}>
             {filtroSelecionado}
           </Dropdown.Toggle>
           <Dropdown.Menu className="rounded-3">
-            <Dropdown.Item onClick={() => handleDropdownSelect(nomeDrop)}>
+            <Dropdown.Item 
+            onClick={() => handleDropdownSelect(nomeDrop)}>
               Todos
             </Dropdown.Item>
             {lista.map((item, index) => (
@@ -50,19 +54,12 @@ const Pesquisa = ({ lista, nomeDrop, navega, onFilterChange }) => {
             ))}
           </Dropdown.Menu>
         </Dropdown>
-        <Button
-          type="submit"
-          className="shadow rounded-5"
-          style={{ padding: "15px", width: "70px" }}
-        >
-          <FaSearch />
-        </Button>
       </FloatingLabel>
 
       <div className="d-flex gap-3 m-2">
         <Button
           href={navega}
-          className="shadow rounded-5"
+          className="shadow rounded-3"
           style={{ padding: "15px" }}
         >
           Cadastrar

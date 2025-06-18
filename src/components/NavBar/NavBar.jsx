@@ -10,74 +10,54 @@ const NavBar = () => {
 
   const { usuarioNome, logout } = useContext(AuthContext);
 
+  let tit;
+
+  if(usuarioNome==""){
+    tit="/home"
+  }
+  else{
+    tit="/estoque"
+  }
+
   return (
 
     <div>
       {/* Coloquei fixed-top na navbar */}
-      <Navbar expand="lg" bg="primary" data-bs-theme="dark" className="d-flex justify-content-center fixed-top">
+      <Navbar expand="lg" bg="primary" data-bs-theme="dark" fixed="top">
         <Container>
-          <Navbar.Brand
-            className={styles.Titulo}
-            href="/home">
+          <Navbar.Brand className={styles.Titulo} href={tit}>
             StoryBox
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="minha-nav" />
-          <Navbar.Collapse id="minha-nav">
-            {
-              usuarioNome != "" &&
-              (
-                <Nav className="me-auto">
-                  <Nav.Link href="/relatorio"
-                    className={styles.button}> Relatorio </Nav.Link>
-                  <Nav.Link href="/estoque"
-                    className={styles.button}> Estoque </Nav.Link>
-                  <Nav.Link href="/funcionarios"
-                    className={styles.button}> Funcionarios </Nav.Link>
-                  <Nav.Link href="/cardapio"
-                    className={styles.button}> Cardapio </Nav.Link>
-                  <Nav.Link href="/agenda"
-                    className={styles.button}> Agenda </Nav.Link>
-                  <Nav.Link href="/alertas"
-                    className={styles.button}> Alertas </Nav.Link>
+          <Navbar.Collapse id="minha-nav" className="justify-content-between">
+
+            {!!usuarioNome?.trim() ? (
+              <>
+                <Nav>
+                  <Nav.Link href="/relatorio" className={styles.button}>Relatório</Nav.Link>
+                  <Nav.Link href="/estoque" className={styles.button}>Insumos</Nav.Link>
+                  <Nav.Link href="/funcionarios" className={styles.button}>Funcionários</Nav.Link>
+                  <Nav.Link href="/cardapio" className={styles.button}>Produtos</Nav.Link>
+                  <Nav.Link href="/agenda" className={styles.button}>Agenda</Nav.Link>
+                  <Nav.Link href="/alertas" className={styles.button}>Alertas</Nav.Link>
                 </Nav>
-              )
-            }
-            <Nav className="justify-content-end">
-              <Navbar.Text style={{ color: "white", marginRight: "5px" }}>
-                {/* Caso usuario tenha feito login, aparece sair, se não aparece entrar */}
-                {
-                  usuarioNome === "" ? (
-                    <div className="d-flex align-items-center gap-3">
-                      <Nav.Link
-                        href="/cadastro">
-                        Cadastre-se
-                      </Nav.Link>
-                      <Button
-                        className="shadow"
-                        variant="primary"
-                        href="/login"
-                        style={{ width: "100px", margin: "10px 0" }}
-                      >
-                        Login
-                      </Button>
-                    </div>
-                  ) : (
-                    <Button
-                      className="shadow"
-                      variant="danger"
-                      href="/login"
-                      style={{ width: "100px", margin: "10px" }}
-                      onClick={logout}>
-                      Sair
-                    </Button>
-                  )
-                }
-              </Navbar.Text>
-            </Nav>
+                <Button variant="danger" onClick={logout} href="/login">Sair</Button>
+              </>
+            ) : (
+              <div className="d-flex align-items-center gap-3"
+              style={{
+                justifyContent: "end"
+              }}>
+                <Nav.Link href="/cadastro" className={styles.botaoCadastro} style={{
+                  color: "white"
+                }}>Cadastre-se</Nav.Link>
+                <Button variant="light" href="/login" className="text-primary">Login</Button>
+              </div>
+            )}
           </Navbar.Collapse>
         </Container>
       </Navbar>
-    </div>
+    </div >
   );
 };
 
