@@ -128,7 +128,7 @@ const Insumos = () => {
   return (
     <div style={{ marginTop: '100px' }}>
       <NavBar />
-      <Container style={{ maxWidth: "800px" }}>
+      <Container style={{ maxWidth: "500px" }}>
         <Form
           onSubmit={handleSubmit}
           className="shadow"
@@ -243,14 +243,14 @@ const Insumos = () => {
                 ))}
               </Dropdown.Menu>
             </Dropdown>
-            <Button
+            {/* <Button
               className="rounded-5 m-2 mt-2 fs-2"
               style={{ width: '60px', height: '60px' }}
               onClick={handleReset}
               variant="outline-danger"
             >
               ↺
-            </Button>
+            </Button> */}
           </div>
 
           <div className="d-flex justify-content-center gap-3">
