@@ -58,6 +58,7 @@ const Funcionarios = () => {
 
   const handleCardClick = (id) => {
     navigate(`/visualizar_funcionario/${id}`);
+    console.log('Passado para a tela de visualizar')
   };
 
   const handleDelete = (id) => {
@@ -81,11 +82,12 @@ const Funcionarios = () => {
       <NavBar />
 
       <Container>
-        <h1 style={{ marginTop: "100px" }}>Funcionários</h1>
+        <h1 style={{ marginTop: "100px" }}><b>FUNCIONARIOS</b></h1>
 
         <Pesquisa
           nomeDrop="Cargo"
           navega="/cadastro_funcionario"
+          TxtButton="Funcionarios +"
           lista={[
             { texto: "Gerente", value: "Gerente" },
             { texto: "ADM", value: "ADM" },
@@ -95,39 +97,38 @@ const Funcionarios = () => {
             setFiltro({ ...filtro, filtro: filtroSelecionado })
           }
         />
-
-        <CardGeral
-          card={funcionarios}
-          imgHeight={250}
-          onCardClick={handleCardClick}
-          showButtons={false}
-          customButton={(item) => (
-            <>
-              <Button
-                variant='warning'
-                className='rounded-circle fs-5 text-center shadow m-1'
-                onClick={(e) => {
-                  e.stopPropagation();
-                  navigate(`/visualizar_funcionario/${item.id}`);
-                }}
-              >
-                <FaEdit />
-              </Button>
-              <Button
-                variant='danger'
-                className='rounded-circle fs-5 text-center shadow m-1'
-                onClick={(e) => {
-                  e.stopPropagation();
-                  if (window.confirm('Deseja deletar o funcionário?')) {
-                    handleDelete(item.id);
-                  }
-                }}
-              >
-                <FaRegTrashAlt />
-              </Button>
-            </>
-          )}
-        />
+          <CardGeral
+            card={funcionarios}
+            imgHeight={250}
+            onCardClick={handleCardClick}
+            showButtons={false}
+            customButton={(item) => (
+              <>
+                <Button
+                  variant='warning'
+                  className='rounded-circle fs-5 text-center shadow m-1'
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    navigate(`/visualizar_funcionario/${item.id}`);
+                  }}
+                >
+                  <FaEdit />
+                </Button>
+                <Button
+                  variant='danger'
+                  className='rounded-circle fs-5 text-center shadow m-1'
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (window.confirm('Deseja deletar o funcionário?')) {
+                      handleDelete(item.id);
+                    }
+                  }}
+                >
+                  <FaRegTrashAlt />
+                </Button>
+              </>
+            )}
+          />
       </Container>
     </div>
   );

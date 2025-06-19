@@ -5,6 +5,8 @@ import NavBar from '../../components/NavBar/NavBar';
 import { Button, Container, Dropdown, FloatingLabel, Form, Badge } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
+import logo from "../../assets/logo.png"
+
 const Produto = () => {
   const [nome, setNome] = useState('');
   const [descricao, setDescricao] = useState('');
@@ -12,6 +14,8 @@ const Produto = () => {
   const [valor, setValor] = useState('');
   const [imagemUrl, setImagemUrl] = useState('');
   const [insumos, setInsumos] = useState([]);
+  const [unidade, setUnidade] = useState([]);
+  const [quantidade, setQuantidade] = useState('');
   const [insumoSelecionado, setInsumoSelecionado] = useState({
     id: null,
     nome: '',
@@ -82,7 +86,52 @@ const Produto = () => {
     } catch (error) {
       alert('Erro ao conectar ao servidor.');
     }
+
+
+
   };
+
+  const handleReset = () => {
+    setInsumoSelecionado({
+      nome_item: '',
+      descricao_item: '',
+      categoria: 'Outros',
+      valor_item: 0,
+      imagem_url: ''
+    });
+  };
+
+  const validarProduto = () => {
+    if (!nome || !insumos || !quantidade || !unidade || !imagemUrl || !valor || !descricao || !filtro) { //removido cnpj
+      alert('Todos os campos são obrigatórios!');
+      return false;
+    }
+
+    if (insumosSelecionados.nome_item < 4) {
+      alert('O nome deve ter pello menos 4 caracteres!');
+      return false;
+    }
+
+
+    if (!insumosSelecionados.imagem_url) {
+      alert('A URL da imagem é obrigatória.');
+      return false;
+    }
+
+    if (insumosSelecionados.descricao_item < 1) {
+      alert('O nome deve ter pello menos 1 caracteres!');
+      return false;
+    }
+
+    if (insumosSelecionados.valor_item <= 0) {
+      alert('O valor deve ser maior que zero.');
+      return;
+    }
+
+    return true;
+
+
+  }
 
   return (
     <div style={{ marginTop: '100px' }}>
@@ -97,8 +146,10 @@ const Produto = () => {
           style={{
             padding: '30px',
             borderRadius: '20px',
-            border: '1px solid blue'
+            border: '1px solid blue', textAlign:"center"
           }}>
+          <img
+            src={logo} width={100} alt="" />
           <h1 style={{ textAlign: 'center' }}>Cadastro</h1>
 
           <FloatingLabel
@@ -108,19 +159,16 @@ const Produto = () => {
             <Form.Control
               type="text"
               placeholder="Nome"
-              className="rounded shadow mt-3"
+              className="rounded-5 shadow mt-3"
               value={nome}
               onChange={(e) => setNome(e.target.value)}
               required />
           </FloatingLabel>
 
-          <div className="d-flex align-items-center m-2 gap-2"
-          style={{
-            flexWrap: "wrap"
-          }}>
+          <div className="d-flex align-items-center m-2 gap-2">
             {/* Seleção de insumo */}
-            <Dropdown className="shadow rounded">
-              <Dropdown.Toggle variant="outline-primary rounded">
+            <Dropdown className="shadow rounded-5">
+              <Dropdown.Toggle variant="outline-primary rounded-5">
                 {insumoSelecionado.nome || 'Insumos'}
               </Dropdown.Toggle>
               <Dropdown.Menu style={{ maxHeight: '200px', overflowY: 'auto' }}>
@@ -152,15 +200,15 @@ const Produto = () => {
                   quantidade_necessaria: e.target.value,
                 }))
               }
-              className="shadow rounded"
+              className="shadow rounded-5"
               style={{ width: '150px' }}
               min="0"
             />
 
             {/* Unidade de medida */}
-            <Dropdown className="shadow rounded">
+            <Dropdown className="shadow rounded-5">
               <Dropdown.Toggle
-                variant="outline-primary rounded">
+                variant="outline-primary rounded-5">
                 {insumoSelecionado.unidade_medida_receita || 'Unidade'}
               </Dropdown.Toggle>
               <Dropdown.Menu
@@ -182,7 +230,7 @@ const Produto = () => {
             </Dropdown>
 
             {/* Botão de adicionar */}
-            <Button variant="primary" onClick={adicionarInsumo} className="rounded">
+            <Button variant="primary" onClick={adicionarInsumo} className="rounded-5">
               +
             </Button>
           </div>
@@ -191,7 +239,7 @@ const Produto = () => {
             {insumosSelecionados.length > 0 ? (
               insumosSelecionados.map((i) => (
                 <Badge key={i.id} pill bg="primary"
-                  className="m-1 rounded" style={{ cursor: 'pointer', padding: '10px' }}
+                  className="m-1 rounded-5" style={{ cursor: 'pointer', padding: '10px' }}
                   onClick={() => removerInsumo(i.id)}>
                   {i.nome} — {i.quantidade_necessaria} {i.unidade_medida_receita} ✕
                 </Badge>
@@ -207,7 +255,7 @@ const Produto = () => {
             className="m-2">
             <Form.Control
               type="text"
-              className="rounded shadow mt-3"
+              className="rounded-5 shadow mt-3"
               placeholder="URL da imagem"
               value={imagemUrl}
               onChange={(e) =>
@@ -221,7 +269,7 @@ const Produto = () => {
             <Form.Control
               type="number"
               placeholder="Valor"
-              className="rounded shadow mt-3"
+              className="rounded-5 shadow mt-3"
               value={valor}
               onChange={(e) => setValor(e.target.value)}
               required
@@ -235,14 +283,14 @@ const Produto = () => {
               placeholder="Descrição"
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
-              className="rounded shadow mt-3"
+              className="rounded-5 shadow mt-3"
               style={{ border: 'none', height: '100px' }}
             />
           </FloatingLabel>
 
           <div className="d-flex m-2">
-            <Dropdown className="shadow rounded mt-2">
-              <Dropdown.Toggle variant="outline-primary rounded">
+            <Dropdown className="shadow rounded-5 mt-2">
+              <Dropdown.Toggle variant="outline-primary rounded-5">
                 {filtro || 'Filtro'}
               </Dropdown.Toggle>
               <Dropdown.Menu>
@@ -253,17 +301,13 @@ const Produto = () => {
             </Dropdown>
           </div>
 
-          <div className="d-flex gap-3"
-            style={{ width: "95%", margin: "auto" }}>
-            <Button type="submit"
-              className="shadow mt-4"
-              style={{ padding: '15px', width: '50%', margin: "auto" }}>
-              Cadastrar
-            </Button>
-            <Button type="button" className="shadow mt-4" variant="outline-primary" onClick={() => navigate('/cardapio')} style={{ padding: '15px', width: '50%' }}>
-              Cancelar
-            </Button>
-          </div>
+          <Button type="submit" className="shadow mt-4" style={{ padding: '15px', width: '90%', borderRadius: '30px', marginLeft: '20px' }}>
+            Cadastrar
+          </Button>
+
+          <Button type="button" className="shadow mt-4" variant="outline-primary" onClick={() => navigate('/cardapio')} style={{ padding: '15px', width: '90%', borderRadius: '30px', marginLeft: '20px' }}>
+            Cancelar
+          </Button>
         </Form>
       </Container>
     </div>

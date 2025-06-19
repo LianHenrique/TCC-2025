@@ -134,10 +134,11 @@ const Cardapio = () => {
         <h1
           style={{
             marginTop: "100px"
-          }}>Produto</h1>
+          }}><b>PRODUTOS</b></h1>
         <Pesquisa
           nomeDrop="Filtro"
           navega="/cadastro_produto"
+          TxtButton="Produtos +"
           lista={[
             { lista: 'Lanche', link: '#lanche' },
             { lista: 'Bebida', link: '#bebida' },
@@ -154,7 +155,10 @@ const Cardapio = () => {
           customButton={item => (
             <Button
               variant="success"
-              className="h-10 fs-5 text-center shadow alert-success align-center bg-success text-white"
+              style={{
+                padding: "15px"
+              }}
+              className="fs-5 text-center shadow alert-success align-center bg-success text-white"
               onClick={() => handlePedir(item.id)}
             >
               Pedir

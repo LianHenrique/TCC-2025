@@ -50,7 +50,7 @@ const Alerta = () => {
                     marginTop: "100px"
                 }}>
                 {/* Título do alerta */}
-                <h1>Insumos para serem repostos</h1>
+                <h1 style={{ marginBottom: "50px"}}>Insumos para serem repostos</h1>
                 {/* Seção para ícones ou legendas (comentada) */}
                 <section style={{
                     display: 'flex',
@@ -65,11 +65,11 @@ const Alerta = () => {
                         // Define a cor de fundo de acordo com a quantidade
                         let colort = ''
                         if (insumo.quantidade < 10) {
-                            colort = 'rgba(246, 148, 148, 1)' // Vermelho claro: crítico
+                            colort = 'rgb(255, 0, 0)' // Vermelho claro: crítico
                         } else if (insumo.quantidade > 15) {
-                            colort = 'rgb(189, 251, 158)' // Verde: tranquilo
+                            colort = 'rgb(0, 255, 0)' // Verde: tranquilo
                         } else if (insumo.quantidade <= 15) {
-                            colort = 'rgb(251, 255, 176)' // Amarelo: atenção
+                            colort = 'rgb(255, 255, 0)' // Amarelo: atenção
                         }
                         else {
                             colort = 'white'

@@ -5,6 +5,7 @@ import Pesquisa from '../../components/Pesquisa/Pesquisa';
 import { Button, Container, Badge } from 'react-bootstrap';
 import CardGeral from '../../components/Cards/CardGeral';
 import { FaEdit, FaRegTrashAlt } from 'react-icons/fa';
+import AlertaSobre from '../../components/AlertaSobre/AlertaSobre';
 
 const Estoque = () => {
   const [produtos, setProdutos] = useState({});
@@ -26,13 +27,12 @@ const Estoque = () => {
 
   const handleCardClick = (id) => {
     navigate(`/visualizar/${id}`);
+    console.log('Indo para a tela de visulizar')
   };
 
   const handleDelete = async (id) => {
     const confirm = window.confirm('Deseja realmente deletar este item do estoque?');
-    if (confirm) {
-      alert('Insumo desativado com sucesso!')
-    }
+    if(!confirm) return;
 
     try {
       const response = await await fetch(`http://localhost:3000/insumos/${id}`, {
@@ -42,6 +42,8 @@ const Estoque = () => {
       if (!response.ok) {
         throw new Error('Erro ao deletar o item');
       }
+
+      alert('Insumo desativado com sucesso')
 
       const data = await response.json();
 
@@ -200,14 +202,18 @@ const Estoque = () => {
 
   return (
     <div>
+      {/* <AlertaSobre
+      title="sim"
+      text="sim2"
+      verificacao={true}/> */}
       <NavBar />
       <Container className="my-4">
-        <h1 style={{ marginTop: "100px" }}>Insumos</h1>
+        <h1 style={{ marginTop: "100px" }}><b>INSUMOS</b></h1>
 
         <Pesquisa
           nomeDrop="Filtrar por"
           navega="/cadastro_insumos"
-          textoBotao="Adicionar Insumo"
+          TxtButton="Insumos +"
           lista={[
             { texto: "Carnes", value: "Carnes" },
             { texto: "Perecíveis", value: "Perecíveis" },
@@ -223,9 +229,6 @@ const Estoque = () => {
             <div key={normalizedCategoryKey} id={normalizedCategoryKey} className="mb-5">
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h2>{categoryData.displayName}</h2> {/* Use the stored display name */}
-                <Badge bg="secondary">
-                  {categoryData.items.length} itens
-                </Badge>
               </div>
 
               <CardGeral
