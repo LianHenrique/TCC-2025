@@ -111,7 +111,8 @@ const Alerta = () => {
                                                 display: 'flex',
                                                 gap: '20px',
                                                 fontSize: '20px',
-                                                flexWrap: 'wrap'
+                                                flexWrap: 'wrap',
+                                                color: "black"
                                             }}
                                         >
                                             <p>Nome: {insumo.nome}</p>
@@ -130,7 +131,8 @@ const Alerta = () => {
                                             width: '40px',
                                             height: '40px',
                                             textAlign: 'center',
-                                            marginLeft: '20px'
+                                            marginLeft: '20px',
+                                            color: "black"
                                         }}
                                     >
                                         !
