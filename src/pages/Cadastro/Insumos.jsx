@@ -77,24 +77,9 @@ const Insumos = () => {
       console.error("Erro de rede ou servidor", error);
       alert("Erro de rede ou servidor.");
     }
-  };
 
-  // Reset do formulário
-  const handleReset = () => {
-    setFormData({
-      nome_insumos: '',
-      valor_insumos: '',
-      categoria: 'Outros',
-      quantidade_insumos: 0,
-      data_vencimento: '',
-      descricao_insumos: '',
-      imagem_url: ''
-    });
-  };
-
-  //valida insumos
-  const validarInsumos = () =>{
-    if (formData.nome_insumos.length < 3) {
+    //valida campos 
+     if (formData.nome_insumos.length < 3) {
       alert('O nome do insumo deve ter pelo menos 3 caracteres.');
       return false;
     }
@@ -123,7 +108,23 @@ const Insumos = () => {
       return false;
     }
     return true;
-  }
+  };
+
+  // Reset do formulário
+  const handleReset = () => {
+    setFormData({
+      nome_insumos: '',
+      valor_insumos: '',
+      categoria: 'Outros',
+      quantidade_insumos: 0,
+      data_vencimento: '',
+      descricao_insumos: '',
+      imagem_url: ''
+    });
+  };
+
+
+  
 
   return (
     <div style={{ marginTop: '100px' }}>
@@ -131,10 +132,9 @@ const Insumos = () => {
       <Container style={{ maxWidth: "500px" }}>
         <Form
           onSubmit={handleSubmit}
-          className="shadow"
+          className="shadow rounded"
           style={{
             padding: '30px',
-            borderRadius: '20px',
             border: '1px blue solid',
             marginBottom: "10px"
           }}
@@ -148,7 +148,7 @@ const Insumos = () => {
               placeholder="Nome do Insumo"
               value={formData.nome_insumos}
               onChange={handleChange}
-              className="rounded-5 shadow mt-3"
+              className="rounded-3 shadow mt-3"
               style={{ border: 'none' }}
               required
             />
@@ -163,7 +163,7 @@ const Insumos = () => {
               placeholder="Valor por Unidade"
               value={formData.valor_insumos}
               onChange={handleChange}
-              className="rounded-5 shadow mt-3"
+              className="rounded-3 shadow mt-3"
               style={{ border: 'none' }}
               required
             />
@@ -177,7 +177,7 @@ const Insumos = () => {
               value={formData.data_vencimento}
               min={today}
               onChange={handleChange}
-              className="rounded-5 shadow mt-3"
+              className="rounded-3 shadow mt-3"
               style={{ border: 'none' }}
               required
             />
@@ -191,42 +191,44 @@ const Insumos = () => {
               placeholder="Quantidade em Estoque"
               value={formData.quantidade_insumos}
               onChange={handleChange}
-              className="rounded-5 shadow mt-3"
+              className="rounded-3 shadow mt-3"
               style={{ border: 'none' }}
               required
             />
           </FloatingLabel>
 
-          <FloatingLabel controlId="imagem_url" label="URL da Imagem" className="m-2">
+          <FloatingLabel 
+          controlId="imagem_url" label="URL da Imagem" className="m-2">
             <Form.Control
               type="text"
               name="imagem_url"
               placeholder="URL da Imagem"
               value={formData.imagem_url}
               onChange={handleChange}
-              className="rounded-5 shadow mt-3"
+              className="rounded-3 shadow mt-3"
               style={{ border: 'none' }}
               required
             />
           </FloatingLabel>
 
-          <FloatingLabel controlId="descricao_insumos" label="Descrição do Produto" className="m-2">
+          <FloatingLabel 
+          controlId="descricao_insumos" label="Descrição do Produto" className="m-2">
             <Form.Control
               as="textarea"
               name="descricao_insumos"
               placeholder="Descrição do Produto"
               value={formData.descricao_insumos}
               onChange={handleChange}
-              className="rounded-5 shadow mt-3"
+              className="rounded-3 shadow mt-3"
               style={{ border: 'none', height: '100px' }}
               required
             />
           </FloatingLabel>
 
           <div className="d-flex m-2" style={{ alignContent: 'center' }}>
-            <Dropdown className="d-flex shadow rounded-5 mt-2" style={{ width: '150px', height: '60px' }}>
+            <Dropdown className="d-flex shadow rounded-3 mt-2" style={{ width: '150px', height: '60px' }}>
               <Dropdown.Toggle
-                variant="outline-primary rounded-5"
+                variant="outline-primary rounded-3"
                 style={{ width: '150px', height: '60px' }}
               >
                 {formData.categoria}
@@ -236,7 +238,7 @@ const Insumos = () => {
                   <Dropdown.Item
                     key={item}
                     onClick={() => setFormData({...formData, categoria: item})}
-                    className="dropdown-item rounded-5"
+                    className="dropdown-item rounded-3"
                   >
                     {item}
                   </Dropdown.Item>
@@ -253,26 +255,25 @@ const Insumos = () => {
             </Button> */}
           </div>
 
-          <div className="d-flex justify-content-center gap-3">
+          <div className="d-flex justify-content-center gap-3"
+          style={{width: "95%", margin: "auto"}}>
             <Button
               type="submit"
-              className="shadow mt-4"
+              className="shadow mt-4 rounded"
               style={{
                 padding: '15px',
-                width: '45%',
-                borderRadius: '30px'
+                width: '50%'
               }}
             >
               Cadastrar
             </Button>
             <Button
-              className="shadow mt-4"
+              className="shadow mt-4 rounded"
               variant="outline-primary"
               onClick={() => navigate('/estoque')}
               style={{
                 padding: '15px',
-                width: '45%',
-                borderRadius: '30px'
+                width: '50%'
               }}
             >
               Cancelar
