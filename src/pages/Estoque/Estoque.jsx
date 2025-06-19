@@ -26,6 +26,7 @@ const Estoque = () => {
 
   const handleCardClick = (id) => {
     navigate(`/visualizar/${id}`);
+    console.log('Indo para a tela de visulizar')
   };
 
   const handleDelete = async (id) => {

@@ -58,6 +58,7 @@ const Funcionarios = () => {
 
   const handleCardClick = (id) => {
     navigate(`/visualizar_funcionario/${id}`);
+    console.log('Passado para a tela de visualizar')
   };
 
   const handleDelete = (id) => {
