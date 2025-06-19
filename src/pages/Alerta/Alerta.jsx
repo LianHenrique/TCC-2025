@@ -65,11 +65,11 @@ const Alerta = () => {
                         // Define a cor de fundo de acordo com a quantidade
                         let colort = ''
                         if (insumo.quantidade < 10) {
-                            colort = 'rgba(246, 148, 148, 1)' // Vermelho claro: crítico
+                            colort = 'rgb(255, 0, 0)' // Vermelho claro: crítico
                         } else if (insumo.quantidade > 15) {
-                            colort = 'rgb(189, 251, 158)' // Verde: tranquilo
+                            colort = 'rgb(0, 255, 0)' // Verde: tranquilo
                         } else if (insumo.quantidade <= 15) {
-                            colort = 'rgb(251, 255, 176)' // Amarelo: atenção
+                            colort = 'rgb(255, 255, 0)' // Amarelo: atenção
                         }
                         else {
                             colort = 'white'
@@ -78,7 +78,7 @@ const Alerta = () => {
                         // Renderiza cada insumo
                         return (
                             <div key={insumo.id}
-                                className='shadow rounded-5 d-flex gap-3 align-items-center'
+                                className='shadow rounded d-flex gap-3 align-items-center'
                                 style={{
                                     width: '100%',
                                     maxWidth: '625px',

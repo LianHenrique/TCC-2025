@@ -31,9 +31,7 @@ const Estoque = () => {
 
   const handleDelete = async (id) => {
     const confirm = window.confirm('Deseja realmente deletar este item do estoque?');
-    if (confirm) {
-      alert('Insumo desativado com sucesso!')
-    }
+    if(!confirm) return;
 
     try {
       const response = await await fetch(`http://localhost:3000/insumos/${id}`, {
@@ -43,6 +41,8 @@ const Estoque = () => {
       if (!response.ok) {
         throw new Error('Erro ao deletar o item');
       }
+
+      alert('Insumo desativado com sucesso')
 
       const data = await response.json();
 
