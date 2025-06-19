@@ -138,7 +138,7 @@ const Funcionarios = () => {
             />
           </FloatingLabel>
 
-          <Form.Select
+          {/* <Form.Select
             aria-label="Selecione o cargo"
             value={cargoFuncionario}
             onChange={(e) => setCargoFuncionario(e.target.value)}
@@ -149,7 +149,7 @@ const Funcionarios = () => {
             <option value="Gerente">Gerente</option>
             <option value="Estoquista">Estoquista</option>
             <option value="Geral">Geral</option>
-          </Form.Select>
+          </Form.Select> */}
 
           <div className="d-flex m-2" style={{ alignContent: 'center' }}>
             <Dropdown className="d-flex shadow rounded-5 mt-2" style={{ width: '150px', height: '60px' }}>

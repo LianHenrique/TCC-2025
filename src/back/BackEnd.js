@@ -639,11 +639,11 @@ app.put('/AtualizarCardapio/:id', (req, res) => {
 
         connection.query(insertInsumoQuery, [values], (error) => {
           if (error) {
-            console.error('❌ Erro ao inserir insumos:', error);
+            console.error('Erro ao inserir insumos:', error);
             return res.status(500).json({ error: "Erro ao adicionar novos insumos." });
           }
 
-          console.log('✅ Produto e insumos atualizados com sucesso!');
+          console.log('Produto e insumos atualizados com sucesso!');
           res.status(200).json({ message: 'Produto e insumos atualizados com sucesso!' });
         });
       });
