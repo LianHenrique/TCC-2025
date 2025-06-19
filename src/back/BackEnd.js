@@ -257,14 +257,20 @@ app.delete("/deletarFuncionario/:id", (req, res) => {
 // --- ROTAS INSUMOS ---
 // Buscar todos insumos
 app.get('/insumos', (req, res) => {
-  connection.query(
-    'SELECT id_insumos, nome_insumos, descricao_insumos, quantidade_insumos, unidade_medida, valor_insumos, data_vencimento, imagem_url, categoria FROM insumos',
-    (error, results) => {
-      if (error) return res.status(500).json({ error: 'Erro ao buscar insumos' });
-      res.json(results);
-    }
-  );
+  const sql = `
+    SELECT id_insumos, nome_insumos, descricao_insumos, quantidade_insumos, 
+           unidade_medida, valor_insumos, data_vencimento, imagem_url, 
+           categoria, alertar_dias_antes, alerta_estoque 
+    FROM insumos
+  `;
+
+  connection.query(sql, (error, results) => {
+    if (error) return res.status(500).json({ error: 'Erro ao buscar insumos' });
+    res.json(results);
+  });
 });
+
+
 
 
 // Deletando os insumos por it
@@ -290,33 +296,26 @@ app.get('/insumos_tudo/:id_insumos', (req, res) => {
 
   const query = `
     SELECT 
-      id_insumos,
-      nome_insumos,
-      descricao_insumos,
-      quantidade_insumos,
-      unidade_medida,
-      valor_insumos,
-      DATE_FORMAT(data_vencimento, '%Y-%m-%d') AS data_vencimento,
-      imagem_url,
-      categoria,
-      id_funcionario_cadastro,
-      data_cadastro,
-      data_ultima_modificacao
+      id_insumos, nome_insumos, quantidade_insumos, valor_insumos, 
+      imagem_url, categoria, data_vencimento, 
+      alerta_estoque, alertar_dias_antes
     FROM insumos
-    WHERE id_insumos = ?;
+    WHERE id_insumos = ?
   `;
 
-  connection.query(query, [id_insumos], (error, resultados) => {
+  connection.query(query, [id_insumos], (error, results) => {
     if (error) {
-      return res.status(500).json({ erro: 'Erro ao buscar insumo' });
+      console.error(error);
+      return res.status(500).json({ error: 'Erro ao buscar o insumo' });
     }
-    if (resultados.length === 0) {
-      return res.status(404).json({ error: 'Produto não encontrado' });
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Insumo não encontrado' });
     }
-    res.json(resultados[0]);
+
+    res.status(200).json(results[0]);
   });
 });
-
 
 
 
@@ -329,7 +328,9 @@ app.put('/insumos_tudo_POST/:id_insumos', (req, res) => {
     valor_insumos,
     imagem_url,
     categoria,
-    data_vencimento
+    data_vencimento,
+    alerta_estoque,
+    alerta_vencimento
   } = req.body;
 
   const query = `
@@ -340,7 +341,9 @@ app.put('/insumos_tudo_POST/:id_insumos', (req, res) => {
       valor_insumos = ?,
       imagem_url = ?,
       categoria = ?,
-      data_vencimento = ?
+      data_vencimento = ?,
+      alerta_estoque = ?,
+      alerta_vencimento = ?
     WHERE id_insumos = ?;
   `;
 
@@ -351,6 +354,8 @@ app.put('/insumos_tudo_POST/:id_insumos', (req, res) => {
     imagem_url,
     categoria,
     data_vencimento,
+    alerta_estoque,
+    alerta_vencimento,
     id_insumos
   ];
 
@@ -371,16 +376,28 @@ app.put('/insumos_tudo_POST/:id_insumos', (req, res) => {
 
 
 // Notificação de quantidade do estoque (todos produtos com QTD <= 10)
+// Rota atualizada: alerta antecipado (<= alerta_estoque + 10) e crítico (<= alerta_estoque)
 app.get('/insumos/alerta', (req, res) => {
-  connection.query('SELECT * FROM insumos WHERE quantidade_insumos <= 20', (error, results) => {
-    if (error) {
-      console.error('Erro ao buscar insumos', error.message);
-      console.error(error);
-      return res.status(500).json({ error: 'Erro ao buscar insumos:' })
+  connection.query(
+    `SELECT 
+       id_insumos, 
+       nome_insumos, 
+       imagem_url, 
+       quantidade_insumos, 
+       alerta_estoque,
+       CASE
+         WHEN quantidade_insumos <= alerta_estoque THEN 'critico'
+         WHEN quantidade_insumos <= alerta_estoque + 10 THEN 'antecipado'
+         ELSE NULL
+       END AS tipo_alerta
+     FROM insumos
+     WHERE quantidade_insumos <= alerta_estoque + 10`,
+    (error, results) => {
+      if (error) return res.status(500).json({ error: 'Erro ao buscar alertas' });
+      res.json(results);
     }
-    return res.json(results);
-  })
-})
+  );
+});
 
 
 
@@ -402,23 +419,19 @@ app.get('/insumos/:id_insumos', (req, res) => {
 
 // Inserir insumo
 app.post('/insumos/insert', (req, res) => {
-  const { nome_insumos, imagem_url, valor_insumos, categoria, quantidade_insumos, data_vencimento, descricao_insumos } = req.body;
+  const { nome_insumos, imagem_url, valor_insumos, categoria, quantidade_insumos, data_vencimento, descricao_insumos, alertar_dias_antes, alerta_estoque } = req.body;
 
   if (
-    nome_insumos === undefined || nome_insumos === '' ||
-    imagem_url === undefined || imagem_url === '' ||
-    valor_insumos === undefined ||
-    categoria === undefined || categoria === '' ||
-    quantidade_insumos === undefined || quantidade_insumos === null ||
-    data_vencimento === undefined || data_vencimento === '' ||
-    descricao_insumos === undefined || descricao_insumos === ''
+    !nome_insumos || !imagem_url || valor_insumos === undefined || !categoria ||
+    quantidade_insumos === undefined || !data_vencimento || !descricao_insumos ||
+    alertar_dias_antes === undefined || alerta_estoque === undefined
   ) {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
   }
 
-  const sql = `INSERT INTO insumos (nome_insumos, imagem_url, valor_insumos, categoria, quantidade_insumos, data_vencimento_prod, descricao_produto) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+  const sql = `INSERT INTO insumos (nome_insumos, imagem_url, valor_insumos, categoria, quantidade_insumos, data_vencimento, descricao_insumos, alertar_dias_antes, alerta_estoque) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
-  connection.query(sql, [nome_insumos, imagem_url, valor_insumos, categoria, quantidade_insumos, data_vencimento, descricao_insumos], (error) => {
+  connection.query(sql, [nome_insumos, imagem_url, valor_insumos, categoria, quantidade_insumos, data_vencimento, descricao_insumos, alertar_dias_antes, alerta_estoque], (error) => {
     if (error) {
       console.error(error);
       return res.status(500).json({ error: 'Erro ao cadastrar insumo' });
@@ -427,11 +440,9 @@ app.post('/insumos/insert', (req, res) => {
   });
 });
 
+
+
 // --- ROTAS PRODUTOS ---
-
-
-
-
 // Buscar itens do cardapio por ID
 app.get('/cardapio/:id_cardapio', (req, res) => {
   const { id_cardapio } = req.params;

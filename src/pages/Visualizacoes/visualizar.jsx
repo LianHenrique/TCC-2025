@@ -17,18 +17,11 @@ const Visualizar = () => {
     const [imagemAtual, setImagemAtual] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [alertaEstoque, setAlertaEstoque] = useState('');
+    const [alertaVencimento, setAlertaVencimento] = useState('');
 
     useEffect(() => {
         if (!id) return;
-
-        console.log('Dados enviados:', {
-            nome_insumos: nome,
-            quantidade_insumos: quantidade,
-            categoria: filtro,
-            imagem_url: url,
-            valor_insumos: preco,
-            data_vencimento: validade
-        });
 
         fetch(`http://localhost:3000/insumos_tudo/${id}`)
             .then(res => {
@@ -37,12 +30,15 @@ const Visualizar = () => {
             })
             .then(data => {
                 const insumo = Array.isArray(data) ? data[0] : data;
+
                 setNome(insumo.nome_insumos);
                 setQuantidade(insumo.quantidade_insumos);
                 setPreco(insumo.valor_insumos);
                 setUrl(insumo.imagem_url);
                 setImagemAtual(insumo.imagem_url);
                 setFiltro(insumo.categoria);
+                setAlertaEstoque(insumo.alerta_estoque || '');
+                setAlertaVencimento(insumo.alertar_dias_antes || '');
 
                 const dataFormatada = insumo.data_vencimento
                     ? new Date(insumo.data_vencimento).toISOString().split('T')[0]
@@ -56,7 +52,6 @@ const Visualizar = () => {
                 setLoading(false);
             });
     }, [id]);
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -72,7 +67,9 @@ const Visualizar = () => {
                     categoria: filtro,
                     imagem_url: url,
                     valor_insumos: preco,
-                    data_vencimento: validade // <- Enviando validade no PUT
+                    data_vencimento: validade,
+                    alerta_estoque: alertaEstoque,
+                    alerta_vencimento: alertaVencimento
                 })
             });
 
@@ -155,6 +152,28 @@ const Visualizar = () => {
                             onChange={(e) => setValidade(e.target.value)}
                             className="rounded-5 shadow"
                             min={new Date().toISOString().split('T')[0]}
+                            required
+                        />
+                    </FloatingLabel>
+
+                    <FloatingLabel controlId="alertaEstoque" label="Alerta de Estoque (mínimo)" className="mb-3">
+                        <Form.Control
+                            type="number"
+                            value={alertaEstoque}
+                            onChange={(e) => setAlertaEstoque(e.target.value)}
+                            className="rounded-5 shadow"
+                            min="0"
+                            required
+                        />
+                    </FloatingLabel>
+
+                    <FloatingLabel controlId="alertaVencimento" label="Alerta de Vencimento (dias antes)" className="mb-3">
+                        <Form.Control
+                            type="number"
+                            value={alertaVencimento}
+                            onChange={(e) => setAlertaVencimento(e.target.value)}
+                            className="rounded-5 shadow"
+                            min="0"
                             required
                         />
                     </FloatingLabel>

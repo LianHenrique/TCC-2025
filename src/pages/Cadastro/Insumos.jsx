@@ -4,96 +4,36 @@ import NavBar from '../../components/NavBar/NavBar';
 import { Button, Container, Dropdown, FloatingLabel, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router';
 
-const Insumos = () => {
-  // Estados do formulário
-  const [formData, setFormData] = useState({
-    nome_insumos: '',
-    valor_insumos: '',
-    categoria: 'Categoria',
-    quantidade_insumos: 0,
-    data_vencimento: '',
-    descricao_insumos: '',
-    imagem_url: ''
-  });
+const getFormDataInicial = () => ({
+  nome_insumos: '',
+  valor_insumos: '',
+  categoria: 'Categoria',
+  quantidade_insumos: 0,
+  data_vencimento: '',
+  descricao_insumos: '',
+  imagem_url: '',
+  alerta_vencimento: 10, // dias antes do vencimento
+  alerta_estoque: 1 // mínimo para alerta de estoque
+});
 
-  // Opções de categoria conforme ENUM do banco
-  const categoriasDisponiveis = ['Carnes', 'Perecíveis', 'Molhos', 'Congelados'];
-  
+const categoriasDisponiveis = ['Carnes', 'Perecíveis', 'Molhos', 'Congelados'];
+
+const Insumos = () => {
+  const [formData, setFormData] = useState(getFormDataInicial());
   const navigate = useNavigate();
   const today = new Date().toISOString().split('T')[0];
 
-  // Manipulador de mudança genérico para todos os campos
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: name === 'quantidade_insumos' ? Number(value) : value
+      [name]: ['quantidade_insumos', 'valor_insumos', 'alerta_vencimento', 'alerta_estoque'].includes(name)
+        ? Number(value)
+        : value
     }));
   };
 
-  // Manipulador de envio do formulário
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Validação dos campos obrigatórios
-    if (Object.values(formData).some(val => 
-      val === '' || 
-      (typeof val === 'number' && isNaN(val))
-    )) {
-      alert('Todos os campos são obrigatórios.');
-      return;
-    }
-
-    // Validação da data de vencimento
-    if (new Date(formData.data_vencimento) < new Date(today)) {
-      alert('A data de validade deve ser hoje ou uma data futura.');
-      return;
-    }
-
-    try {
-      const res = await fetch("http://localhost:3000/insumos/insert", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (res.ok) {
-        alert("Insumo cadastrado com sucesso!");
-        // Reset do formulário
-        setFormData({
-          nome_insumos: '',
-          valor_insumos: '',
-          categoria: 'Outros',
-          quantidade_insumos: 0,
-          data_vencimento: '',
-          descricao_insumos: '',
-          imagem_url: ''
-        });
-        navigate('/estoque');
-      } else {
-        alert("Erro ao cadastrar insumo.");
-      }
-    } catch (error) {
-      console.error("Erro de rede ou servidor", error);
-      alert("Erro de rede ou servidor.");
-    }
-  };
-
-  // Reset do formulário
-  const handleReset = () => {
-    setFormData({
-      nome_insumos: '',
-      valor_insumos: '',
-      categoria: 'Outros',
-      quantidade_insumos: 0,
-      data_vencimento: '',
-      descricao_insumos: '',
-      imagem_url: ''
-    });
-  };
-
-  //valida insumos
-  const validarInsumos = () =>{
+  const validarInsumos = () => {
     if (formData.nome_insumos.length < 3) {
       alert('O nome do insumo deve ter pelo menos 3 caracteres.');
       return false;
@@ -106,11 +46,7 @@ const Insumos = () => {
       alert('A quantidade em estoque não pode ser negativa.');
       return false;
     }
-    if (!formData.data_vencimento) {
-      alert('A data de validade é obrigatória.');
-      return false;
-    }
-    if (new Date(formData.data_vencimento) < new Date(today)) {
+    if (!formData.data_vencimento || new Date(formData.data_vencimento) < new Date(today)) {
       alert('A data de validade deve ser hoje ou uma data futura.');
       return false;
     }
@@ -118,37 +54,55 @@ const Insumos = () => {
       alert('A URL da imagem é obrigatória.');
       return false;
     }
-    if (formData.descricao_insumos.length < 10) {
-      alert('A descrição do produto deve ter pelo menos 10 caracteres.');
+    if (formData.alerta_vencimento < 0) {
+      alert('O número de dias para alerta deve ser igual ou maior que 0.');
+      return false;
+    }
+    if (formData.alerta_estoque < 1) {
+      alert('O alerta de estoque deve ser maior que 0.');
       return false;
     }
     return true;
-  }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validarInsumos()) return;
+
+    try {
+      const res = await fetch("http://localhost:3000/insumos/insert", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
+
+      if (res.ok) {
+        alert("Insumo cadastrado com sucesso!");
+        setFormData(getFormDataInicial());
+        navigate('/estoque');
+      } else {
+        alert("Erro ao cadastrar insumo.");
+      }
+    } catch (error) {
+      console.error("Erro:", error);
+      alert("Erro de rede ou servidor.");
+    }
+  };
 
   return (
     <div style={{ marginTop: '100px' }}>
       <NavBar />
       <Container style={{ maxWidth: "500px" }}>
-        <Form
-          onSubmit={handleSubmit}
-          className="shadow rounded"
-          style={{
-            padding: '30px',
-            border: '1px blue solid',
-            marginBottom: "10px"
-          }}
-        >
-          <h1 style={{ textAlign: 'center' }}>Cadastro de Insumos</h1>
+        <Form onSubmit={handleSubmit} className="shadow rounded" style={{ padding: '30px', border: '1px blue solid' }}>
+          <h1 className="text-center">Cadastro de Insumos</h1>
 
           <FloatingLabel controlId="nome_insumos" label="Nome do Insumo" className="m-2">
             <Form.Control
               type="text"
               name="nome_insumos"
-              placeholder="Nome do Insumo"
               value={formData.nome_insumos}
               onChange={handleChange}
               className="rounded-3 shadow mt-3"
-              style={{ border: 'none' }}
               required
             />
           </FloatingLabel>
@@ -159,11 +113,9 @@ const Insumos = () => {
               name="valor_insumos"
               step="0.01"
               min="0"
-              placeholder="Valor por Unidade"
               value={formData.valor_insumos}
               onChange={handleChange}
               className="rounded-3 shadow mt-3"
-              style={{ border: 'none' }}
               required
             />
           </FloatingLabel>
@@ -172,12 +124,22 @@ const Insumos = () => {
             <Form.Control
               type="date"
               name="data_vencimento"
-              placeholder="Data de Validade"
               value={formData.data_vencimento}
               min={today}
               onChange={handleChange}
               className="rounded-3 shadow mt-3"
-              style={{ border: 'none' }}
+              required
+            />
+          </FloatingLabel>
+
+          <FloatingLabel controlId="alerta_vencimento" label="Alertar quantos dias antes do vencimento?" className="m-2">
+            <Form.Control
+              type="number"
+              name="alerta_vencimento"
+              min="0"
+              value={formData.alerta_vencimento}
+              onChange={handleChange}
+              className="rounded-3 shadow mt-3"
               required
             />
           </FloatingLabel>
@@ -186,95 +148,73 @@ const Insumos = () => {
             <Form.Control
               type="number"
               name="quantidade_insumos"
-              min="0"
-              placeholder="Quantidade em Estoque"
+              min="1"
               value={formData.quantidade_insumos}
               onChange={handleChange}
               className="rounded-3 shadow mt-3"
-              style={{ border: 'none' }}
               required
             />
           </FloatingLabel>
 
-          <FloatingLabel 
-          controlId="imagem_url" label="URL da Imagem" className="m-2">
+          <FloatingLabel controlId="alerta_estoque" label="Alertar com qual quantidade em estoque?" className="m-2">
+            <Form.Control
+              type="number"
+              name="alerta_estoque"
+              min="1"
+              value={formData.alerta_estoque}
+              onChange={handleChange}
+              className="rounded-3 shadow mt-3"
+              required
+            />
+          </FloatingLabel>
+
+          <FloatingLabel controlId="imagem_url" label="URL da Imagem" className="m-2">
             <Form.Control
               type="text"
               name="imagem_url"
-              placeholder="URL da Imagem"
               value={formData.imagem_url}
               onChange={handleChange}
               className="rounded-3 shadow mt-3"
-              style={{ border: 'none' }}
               required
             />
           </FloatingLabel>
 
-          <FloatingLabel 
-          controlId="descricao_insumos" label="Descrição do Produto" className="m-2">
+          <FloatingLabel controlId="descricao_insumos" label="Descrição do Produto" className="m-2">
             <Form.Control
               as="textarea"
               name="descricao_insumos"
-              placeholder="Descrição do Produto"
               value={formData.descricao_insumos}
               onChange={handleChange}
               className="rounded-3 shadow mt-3"
-              style={{ border: 'none', height: '100px' }}
+              style={{ height: '100px' }}
               required
             />
           </FloatingLabel>
 
-          <div className="d-flex m-2" style={{ alignContent: 'center' }}>
+          <div className="d-flex m-2">
             <Dropdown className="d-flex shadow rounded-3 mt-2" style={{ width: '150px', height: '60px' }}>
-              <Dropdown.Toggle
-                variant="outline-primary rounded-3"
-                style={{ width: '150px', height: '60px' }}
-              >
+              <Dropdown.Toggle variant="outline-primary rounded-3" style={{ width: '150px', height: '60px' }}>
                 {formData.categoria}
               </Dropdown.Toggle>
               <Dropdown.Menu className="rounded-3">
                 {categoriasDisponiveis.map((item) => (
                   <Dropdown.Item
                     key={item}
-                    onClick={() => setFormData({...formData, categoria: item})}
-                    className="dropdown-item rounded-3"
+                    onClick={() => setFormData({ ...formData, categoria: item })}
+                    className="rounded-3"
                   >
                     {item}
                   </Dropdown.Item>
                 ))}
               </Dropdown.Menu>
             </Dropdown>
-            {/* <Button
-              className="rounded-5 m-2 mt-2 fs-2"
-              style={{ width: '60px', height: '60px' }}
-              onClick={handleReset}
-              variant="outline-danger"
-            >
-              ↺
-            </Button> */}
           </div>
 
-          <div className="d-flex justify-content-center gap-3"
-          style={{width: "95%", margin: "auto"}}>
-            <Button
-              type="submit"
-              className="shadow mt-4 rounded"
-              style={{
-                padding: '15px',
-                width: '50%'
-              }}
-            >
+          <div className="d-flex justify-content-center gap-3" style={{ width: "95%", margin: "auto" }}>
+            <Button type="submit" className="shadow mt-4 rounded" style={{ padding: '15px', width: '50%' }}>
               Cadastrar
             </Button>
-            <Button
-              className="shadow mt-4 rounded"
-              variant="outline-primary"
-              onClick={() => navigate('/estoque')}
-              style={{
-                padding: '15px',
-                width: '50%'
-              }}
-            >
+            <Button variant="outline-primary" onClick={() => navigate('/estoque')} className="shadow mt-4 rounded" style={{ padding: '15px', width: '50%' }}>
               Cancelar
             </Button>
           </div>

@@ -44,6 +44,8 @@ CREATE TABLE Insumos (
     data_vencimento DATE,
     imagem_url VARCHAR(2083), -- URL da imagem do produto
     categoria VARCHAR(35), -- mudar para um ENUM depois
+    alertar_dias_antes INT NOT NULL DEFAULT 10,
+    alerta_estoque INT NOT NULL DEFAULT 1,
     id_funcionario_cadastro INT, -- Funcionário que cadastrou
     data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     data_ultima_modificacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
