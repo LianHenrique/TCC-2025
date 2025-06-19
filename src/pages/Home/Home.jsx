@@ -1,82 +1,98 @@
-import React, { useState, useEffect } from 'react';
-import CardsCurso from "../../components/Cards/CardsCurso";
-import CardsDescPlanoGratuito from "../../components/Cards/CardsDesc";
+import { useState, useEffect } from 'react';
 import NavBar from "../../components/NavBar/NavBar";
-import './Home.css';
+import styles from './Home.module.css';
+import { useNavigate } from 'react-router-dom';
 
-function App() {
-  const [temaEscuro, setTemaEscuro] = useState(false);
+function Home() {
+  const [temaEscuro] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    document.body.className = temaEscuro ? 'dark-mode' : 'light-mode';
+    document.body.className = temaEscuro ? styles['dark-mode'] : styles['light-mode'];
   }, [temaEscuro]);
 
-  const alternarTema = () => setTemaEscuro(prev => !prev);
-
   return (
-    <div className="App">
-      {/* Navegação */}
+    <div>
       <NavBar />
 
-      {/* Botão de alternância de tema */}
-      <button className="theme-toggle-button" onClick={alternarTema}>
-        <svg viewBox="0 0 24 24" width="24" height="24">
-          <path
-            fill="currentColor"
-            d="M9.37,5.51C9.19,6.15,9.1,6.82,9.1,7.5c0,4.08,3.32,7.4,7.4,7.4c0.68,0,1.35-0.09,1.99-0.27C17.45,17.19,14.93,19,12,19 
-            c-3.86,0-7-3.14-7-7C5,9.07,6.81,6.55,9.37,5.51z M12,3c-4.97,0-9,4.03-9,9s4.03,9,9,9s9-4.03,9-9c0-0.46-0.04-0.92-0.1-1.36 
-            c-0.98,1.37-2.58,2.26-4.4,2.26c-2.98,0-5.4-2.42-5.4-5.4c0-1.81,0.89-3.42,2.26-4.4C12.92,3.04,12.46,3,12,3z"
-          />
-        </svg>
-      </button>
+      <div className={styles.App}>
+        <div className={styles.header}>
+          <h2 style={{
+            marginTop: "50px"
+          }}>
+            Gerencie o <span className={styles.destaque}>estoque</span> do seu <br />
+            negócio de maneira ágil
+          </h2>
+          <p>
+            A StoryBox é uma solução completa para o gerenciamento de estoques, oferecendo ferramentas intuitivas
+            e recursos avançados que otimizam processos, reduzem erros e aumentam a eficiência operacional.
+            Com uma interface amigável e funcionalidades inteligentes, ela facilita o controle de entradas e saídas,
+            o acompanhamento dos níveis de estoque e a tomada de decisões estratégicas com base em dados precisos e em tempo real.
+          </p>
+        </div>
 
-      {/* Descrição principal */}
-      <CardsDescPlanoGratuito 
-        titulo={
-          <span className="alexandria bold">
-            Gerencie o <strong className="destaque">estoque</strong> do seu negócio de maneira ágil
-          </span>
-        }
-        desc={
-          <span className="alexandria2">
-            StoreBox facilita o gerenciamento de estoques com eficiência e recursos úteis.
-          </span>
-        }
-        botaoTxt={<strong>Teste grátis</strong>}
-        comBotão={true}
-        txtComBotao={<strong>Experimente grátis por 30 dias</strong>}
-      />
+        <div className={`${styles.testeGratisContainer} ${styles.alinharEsquerda}`}>
+          <button
+            className={styles.botaoTesteGratis}
+            onClick={() => navigate("/cadastro")}
+          >
+            Teste Grátis
+          </button>
+          <span className={styles.bold}>Experimente grátis por 30 dias</span>
+        </div>
 
-      {/* Benefícios rápidos */}
-      <div className="alexandria2">
-        <p>1 Acesso em tempo real</p>
-        <p>2 Redução de erros</p>
-        <p>3 Relatórios detalhados</p>
+        <div className={styles.beneficios}>
+          <div className={`${styles.beneficioCard} ${styles.beneficio2}`}>Acesso em tempo real</div>
+          <div className={`${styles.beneficioCard} ${styles.beneficio2}`}>Redução de erros</div>
+          <div className={`${styles.beneficioCard} ${styles.beneficio2}`}>Relatórios detalhados</div>
+        </div>
+
+        <div className={styles.planos}>
+          <div className={styles.card}>
+            <h3>Grátis</h3>
+            <p className={styles.cardText}>
+              Experimente gratuitamente por 30 dias<br /><br />
+              • Uso limitado<br />
+              • Sem recursos avançados<br />
+              • Sem registro em reconhecimento<br />
+              • Sem obrigação de faturamento
+            </p>
+            <button className={styles.botaoTesteGratis2} onClick={() => navigate("/cadastro")}>
+              Começar
+            </button>
+          </div>
+
+          <div className={styles.card}>
+            <h3>Plano 1</h3>
+            <p className={styles.cardText}>
+              Experimente o melhor plano<br /><br />
+              • Uso ilimitado<br />
+              • Com recursos avançados<br />
+              • Com registro em reconhecimento<br />
+              • Com obrigação de faturamento
+            </p>
+            <button className={styles.botaoTesteGratis2} onClick={() => navigate("/cadastro")}>
+              Começar
+            </button>
+          </div>
+
+          <div className={styles.card}>
+            <h3>Plano 2</h3>
+            <p className={styles.cardText}>
+              Experimente o primeiro plano <br /><br />
+              • Uso ilimitado<br />
+              • Início dos recursos avançados<br />
+              • Sem registro em reconhecimento<br />
+              • Sem obrigação de faturamento
+            </p>
+            <button className={styles.botaoTesteGratis2} onClick={() => navigate("/cadastro")}>
+              Começar
+            </button>
+          </div>
+        </div>
       </div>
-
-      {/* Planos */}
-      <CardsCurso 
-        cards={[
-          {
-            titulo: "Grátis",
-            req1: "Experimente gratuito por 30 dias",
-            req2: "Uso limitado",
-            req3: "Sem recursos adicionais",
-            req4: "Sem imagem de reconhecimento",
-            req5: "Sem cadastro de funcionários",
-          },
-          {
-            titulo: "Plano 1",
-            req1: " ",
-          },
-          {
-            titulo: "Plano 2",
-            req1: " ",
-          },
-        ]}
-      />
     </div>
   );
 }
 
-export default App;
+export default Home;

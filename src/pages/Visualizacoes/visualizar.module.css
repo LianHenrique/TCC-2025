@@ -1,0 +1,91 @@
+.Container {
+  display: flex;
+  align-items: center;
+  margin-top: 10vh;
+}
+
+.corpo_card {
+  margin-top: 60vh;
+  border: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  /* border: solid 4px violet !important; */
+}
+
+.img {
+  position: relative;
+  top: -57vh;
+  left: 4.5vw;
+  height: 60vh;
+  width: 30vw;
+  box-shadow: 5px 6px 9px rgba(0, 0, 0, 0.4);
+}
+
+.descricao {
+  position: relative;
+  font-size: 1.5em;
+  margin-bottom: 63rem;
+  left: 23vw;
+}
+
+/* Quantidade/ Entrada/ Vencimento/ Descrição */
+.desc {
+  position: relative;
+  left: 39vw;
+  font-weight: bold;
+  gap: 10%;
+  font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+    "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+  bottom: 46em;
+}
+
+/* Nome do insumo */
+.titulo {
+  position: absolute;
+  left: 40.2vw;
+  top: -46.3vh;
+  font-weight: bold;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+  width: 14em;
+}
+
+/* Descrição do insumo: */
+.title {
+  position: absolute;
+  top: 20vh;
+  left: 48vw;
+  font-size: 30px;
+  font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+    "Lucida Sans", Arial, sans-serif;
+  font-weight: bold;
+}
+
+@media (max-width: 600px) {
+  .img {
+    height: 40vh;
+    left: -2vw;
+    width: 90vw;
+  }
+
+  .title {
+    margin-top: 39vh;
+    margin-left: -43vw;
+  }
+
+  .titulo {
+    padding: 10px;
+    width: 50vw;
+    margin-top: 43vh;
+    margin-left: -58vw;
+    font-size: 2.5vh;
+  }
+
+  .desc {
+    gap: 1px !important;
+    padding: 1px;
+    position: relative;
+    top: -46.5vh !important;
+    margin-left: -46vw;
+  }
+}
