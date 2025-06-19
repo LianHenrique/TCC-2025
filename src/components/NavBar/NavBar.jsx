@@ -6,6 +6,8 @@ import { useContext } from "react";
 import { AuthContext } from "../../Contexts/UserContext";
 import styles from "./NavBar.module.css"
 
+import logo from "../../assets/logo.png"
+
 const NavBar = () => {
 
   const { usuarioNome, logout } = useContext(AuthContext);
@@ -21,10 +23,9 @@ const NavBar = () => {
 
   return (
 
-    <div>
+    <div >
       {/* Coloquei fixed-top na navbar */}
       <Navbar expand="lg" bg="primary" data-bs-theme="dark" fixed="top">
-        <Container>
           <Navbar.Brand className={styles.Titulo} href={tit}>
             StoryBox
           </Navbar.Brand>
@@ -39,7 +40,7 @@ const NavBar = () => {
                   <Nav.Link href="/estoque" className={styles.button}>Insumos</Nav.Link>
                   <Nav.Link href="/funcionarios" className={styles.button}>Funcionários</Nav.Link>
                   <Nav.Link href="/cardapio" className={styles.button}>Produtos</Nav.Link>
-                  <Nav.Link href="/agenda" className={styles.button}>Agenda</Nav.Link>
+                  {/* <Nav.Link href="/agenda" className={styles.button}>Agenda</Nav.Link> */}
                   <Nav.Link href="/alertas" className={styles.button}>Alertas</Nav.Link>
                 </Nav>
                 <Button variant="danger"
@@ -58,7 +59,6 @@ const NavBar = () => {
               </div>
             )}
           </Navbar.Collapse>
-        </Container>
       </Navbar>
     </div >
   );

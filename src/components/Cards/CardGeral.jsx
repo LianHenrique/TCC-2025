@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Button, Card } from 'react-bootstrap';
 import { FaEdit, FaRegTrashAlt } from 'react-icons/fa';
 
@@ -10,6 +11,26 @@ const CardGeral = ({
   showButtons = false,
   customButton,
 }) => {
+  const [layout, setLayout] = useState('desktop'); // 'mobile', 'split', 'desktop'
+
+  useEffect(() => {
+    const handleResize = () => {
+      const width = window.innerWidth;
+
+      if (width < 576) {
+        setLayout('mobile');
+      } else if (width < 992) {
+        setLayout('split');
+      } else {
+        setLayout('desktop');
+      }
+    };
+
+    handleResize(); // Inicial
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <div className={ClassNameCard} style={{ width: '100%' }}>
       {filtro && <h2>{filtro}</h2>}
@@ -26,12 +47,17 @@ const CardGeral = ({
           <div
             key={item.id || index}
             style={{
-              width: 'calc(50% - 0.5rem)', // duas colunas com gap
-              minWidth: '300px', // não deixa o card quebrar antes de 300px
+              width:
+                layout === 'desktop'
+                  ? 'calc(50% - 0.5rem)'
+                  : '100%', // full width for mobile and split
+              minWidth: '300px',
             }}
           >
             <Card
-              className="shadow rounded d-flex flex-row"
+              className={`shadow rounded d-flex ${
+                layout === 'mobile' ? 'flex-column' : 'flex-row'
+              }`}
               style={{
                 minHeight: '200px',
                 height: '100%',
@@ -41,10 +67,11 @@ const CardGeral = ({
               <Card.Img
                 className="rounded"
                 style={{
-                  width: '200px',
-                  height: '150px',
+                  width: layout === 'mobile' ? '100%' : '200px',
+                  height: layout === 'mobile' ? '200px' : '150px',
                   objectFit: 'cover',
-                  borderRadius: '0 0 0 20px',
+                  borderRadius:
+                    layout === 'mobile' ? '20px 20px 0 0' : '0 0 0 20px',
                   flexShrink: 0,
                 }}
                 variant="top"

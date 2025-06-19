@@ -53,7 +53,7 @@ CREATE TABLE Insumos (
 
 ALTER TABLE Insumos 
 MODIFY COLUMN categoria ENUM('Carnes', 'Perecíveis', 'Molhos', 'Congelados') NOT NULL;
-e
+
 INSERT INTO insumos (nome_insumos, descricao_insumos, quantidade_insumos, unidade_medida, valor_insumos, data_vencimento, imagem_url, categoria) VALUES
 ('Hamburguer de carne', 'Hambúrguer bovino congelado', 20, 'unidades', 9.90, '2025-04-17', 'https://organic4.com.br/wp-content/uploads/2023/04/img-site-1-lanches-burger-carne.jpg', 'Carnes'),
 ('Pão', 'Pão de hambúrguer tradicional', 5, 'unidades', 14.00, '2025-11-17', 'https://guiadacozinha.com.br/wp-content/uploads/2018/10/paofrancesfolhado.jpg', 'Carnes'),
