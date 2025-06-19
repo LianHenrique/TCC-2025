@@ -5,6 +5,8 @@ import NavBar from '../../components/NavBar/NavBar';
 import { Button, Container, Dropdown, FloatingLabel, Form, Badge } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 
+import logo from "../../assets/logo.png"
+
 const Produto = () => {
   const [nome, setNome] = useState('');
   const [descricao, setDescricao] = useState('');
@@ -12,7 +14,7 @@ const Produto = () => {
   const [valor, setValor] = useState('');
   const [imagemUrl, setImagemUrl] = useState('');
   const [insumos, setInsumos] = useState([]);
-  const [unidade, setUnidade] = useState([]); 
+  const [unidade, setUnidade] = useState([]);
   const [quantidade, setQuantidade] = useState('');
   const [insumoSelecionado, setInsumoSelecionado] = useState({
     id: null,
@@ -91,42 +93,42 @@ const Produto = () => {
 
   const handleReset = () => {
     setInsumoSelecionado({
-    nome_item: '',
-    descricao_item: '',
-    categoria: 'Outros',
-    valor_item : 0,
-    imagem_url: ''
+      nome_item: '',
+      descricao_item: '',
+      categoria: 'Outros',
+      valor_item: 0,
+      imagem_url: ''
     });
   };
 
   const validarProduto = () => {
-     if (!nome || !insumos || !quantidade || !unidade || !imagemUrl || !valor || !descricao || !filtro){ //removido cnpj
+    if (!nome || !insumos || !quantidade || !unidade || !imagemUrl || !valor || !descricao || !filtro) { //removido cnpj
       alert('Todos os campos são obrigatórios!');
       return false;
     }
 
-    if(insumosSelecionados. nome_item< 4){
+    if (insumosSelecionados.nome_item < 4) {
       alert('O nome deve ter pello menos 4 caracteres!');
       return false;
     }
 
 
-     if (!insumosSelecionados.imagem_url) {
+    if (!insumosSelecionados.imagem_url) {
       alert('A URL da imagem é obrigatória.');
       return false;
     }
 
-    if(insumosSelecionados.descricao_item< 1){
+    if (insumosSelecionados.descricao_item < 1) {
       alert('O nome deve ter pello menos 1 caracteres!');
       return false;
     }
 
-    if (insumosSelecionados. valor_item <= 0) {
+    if (insumosSelecionados.valor_item <= 0) {
       alert('O valor deve ser maior que zero.');
       return;
     }
 
-return true; 
+    return true;
 
 
   }
@@ -135,7 +137,7 @@ return true;
     <div style={{ marginTop: '100px' }}>
       <NavBar />
       <Container
-      style={{
+        style={{
           maxWidth: "500px"
         }}>
         <Form
@@ -144,8 +146,10 @@ return true;
           style={{
             padding: '30px',
             borderRadius: '20px',
-            border: '1px solid blue'
+            border: '1px solid blue', textAlign:"center"
           }}>
+          <img
+            src={logo} width={100} alt="" />
           <h1 style={{ textAlign: 'center' }}>Cadastro</h1>
 
           <FloatingLabel
@@ -258,19 +262,19 @@ return true;
                 setImagemUrl(e.target.value)} />
           </FloatingLabel>
 
-          <FloatingLabel 
-          controlId="floatingValor" 
-          label="Valor" 
-          className="m-2">
-            <Form.Control 
-            type="number" 
-            placeholder="Valor" 
-            className="rounded-5 shadow mt-3"
-            value={valor} 
-            onChange={(e) => setValor(e.target.value)} 
-            required 
-            min="0" 
-            step="0.01" />
+          <FloatingLabel
+            controlId="floatingValor"
+            label="Valor"
+            className="m-2">
+            <Form.Control
+              type="number"
+              placeholder="Valor"
+              className="rounded-5 shadow mt-3"
+              value={valor}
+              onChange={(e) => setValor(e.target.value)}
+              required
+              min="0"
+              step="0.01" />
           </FloatingLabel>
 
           <FloatingLabel controlId="descricao" label="Descrição" className="m-2">

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import NavBar from '../../components/NavBar/NavBar';
 import Pesquisa from '../../components/Pesquisa/Pesquisa';
-import { Button, Container, Badge } from 'react-bootstrap';
+import { Button, Container } from 'react-bootstrap';
 import CardGeral from '../../components/Cards/CardGeral';
 import { FaEdit, FaRegTrashAlt } from 'react-icons/fa';
 
@@ -12,31 +12,84 @@ const Estoque = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [filtroAtivo, setFiltroAtivo] = useState('Todos');
+  const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
-  const normalizeString = (str) =>
-    str?.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim() || '';
+  const normalizeString = (str) => {
+    if (!str) return '';
+    return String(str)
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .trim();
+  };
 
-  const handleCardClick = (id) => navigate(`/visualizar/${id}`);
+  const filtrarProdutos = (categoria, texto) => {
+    const filtroNormalizado = categoria && categoria !== 'Todos' ? normalizeString(categoria) : null;
+    const textoNormalizado = normalizeString(texto);
+
+    const filtrados = {};
+
+    for (const catKey in produtos) {
+      if (filtroNormalizado && catKey !== filtroNormalizado) continue;
+
+      const itensFiltrados = produtos[catKey].items.filter(item =>
+        item.nome.toLowerCase().includes(textoNormalizado)
+      );
+
+      if (itensFiltrados.length > 0) {
+        filtrados[catKey] = {
+          displayName: produtos[catKey].displayName,
+          items: itensFiltrados
+        };
+      }
+    }
+
+    setProdutosFiltrados(filtrados);
+  };
+
+  // Atualiza a filtragem sempre que filtro, texto ou produtos mudarem
+  useEffect(() => {
+    filtrarProdutos(filtroAtivo, searchTerm);
+  }, [filtroAtivo, searchTerm, produtos]);
+
+  const handleFiltroChange = (filtroSelecionado) => {
+    setFiltroAtivo(filtroSelecionado);
+  };
+
+  const handleSearchChange = (texto) => {
+    setSearchTerm(texto);
+  };
+
+  const handleCardClick = (id) => {
+    navigate(`/visualizar/${id}`);
+  };
 
   const handleDelete = async (id) => {
     const confirm = window.confirm('Deseja realmente deletar este item do estoque?');
     if (!confirm) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/insumos/${id}`, { method: 'DELETE' });
-      if (!response.ok) throw new Error('Erro ao deletar o item');
+      const response = await fetch(`http://localhost:3000/insumos/${id}`, {
+        method: 'DELETE'
+      });
 
       alert('Insumo desativado com sucesso');
 
-      const atualizarEstado = (estadoAnterior) => {
-        const novoEstado = { ...estadoAnterior };
-        for (const categoria in novoEstado) {
-          novoEstado[categoria].items = novoEstado[categoria].items.filter((p) => p.id !== id);
-          if (novoEstado[categoria].items.length === 0) delete novoEstado[categoria];
+      const data = await response.json();
+
+      alert(data.message || 'Insumo desativado com sucesso');
+
+      setProdutos(prev => {
+        const newProdutos = { ...prev };
+        for (const categoriaKey in newProdutos) {
+          newProdutos[categoriaKey].items = newProdutos[categoriaKey].items.filter(p => p.id !== id);
+          if (newProdutos[categoriaKey].items.length === 0) {
+            delete newProdutos[categoriaKey];
+          }
         }
         return novoEstado;
-      };
+      });
 
       setProdutos(atualizarEstado);
       setProdutosFiltrados(atualizarEstado);
@@ -46,22 +99,8 @@ const Estoque = () => {
     }
   };
 
-  const handleEdit = (id) => navigate(`/editar/${id}`);
-
-  const handleFiltroChange = (filtro) => {
-    if (!filtro) return;
-    setFiltroAtivo(filtro);
-
-    if (filtro === 'Todos') {
-      setProdutosFiltrados(produtos);
-      return;
-    }
-
-    const filtroKey = normalizeString(filtro);
-    const filtrados = {};
-    if (produtos[filtroKey]) filtrados[filtroKey] = produtos[filtroKey];
-
-    setProdutosFiltrados(filtrados);
+  const handleEdit = (id) => {
+    navigate(`/editar/${id}`);
   };
 
   useEffect(() => {
@@ -165,12 +204,12 @@ const Estoque = () => {
     <div>
       <NavBar />
       <Container className="my-4">
-        <h1 style={{ marginTop: '100px' }}>Insumos</h1>
+        <h1 style={{ marginTop: "100px" }}><b>INSUMOS</b></h1>
 
         <Pesquisa
           nomeDrop="Filtrar por"
           navega="/cadastro_insumos"
-          textoBotao="Adicionar Insumo"
+          TxtButton="Insumos +"
           lista={[
             { texto: 'Carnes', value: 'Carnes' },
             { texto: 'Perecíveis', value: 'Perecíveis' },
@@ -178,19 +217,19 @@ const Estoque = () => {
             { texto: 'Congelados', value: 'Congelados' }
           ]}
           onFilterChange={handleFiltroChange}
+          onSearchChange={handleSearchChange}
         />
 
         {Object.entries(produtosFiltrados)
-          .sort(([a], [b]) => a.localeCompare(b, 'pt-BR'))
-          .map(([key, cat]) => (
-            <div key={key} id={key} className="mb-5">
+          .sort(([keyA], [keyB]) => keyA.localeCompare(keyB, 'pt-BR'))
+          .map(([normalizedCategoryKey, categoryData]) => (
+            <div key={normalizedCategoryKey} id={normalizedCategoryKey} className="mb-5">
               <div className="d-flex justify-content-between align-items-center mb-3">
-                <h2>{cat.displayName}</h2>
-                <Badge bg="secondary">{cat.items.length} itens</Badge>
+                <h2>{categoryData.displayName}</h2>
               </div>
 
               <CardGeral
-                card={cat.items.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'))}
+                card={categoryData.items.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'))}
                 onCardClick={handleCardClick}
                 imgHeight={250}
                 showButtons={false}

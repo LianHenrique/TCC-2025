@@ -3,7 +3,9 @@ import '../Style/login.css';
 import NavBar from '../../components/NavBar/NavBar';
 import { Button, Container, Dropdown, FloatingLabel, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router';
+import logo from "../../assets/logo.png";
 
+// Função que retorna o estado inicial do formulário
 const getFormDataInicial = () => ({
   nome_insumos: '',
   valor_insumos: '',
@@ -12,14 +14,13 @@ const getFormDataInicial = () => ({
   data_vencimento: '',
   descricao_insumos: '',
   imagem_url: '',
-  alerta_vencimento: 10, // dias antes do vencimento
-  alerta_estoque: 1 // mínimo para alerta de estoque
+  alerta_vencimento: 0,
+  alerta_estoque: 1
 });
-
-const categoriasDisponiveis = ['Carnes', 'Perecíveis', 'Molhos', 'Congelados'];
 
 const Insumos = () => {
   const [formData, setFormData] = useState(getFormDataInicial());
+  const categoriasDisponiveis = ['Carnes', 'Perecíveis', 'Molhos', 'Congelados'];
   const navigate = useNavigate();
   const today = new Date().toISOString().split('T')[0];
 
@@ -93,8 +94,18 @@ const Insumos = () => {
     <div style={{ marginTop: '100px' }}>
       <NavBar />
       <Container style={{ maxWidth: "500px" }}>
-        <Form onSubmit={handleSubmit} className="shadow rounded" style={{ padding: '30px', border: '1px blue solid' }}>
-          <h1 className="text-center">Cadastro de Insumos</h1>
+        <Form
+          onSubmit={handleSubmit}
+          className="shadow rounded"
+          style={{
+            padding: '30px',
+            border: '1px blue solid',
+            marginBottom: "10px",
+            textAlign: "center"
+          }}
+        >
+          <img src={logo} width={100} alt="Logo" />
+          <h1 style={{ textAlign: 'center' }}>Cadastro de Insumos</h1>
 
           <FloatingLabel controlId="nome_insumos" label="Nome do Insumo" className="m-2">
             <Form.Control
@@ -144,24 +155,24 @@ const Insumos = () => {
             />
           </FloatingLabel>
 
-          <FloatingLabel controlId="quantidade_insumos" label="Quantidade em Estoque" className="m-2">
+          <FloatingLabel controlId="alerta_estoque" label="Alerta de estoque mínimo" className="m-2">
             <Form.Control
               type="number"
-              name="quantidade_insumos"
+              name="alerta_estoque"
               min="1"
-              value={formData.quantidade_insumos}
+              value={formData.alerta_estoque}
               onChange={handleChange}
               className="rounded-3 shadow mt-3"
               required
             />
           </FloatingLabel>
 
-          <FloatingLabel controlId="alerta_estoque" label="Alertar com qual quantidade em estoque?" className="m-2">
+          <FloatingLabel controlId="quantidade_insumos" label="Quantidade em Estoque" className="m-2">
             <Form.Control
               type="number"
-              name="alerta_estoque"
-              min="1"
-              value={formData.alerta_estoque}
+              name="quantidade_insumos"
+              min="0"
+              value={formData.quantidade_insumos}
               onChange={handleChange}
               className="rounded-3 shadow mt-3"
               required
@@ -201,7 +212,7 @@ const Insumos = () => {
                   <Dropdown.Item
                     key={item}
                     onClick={() => setFormData({ ...formData, categoria: item })}
-                    className="rounded-3"
+                    className="dropdown-item rounded-3"
                   >
                     {item}
                   </Dropdown.Item>
@@ -214,7 +225,12 @@ const Insumos = () => {
             <Button type="submit" className="shadow mt-4 rounded" style={{ padding: '15px', width: '50%' }}>
               Cadastrar
             </Button>
-            <Button variant="outline-primary" onClick={() => navigate('/estoque')} className="shadow mt-4 rounded" style={{ padding: '15px', width: '50%' }}>
+            <Button
+              variant="outline-primary"
+              onClick={() => navigate('/estoque')}
+              className="shadow mt-4 rounded"
+              style={{ padding: '15px', width: '50%' }}
+            >
               Cancelar
             </Button>
           </div>

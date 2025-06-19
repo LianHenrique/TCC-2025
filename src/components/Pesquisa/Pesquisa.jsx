@@ -1,84 +1,53 @@
-import { useForm } from "react-hook-form";
-import { useState } from "react";
-import {
-  Button,
-  Dropdown,
-  InputGroup,
-  Form
-} from "react-bootstrap";
-import { FaSearch } from "react-icons/fa";
+import React, { useState } from 'react';
+import { Form, Button, Dropdown } from 'react-bootstrap';
 
-const Pesquisa = ({ lista, nomeDrop, navega, onFilterChange }) => {
-  const { register, handleSubmit, reset, watch } = useForm();
-  const [filtroSelecionado, setFiltroSelecionado] = useState("Todos");
+const Pesquisa = ({ nomeDrop, lista, onFilterChange, onSearchChange, navega, TxtButton }) => {
+  const [filtroSelecionado, setFiltroSelecionado] = useState('Todos');
+  const [textoBusca, setTextoBusca] = useState('');
 
-  const textoBusca = watch("pesquisa"); // para capturar dinamicamente
-
-  const handleDropdownSelect = (value) => {
+  const handleSelect = (value) => {
     setFiltroSelecionado(value);
-    reset({ pesquisa: "" }); // limpa o campo de texto
-    onFilterChange(value, ""); // atualiza o filtro com texto vazio
+    if(onFilterChange) onFilterChange(value);
   };
 
-  const onSubmit = (data) => {
-    const texto = data.pesquisa.trim();
-    onFilterChange(filtroSelecionado, texto);
+  const handleInputChange = (e) => {
+    const texto = e.target.value;
+    setTextoBusca(texto);
+    if(onSearchChange) onSearchChange(texto);
   };
 
   return (
-    <Form onSubmit={handleSubmit(onSubmit)} className="m-2">
-      <InputGroup className="mb-3 shadow-sm">
-        <Form.Control
-          type="text"
-          placeholder="Buscar..."
-          {...register("pesquisa")}
-        />
+    <div className="d-flex align-items-center mb-3">
+      <Form.Control
+        type="text"
+        placeholder="Pesquisar..."
+        value={textoBusca}
+        onChange={handleInputChange}
+        style={{ maxWidth: '300px', marginRight: '10px' }}
+      />
 
-        <Dropdown>
-          <Dropdown.Toggle
-            variant="outline-primary"
-            className="rounded-0"
-            id="dropdown-filtro"
-          >
-            {filtroSelecionado === nomeDrop ? "Todos" : filtroSelecionado}
+      {lista && (
+        <Dropdown onSelect={handleSelect} className="me-3">
+          <Dropdown.Toggle variant="secondary" id="dropdown-filtro">
+            {filtroSelecionado === 'Todos' ? nomeDrop : filtroSelecionado}
           </Dropdown.Toggle>
-
           <Dropdown.Menu>
-            <Dropdown.Item onClick={() => handleDropdownSelect("Todos")}>
-              Todos
-            </Dropdown.Item>
-            {lista.map((item, index) => (
-              <Dropdown.Item
-                key={index}
-                onClick={() => handleDropdownSelect(item.value)}
-              >
-                {item.texto}
+            <Dropdown.Item eventKey="Todos">Todos</Dropdown.Item>
+            {lista.map(({ texto, value }) => (
+              <Dropdown.Item key={value} eventKey={value}>
+                {texto}
               </Dropdown.Item>
             ))}
           </Dropdown.Menu>
         </Dropdown>
+      )}
 
-        <Button
-          type="submit"
-          variant="outline-secondary"
-          className="rounded-end"
-          title="Buscar"
-        >
-          <FaSearch />
+      {navega && TxtButton && (
+        <Button variant="primary" onClick={() => window.location.href = navega}>
+          {TxtButton}
         </Button>
-      </InputGroup>
-
-      <div className="d-flex justify-content-start">
-        <Button
-          href={navega}
-          className="shadow rounded-3"
-          variant="primary"
-          style={{ padding: "10px 20px" }}
-        >
-          Cadastrar
-        </Button>
-      </div>
-    </Form>
+      )}
+    </div>
   );
 };
 

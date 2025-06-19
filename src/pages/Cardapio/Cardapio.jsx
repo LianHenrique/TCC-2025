@@ -1,18 +1,25 @@
-
-import { Container } from 'react-bootstrap';
+import { Container, Button } from 'react-bootstrap';
 import NavBar from '../../components/NavBar/NavBar';
 import Pesquisa from '../../components/Pesquisa/Pesquisa';
 import { FaEdit, FaRegTrashAlt } from 'react-icons/fa';
 import CardGeral from '../../components/Cards/CardGeral';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { Button } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
 
 const Cardapio = () => {
   const [cardapio, setCardapio] = useState([]);
+  const [filtroSelecionado, setFiltroSelecionado] = useState('Todos');
+  const [textoBusca, setTextoBusca] = useState('');
+  const [cardapioFiltrado, setCardapioFiltrado] = useState([]);
   const navigate = useNavigate();
 
+  // Normaliza texto para comparações
+  const normalizeString = (str) => {
+    if (!str) return '';
+    return String(str).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  };
+
+  // Busca e formatação inicial do cardápio
   useEffect(() => {
     fetch(`http://localhost:3000/cardapio`)
       .then(res => res.json())
@@ -62,6 +69,7 @@ const Cardapio = () => {
               { texto: `Preço: R$ ${Number(item.valor_item || 0).toFixed(2)}` },
               { texto: `Categoria: ${item.categoria || 'Não informada'}` }
             ],
+            categoria: item.categoria || 'Não informada',
             acoes: [
               {
                 icone: <FaEdit />,
@@ -79,6 +87,36 @@ const Cardapio = () => {
       })
       .catch(error => console.error('Erro ao buscar cardápio:', error));
   }, []);
+
+  // Filtra o cardápio toda vez que cardapio, filtro ou texto mudam
+  useEffect(() => {
+    let filtered = [...cardapio];
+
+    if (filtroSelecionado && filtroSelecionado !== 'Todos') {
+      const filtroNorm = normalizeString(filtroSelecionado);
+      filtered = filtered.filter(item => normalizeString(item.categoria) === filtroNorm);
+    }
+
+    if (textoBusca && textoBusca.trim() !== '') {
+      const textoBuscaNorm = normalizeString(textoBusca);
+
+      filtered = filtered.filter(item =>
+        normalizeString(item.nome).includes(textoBuscaNorm) ||
+        item.descricao.some(d => normalizeString(d.texto).includes(textoBuscaNorm))
+      );
+    }
+
+    setCardapioFiltrado(filtered);
+  }, [cardapio, filtroSelecionado, textoBusca]);
+
+  // Atualiza estados de filtro e texto a partir do componente Pesquisa
+  const handleFilterChange = (filtro) => {
+    setFiltroSelecionado(filtro);
+  };
+
+  const handleSearchChange = (texto) => {
+    setTextoBusca(texto);
+  };
 
   function handleCardClick(id) {
     navigate(`/Visualizar_Cardapio/${id}`);
@@ -103,9 +141,7 @@ const Cardapio = () => {
   function handlePedir(id_cardapio) {
     fetch('http://localhost:3000/saida-venda', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ id_cardapio })
     })
       .then(async res => {
@@ -125,36 +161,34 @@ const Cardapio = () => {
       });
   }
 
-
-
   return (
     <div>
       <NavBar />
       <Container>
-        <h1
-          style={{
-            marginTop: "100px"
-          }}>Produto</h1>
+        <h1 style={{ marginTop: "100px" }}><b>PRODUTOS</b></h1>
         <Pesquisa
           nomeDrop="Filtro"
           navega="/cadastro_produto"
+          TxtButton="Produtos +"
           lista={[
-            { lista: 'Lanche', link: '#lanche' },
-            { lista: 'Bebida', link: '#bebida' },
-            { lista: 'Sobremesa', link: '#sobremesa' }
+            { value: 'Lanche', texto: 'Lanche' },
+            { value: 'Bebida', texto: 'Bebida' },
+            { value: 'Sobremesa', texto: 'Sobremesa' }
           ]}
+          onFilterChange={handleFilterChange}
+          onSearchChange={handleSearchChange} // **PASSA O onSearchChange**
         />
 
         <CardGeral
-          filtro=""
-          card={cardapio}
+          card={cardapioFiltrado}
           onCardClick={handleCardClick}
           showButtons={false}
           imgHeight={250}
           customButton={item => (
             <Button
               variant="success"
-              className="h-10 fs-5 text-center shadow alert-success align-center bg-success text-white"
+              style={{ padding: "15px" }}
+              className="fs-5 text-center shadow alert-success align-center bg-success text-white"
               onClick={() => handlePedir(item.id)}
             >
               Pedir

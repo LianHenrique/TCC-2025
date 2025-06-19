@@ -6,6 +6,8 @@ import { useNavigate } from "react-router";
 import { Button, Container, FloatingLabel } from "react-bootstrap";
 import { AuthContext } from "../../Contexts/UserContext";
 
+import logo from "../../assets/logo.png"
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
@@ -33,7 +35,6 @@ const Login = () => {
 
       if (response.ok) {
         login(data.usuario); // <-- Chamada do contexto
-        alert("Login aceito!");
         navigate("/estoque");
         setEmail("");
         setSenha("");
@@ -63,8 +64,10 @@ const Login = () => {
           className='shadow rounded-4'
           style={{
             padding: "30px",
-            border: "1px blue solid"
+            border: "1px blue solid", textAlign:"center"
           }}>
+          <img
+            src={logo} width={100} alt="" />
           <h1 style={{
             textAlign: "center"
           }}>
@@ -104,7 +107,6 @@ const Login = () => {
             style={{
               padding: "15px",
               width: "90%",
-              marginLeft: "20px"
             }}>
             Entrar
           </Button>
@@ -134,7 +136,6 @@ const Login = () => {
             style={{
               padding: "15px",
               width: "90%",
-              marginLeft: "20px"
             }}>
             Voltar
           </Button>

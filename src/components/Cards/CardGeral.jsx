@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Card } from 'react-bootstrap';
-import { FaEdit, FaRegTrashAlt } from 'react-icons/fa';
+import { Card } from 'react-bootstrap';
 
 const CardGeral = ({
   filtro,
