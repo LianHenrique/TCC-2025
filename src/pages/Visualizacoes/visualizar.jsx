@@ -12,6 +12,7 @@ const Visualizar = () => {
     const [quantidade, setQuantidade] = useState('');
     const [filtro, setFiltro] = useState('');
     const [url, setUrl] = useState('');
+    const [validade, setValidade] = useState('');
     const [preco, setPreco] = useState('');
     const [imagemAtual, setImagemAtual] = useState('');
     const [loading, setLoading] = useState(true);
@@ -19,6 +20,15 @@ const Visualizar = () => {
 
     useEffect(() => {
         if (!id) return;
+
+        console.log('Dados enviados:', {
+            nome_insumos: nome,
+            quantidade_insumos: quantidade,
+            categoria: filtro,
+            imagem_url: url,
+            valor_insumos: preco,
+            data_vencimento: validade
+        });
 
         fetch(`http://localhost:3000/insumos_tudo/${id}`)
             .then(res => {
@@ -32,7 +42,13 @@ const Visualizar = () => {
                 setPreco(insumo.valor_insumos);
                 setUrl(insumo.imagem_url);
                 setImagemAtual(insumo.imagem_url);
-                setFiltro(insumo.categoria); // Corrigido aqui
+                setFiltro(insumo.categoria);
+
+                const dataFormatada = insumo.data_vencimento
+                    ? new Date(insumo.data_vencimento).toISOString().split('T')[0]
+                    : '';
+                setValidade(dataFormatada);
+
                 setLoading(false);
             })
             .catch(error => {
@@ -40,6 +56,7 @@ const Visualizar = () => {
                 setLoading(false);
             });
     }, [id]);
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -54,7 +71,8 @@ const Visualizar = () => {
                     quantidade_insumos: quantidade,
                     categoria: filtro,
                     imagem_url: url,
-                    valor_insumos: preco
+                    valor_insumos: preco,
+                    data_vencimento: validade // <- Enviando validade no PUT
                 })
             });
 
@@ -100,7 +118,6 @@ const Visualizar = () => {
                     <FloatingLabel controlId="nome" label="Nome" className="mb-3">
                         <Form.Control
                             type="text"
-                            placeholder="Nome"
                             value={nome}
                             onChange={(e) => setNome(e.target.value)}
                             className="rounded-5 shadow"
@@ -111,7 +128,6 @@ const Visualizar = () => {
                     <FloatingLabel controlId="quantidade" label="Quantidade" className="mb-3">
                         <Form.Control
                             type="number"
-                            placeholder="Quantidade"
                             value={quantidade}
                             onChange={(e) => setQuantidade(e.target.value)}
                             className="rounded-5 shadow"
@@ -124,10 +140,21 @@ const Visualizar = () => {
                         <Form.Control
                             type="number"
                             step="0.01"
-                            placeholder="Preço"
                             value={preco}
                             onChange={(e) => setPreco(e.target.value)}
                             className="rounded-5 shadow"
+                            required
+                        />
+                    </FloatingLabel>
+
+                    <FloatingLabel controlId="validade" label="Validade" className="mb-3">
+                        <Form.Control
+                            type="date"
+                            placeholder="Validade"
+                            value={validade}
+                            onChange={(e) => setValidade(e.target.value)}
+                            className="rounded-5 shadow"
+                            min={new Date().toISOString().split('T')[0]}
                             required
                         />
                     </FloatingLabel>
@@ -149,7 +176,6 @@ const Visualizar = () => {
                     <FloatingLabel controlId="url" label="URL da Imagem" className="mb-3">
                         <Form.Control
                             type="text"
-                            placeholder="URL da imagem"
                             value={url}
                             onChange={(e) => setUrl(e.target.value)}
                             className="rounded-5 shadow"

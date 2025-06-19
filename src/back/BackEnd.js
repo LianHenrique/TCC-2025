@@ -288,43 +288,85 @@ app.delete('/InsumosDelete/:id', (req, res) => {
 app.get('/insumos_tudo/:id_insumos', (req, res) => {
   const { id_insumos } = req.params;
 
-  connection.query('SELECT * FROM insumos WHERE id_insumos = ?', [id_insumos],
-    (error, resultados) => {
-      if (error) {
-        return res.status(500).json({ erro: 'Erro ao buscar insumo' });
-      }
-      if (resultados.length === 0) {
-        return res.status(404).json({ error: 'Produto não encontrado' });
-      }
-      res.json(resultados[0]);
+  const query = `
+    SELECT 
+      id_insumos,
+      nome_insumos,
+      descricao_insumos,
+      quantidade_insumos,
+      unidade_medida,
+      valor_insumos,
+      DATE_FORMAT(data_vencimento, '%Y-%m-%d') AS data_vencimento,
+      imagem_url,
+      categoria,
+      id_funcionario_cadastro,
+      data_cadastro,
+      data_ultima_modificacao
+    FROM insumos
+    WHERE id_insumos = ?;
+  `;
+
+  connection.query(query, [id_insumos], (error, resultados) => {
+    if (error) {
+      return res.status(500).json({ erro: 'Erro ao buscar insumo' });
     }
-  )
+    if (resultados.length === 0) {
+      return res.status(404).json({ error: 'Produto não encontrado' });
+    }
+    res.json(resultados[0]);
+  });
 });
 
 
 
-// Adicionando coisas a insumos por id
+
+// Adicionando coisas a insumos por id 
 app.put('/insumos_tudo_POST/:id_insumos', (req, res) => {
   const { id_insumos } = req.params;
-  const { quantidade_insumos } = req.body;
-  const { nome_insumos } = req.body;
-  const { categoria } = req.body;
-  const { imagem_url } = req.body;
+  const {
+    nome_insumos,
+    quantidade_insumos,
+    valor_insumos,
+    imagem_url,
+    categoria,
+    data_vencimento
+  } = req.body;
 
-  const query = 'UPDATE insumos SET quantidade_insumos = ?, nome_insumos = ?, categoria = ?, imagem_url = ? WHERE id_insumos = ?';
+  const query = `
+    UPDATE insumos
+    SET 
+      nome_insumos = ?,
+      quantidade_insumos = ?,
+      valor_insumos = ?,
+      imagem_url = ?,
+      categoria = ?,
+      data_vencimento = ?
+    WHERE id_insumos = ?;
+  `;
 
-  connection.query(query, [quantidade_insumos, nome_insumos, categoria, imagem_url, id_insumos], (error, results) => {
+  const valores = [
+    nome_insumos,
+    quantidade_insumos,
+    valor_insumos,
+    imagem_url,
+    categoria,
+    data_vencimento,
+    id_insumos
+  ];
+
+  connection.query(query, valores, (error, resultado) => {
     if (error) {
-      return res.status(500).json({ error: 'Erro ao atualizar insumo' });
+      console.error(error);
+      return res.status(500).json({ error: 'Erro ao atualizar o insumo' });
     }
 
-    if (results.affectedRows === 0) {
+    if (resultado.affectedRows === 0) {
       return res.status(404).json({ error: 'Insumo não encontrado' });
     }
 
-    res.json({ message: 'Insumo atualizado com sucesso' })
-  })
-})
+    res.status(200).json({ mensagem: 'Insumo atualizado com sucesso' });
+  });
+});
 
 
 
