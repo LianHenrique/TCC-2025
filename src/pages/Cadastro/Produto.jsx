@@ -12,6 +12,8 @@ const Produto = () => {
   const [valor, setValor] = useState('');
   const [imagemUrl, setImagemUrl] = useState('');
   const [insumos, setInsumos] = useState([]);
+  const [unidade, setUnidade] = useState([]); 
+  const [quantidade, setQuantidade] = useState('');
   const [insumoSelecionado, setInsumoSelecionado] = useState({
     id: null,
     nome: '',
@@ -82,7 +84,52 @@ const Produto = () => {
     } catch (error) {
       alert('Erro ao conectar ao servidor.');
     }
+
+
+
   };
+
+  const handleReset = () => {
+    setInsumoSelecionado({
+    nome_item: '',
+    descricao_item: '',
+    categoria: 'Outros',
+    valor_item : 0,
+    imagem_url: ''
+    });
+  };
+
+  const validarProduto = () => {
+     if (!nome || !insumos || !quantidade || !unidade || !imagemUrl || !valor || !descricao || !filtro){ //removido cnpj
+      alert('Todos os campos são obrigatórios!');
+      return false;
+    }
+
+    if(insumosSelecionados. nome_item< 4){
+      alert('O nome deve ter pello menos 4 caracteres!');
+      return false;
+    }
+
+
+     if (!insumosSelecionados.imagem_url) {
+      alert('A URL da imagem é obrigatória.');
+      return false;
+    }
+
+    if(insumosSelecionados.descricao_item< 1){
+      alert('O nome deve ter pello menos 1 caracteres!');
+      return false;
+    }
+
+    if (insumosSelecionados. valor_item <= 0) {
+      alert('O valor deve ser maior que zero.');
+      return;
+    }
+
+return true; 
+
+
+  }
 
   return (
     <div style={{ marginTop: '100px' }}>
