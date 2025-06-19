@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import NavBar from '../../components/NavBar/NavBar';
-import { Container, Card } from 'react-bootstrap';
-import Button from 'react-bootstrap/Button';
+import { Container, Card, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
@@ -23,7 +22,7 @@ const Alerta = () => {
           id: insumo.id_insumos,
           nome: insumo.nome_insumos,
           quantidade: insumo.quantidade_insumos,
-          tipoAlerta: insumo.tipo_alerta, // ← 'critico' ou 'antecipado'
+          tipoAlerta: insumo.tipo_alerta,
           imagem: insumo.imagem_url || 'https://via.placeholder.com/150'
         }));
 
@@ -40,6 +39,12 @@ const Alerta = () => {
     if (tipoAlerta === 'critico') return '#f8d7da';      // vermelho claro
     if (tipoAlerta === 'antecipado') return '#fff3cd';   // amarelo claro
     return 'white';
+  };
+
+  const getCorDoIcone = (tipoAlerta) => {
+    if (tipoAlerta === 'critico') return 'red';
+    if (tipoAlerta === 'antecipado') return 'orange';
+    return 'black';
   };
 
   return (
@@ -75,38 +80,37 @@ const Alerta = () => {
                   }}
                 />
 
-                <div
-                  className="d-flex justify-content-between align-items-center"
-                  style={{ width: '100%' }}
-                >
+                <div className="d-flex justify-content-between align-items-center w-100">
                   <div style={{ flexGrow: 1 }}>
                     <div
                       style={{
                         display: 'flex',
                         gap: '20px',
-                        fontSize: '20px',
-                        flexWrap: 'wrap'
+                        fontSize: '18px',
+                        flexWrap: 'wrap',
+                        color: 'black'
                       }}
                     >
-                      <p>Nome: {insumo.nome}</p>
-                      <p>Quantidade: {insumo.quantidade}</p>
+                      <p><strong>Nome:</strong> {insumo.nome}</p>
+                      <p><strong>Quantidade:</strong> {insumo.quantidade}</p>
                     </div>
-
-                    <Button onClick={() => handleNavigate(insumo.id)} variant="danger">
-                      Repor Estoque
+                    <Button
+                      size="sm"
+                      variant="outline-dark"
+                      onClick={() => handleNavigate(insumo.id)}
+                    >
+                      Ver mais
                     </Button>
                   </div>
 
-                  {insumo.tipoAlerta === 'critico' && (
-                    <i
-                      className="bi bi-exclamation-circle-fill"
-                      style={{
-                        color: 'red',
-                        fontSize: '32px',
-                        marginLeft: '20px'
-                      }}
-                    />
-                  )}
+                  <i
+                    className="bi bi-exclamation-triangle-fill"
+                    style={{
+                      fontSize: '32px',
+                      color: getCorDoIcone(insumo.tipoAlerta)
+                    }}
+                    title={insumo.tipoAlerta === 'critico' ? 'Alerta Crítico' : 'Alerta Antecipado'}
+                  />
                 </div>
               </div>
             ))}

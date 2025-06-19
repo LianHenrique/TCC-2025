@@ -1,17 +1,18 @@
-import { Outlet } from "react-router-dom"
+import { Outlet } from "react-router-dom";
 import { AuthProvider } from '../Contexts/UserContext';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Notficacao from "../Notificacao/Notficacao";
+import { ThemeProvider } from "../Contexts/ThemeContext";
 
 const InitPages = () => {
   return (
-    <div>
+    <ThemeProvider>
       <AuthProvider>
-        <Notficacao/>
+        <Notficacao />
         <Outlet />
       </AuthProvider>
-    </div>
-  )
-}
+    </ThemeProvider>
+  );
+};
 
-export default InitPages
+export default InitPages;
