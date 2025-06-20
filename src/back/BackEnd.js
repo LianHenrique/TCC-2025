@@ -295,13 +295,25 @@ app.get('/insumos_tudo/:id_insumos', (req, res) => {
   const { id_insumos } = req.params;
 
   const query = `
-    SELECT 
-      id_insumos, nome_insumos, quantidade_insumos, valor_insumos, 
-      imagem_url, categoria, data_vencimento, 
-      alerta_estoque, alertar_dias_antes
-    FROM insumos
-    WHERE id_insumos = ?
-  `;
+  SELECT 
+    i.id_insumos,
+    i.nome_insumos,
+    i.quantidade_insumos,
+    i.valor_insumos,
+    i.imagem_url,
+    i.categoria,
+    i.data_vencimento,
+    i.alerta_estoque,
+    i.alertar_dias_antes,
+    f.id_fornecedor,
+    f.nome_fornecedor,
+    f.telefone_fornecedor,
+    f.email_fornecedor
+  FROM insumos i
+  LEFT JOIN FornecedorInsumo fi ON i.id_insumos = fi.id_insumo
+  LEFT JOIN Fornecedor f ON fi.id_fornecedor = f.id_fornecedor
+  WHERE i.id_insumos = ?
+`;
 
   connection.query(query, [id_insumos], (error, results) => {
     if (error) {
@@ -330,10 +342,12 @@ app.put('/insumos_tudo_POST/:id_insumos', (req, res) => {
     categoria,
     data_vencimento,
     alerta_estoque,
-    alerta_vencimento
+    alerta_vencimento,
+    id_fornecedor
   } = req.body;
 
-  const query = `
+  // Atualiza os dados do insumo
+  const updateInsumoQuery = `
     UPDATE insumos
     SET 
       nome_insumos = ?,
@@ -343,11 +357,11 @@ app.put('/insumos_tudo_POST/:id_insumos', (req, res) => {
       categoria = ?,
       data_vencimento = ?,
       alerta_estoque = ?,
-      alerta_vencimento = ?
-    WHERE id_insumos = ?;
+      alertar_dias_antes = ?
+    WHERE id_insumos = ?
   `;
 
-  const valores = [
+  const insumoValores = [
     nome_insumos,
     quantidade_insumos,
     valor_insumos,
@@ -359,9 +373,9 @@ app.put('/insumos_tudo_POST/:id_insumos', (req, res) => {
     id_insumos
   ];
 
-  connection.query(query, valores, (error, resultado) => {
-    if (error) {
-      console.error(error);
+  connection.query(updateInsumoQuery, insumoValores, (err, resultado) => {
+    if (err) {
+      console.error('Erro ao atualizar insumo:', err);
       return res.status(500).json({ error: 'Erro ao atualizar o insumo' });
     }
 
@@ -369,7 +383,32 @@ app.put('/insumos_tudo_POST/:id_insumos', (req, res) => {
       return res.status(404).json({ error: 'Insumo não encontrado' });
     }
 
-    res.status(200).json({ mensagem: 'Insumo atualizado com sucesso' });
+    // Atualiza ou insere o relacionamento com o fornecedor
+    const deleteQuery = 'DELETE FROM FornecedorInsumo WHERE id_insumo = ?';
+    connection.query(deleteQuery, [id_insumos], (err) => {
+      if (err) {
+        console.error('Erro ao remover relacionamento anterior com fornecedor:', err);
+        return res.status(500).json({ error: 'Erro ao atualizar o fornecedor relacionado' });
+      }
+
+      if (!id_fornecedor) {
+        return res.status(200).json({ mensagem: 'Insumo atualizado sem fornecedor' });
+      }
+
+      const insertRelacao = `
+        INSERT INTO FornecedorInsumo (id_fornecedor, id_insumo)
+        VALUES (?, ?)
+      `;
+
+      connection.query(insertRelacao, [id_fornecedor, id_insumos], (err) => {
+        if (err) {
+          console.error('Erro ao associar fornecedor:', err);
+          return res.status(500).json({ error: 'Erro ao associar fornecedor ao insumo' });
+        }
+
+        res.status(200).json({ mensagem: 'Insumo e fornecedor atualizados com sucesso' });
+      });
+    });
   });
 });
 
@@ -378,27 +417,32 @@ app.put('/insumos_tudo_POST/:id_insumos', (req, res) => {
 // Notificação de quantidade do estoque (todos produtos com QTD <= 10)
 // Rota atualizada: alerta antecipado (<= alerta_estoque + 10) e crítico (<= alerta_estoque)
 app.get('/insumos/alerta', (req, res) => {
-  connection.query(
-    `SELECT 
-       id_insumos, 
-       nome_insumos, 
-       imagem_url, 
-       quantidade_insumos, 
-       alerta_estoque,
-       CASE
-         WHEN quantidade_insumos <= alerta_estoque THEN 'critico'
-         WHEN quantidade_insumos <= alerta_estoque + 10 THEN 'antecipado'
-         ELSE NULL
-       END AS tipo_alerta
-     FROM insumos
-     WHERE quantidade_insumos <= alerta_estoque + 10`,
-    (error, results) => {
-      if (error) return res.status(500).json({ error: 'Erro ao buscar alertas' });
-      res.json(results);
-    }
-  );
-});
+  const sql = `
+    SELECT 
+      id_insumos,
+      nome_insumos,
+      imagem_url,
+      quantidade_insumos,
+      alerta_estoque,
+      alertar_dias_antes,
+      CASE
+        WHEN quantidade_insumos <= alerta_estoque THEN 'critico'
+        WHEN quantidade_insumos <= (alerta_estoque + alertar_dias_antes) THEN 'antecipado'
+        ELSE NULL
+      END AS tipo_alerta
+    FROM insumos
+    WHERE quantidade_insumos <= (alerta_estoque + alertar_dias_antes)
+  `;
 
+  connection.query(sql, (err, results) => {
+    if (err) {
+      console.error('Erro ao buscar alertas:', err);
+      return res.status(500).json({ error: 'Erro ao buscar alertas' });
+    }
+
+    res.status(200).json(results);
+  });
+});
 
 
 // Buscar insumo por id
@@ -984,6 +1028,31 @@ app.delete('/delete/:id', async (req, res) => {
   });
 });
 
+// Cadastrando Fornecedor
+app.post("/cadastro/fornecedor", (req, res) => {
+  const { nome, telefone, email } = req.body;
+
+  const sql = 'INSERT INTO fornecedor (nome_fornecedor, telefone_fornecedor, email_fornecedor) VALUES (?, ?, ?)';
+  connection.query(sql, [nome, telefone, email], (erro, data) => {
+    if (erro) {
+      console.error("Erro ao cadastrar fornecedor:", erro);
+      return res.status(500).json({ error: 'Erro ao cadastrar fornecedor' });
+    }
+    return res.status(200).json({ message: 'Fornecedor cadastrado com sucesso' });
+  });
+});
+
+app.get("/fornecedores", (req, res) => {
+  const sql = "SELECT id_fornecedor, nome_fornecedor FROM fornecedor";
+
+  connection.query(sql, (erro, results) => {
+    if (erro) {
+      console.error("Erro ao buscar fornecedores:", erro);
+      return res.status(500).json({ error: "Erro ao buscar fornecedores" });
+    }
+    res.status(200).json(results);
+  });
+});
 
 // --- INICIANDO SERVIDOR ---
 const PORT = 3000;
