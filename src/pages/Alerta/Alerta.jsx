@@ -24,7 +24,7 @@ const Alerta = () => {
               tipoValidade: insumo.tipo_alerta_validade,
               imagem: insumo.imagem_url || 'https://via.placeholder.com/150'
             }))
-            .filter(insumo => insumo.tipoEstoque);  
+            .filter(insumo => insumo.tipoEstoque);
 
           const ordenados = formatados.sort((a, b) => {
             if (a.tipoEstoque === 'critico' && b.tipoEstoque !== 'critico') return -1;
@@ -55,6 +55,16 @@ const Alerta = () => {
       <NavBar />
       <Container style={{ marginTop: '100px' }}>
         <h1 className="mb-4">Insumos em Alerta de Estoque</h1>
+
+        <div className="mb-4">
+          <Button
+            variant="primary"
+            className="text-white"
+            onClick={() => navigate('/data/vencimento')}
+          >
+            Vencimento dos produtos
+          </Button>
+        </div>
 
         {insumos.length === 0 ? (
           <p>Nenhum insumo em alerta.</p>

@@ -1,4 +1,3 @@
-
 import { createBrowserRouter } from "react-router-dom"
 import InitPages from "../pages/InitPages"
 import Home from "../pages/Home/Home"
@@ -17,6 +16,7 @@ import Agenda from "../pages/Agenda/Agenda"
 import Alerta from "../pages/Alerta/Alerta"
 import Visualizar_Cardapio from "../pages/Visualizacoes/Visualizar_Cardapio"
 import RecSenha from "../pages/RecSenha/RecSenha"
+import DataVencimento from "../pages/Alerta/DataVencimento.jsx"
 
 const MyRouter = createBrowserRouter([
     {
@@ -90,6 +90,10 @@ const MyRouter = createBrowserRouter([
             {
                 path: "/recuperar_senha",
                 element: <RecSenha />
+            },
+            {
+                path: "/data/vencimento",
+                element: <DataVencimento />
             }
         ]
     }

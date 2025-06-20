@@ -1064,6 +1064,32 @@ app.get("/fornecedores", (req, res) => {
   });
 });
 
+// Rota para alinhar as datas de vencimento em ordem crescente
+app.get('/alertas/vencimentos', (req, res) => {
+  const sql = `
+    SELECT 
+      id_insumos,
+      nome_insumos,
+      data_vencimento,
+      quantidade_insumos,
+      imagem_url,
+      categoria
+    FROM insumos
+    WHERE data_vencimento IS NOT NULL
+    ORDER BY data_vencimento ASC
+  `;
+
+  connection.query(sql, (error, results) => {
+    if (error) {
+      console.error('Erro ao buscar datas de vencimento:', error);
+      return res.status(500).json({ error: 'Erro ao buscar vencimentos.' });
+    }
+
+    res.json(results);
+  });
+});
+
+
 // --- INICIANDO SERVIDOR ---
 const PORT = 3000;
 app.listen(PORT, () => {
