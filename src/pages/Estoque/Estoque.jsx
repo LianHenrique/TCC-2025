@@ -126,7 +126,7 @@ const Estoque = () => {
           const venc = insumo.data_vencimento ? new Date(insumo.data_vencimento) : null;
           const hoje = new Date();
           const diasRestantes = venc ? Math.ceil((venc - hoje) / (1000 * 60 * 60 * 24)) : null;
-          const vencProximo = diasRestantes !== null && diasRestantes <= 10 && diasRestantes >= 0;
+          const vencProximo = diasRestantes !== null && diasRestantes <= insumo.alertar_dias_antes && diasRestantes >= 0;
           const vencimentoFormatado = venc ? venc.toLocaleDateString('pt-BR') : 'Sem data';
 
           const valor = parseFloat(insumo.valor_insumos) || 0;
@@ -157,126 +157,127 @@ const Estoque = () => {
               },
               {
                 texto: `Vencimento: ${vencimentoFormatado}`,
-                badge: vencProximo ? 'danger' : undefined
+                badge: vencProximo ? 'danger' : undefined,
+                tooltip: vencProximo ? `Este produto vence em até ${insumo.alertar_dias_antes} dias` : undefined
               }
             ]
           });
 
-          return acc;
-        }, {});
+return acc;
+        }, { });
 
-        setProdutos(agrupados);
-        setProdutosFiltrados(agrupados);
+setProdutos(agrupados);
+setProdutosFiltrados(agrupados);
       } catch (err) {
-        console.error('Erro ao buscar produtos:', err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
+  console.error('Erro ao buscar produtos:', err);
+  setError(err.message);
+} finally {
+  setLoading(false);
+}
     };
 
-    fetchProdutos();
+fetchProdutos();
   }, []);
 
-  if (loading) {
-    return (
-      <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Carregando...</span>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="alert alert-danger m-3">
-        <h4>Erro ao carregar estoque</h4>
-        <p>{error}</p>
-        <Button variant="primary" onClick={() => window.location.reload()}>
-          Tentar novamente
-        </Button>
-      </div>
-    );
-  }
-
+if (loading) {
   return (
-    <div>
-      <NavBar />
-      <Container className="my-4">
-        <h1 style={{ marginTop: "100px" }}><b>INSUMOS</b></h1>
-
-        <Pesquisa
-          nomeDrop="Filtrar por"
-          navega="/cadastro_insumos"
-          TxtButton="Insumos +"
-          lista={[
-            { texto: 'Carnes', value: 'Carnes' },
-            { texto: 'Perecíveis', value: 'Perecíveis' },
-            { texto: 'Molhos', value: 'Molhos' },
-            { texto: 'Congelados', value: 'Congelados' }
-          ]}
-          onFilterChange={handleFiltroChange}
-          onSearchChange={handleSearchChange}
-        />
-
-        {Object.entries(produtosFiltrados)
-          .sort(([keyA], [keyB]) => keyA.localeCompare(keyB, 'pt-BR'))
-          .map(([normalizedCategoryKey, categoryData]) => (
-            <div key={normalizedCategoryKey} id={normalizedCategoryKey} className="mb-5">
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <h2>{categoryData.displayName}</h2>
-              </div>
-
-              <CardGeral
-                card={categoryData.items.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'))}
-                onCardClick={handleCardClick}
-                imgHeight={250}
-                showButtons={false}
-                customButton={(item) => (
-                  <>
-                    <Button
-                      variant="warning"
-                      className="rounded-circle fs-5 shadow m-1"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEdit(item.id);
-                      }}
-                      title="Editar item"
-                    >
-                      <FaEdit />
-                    </Button>
-                    <Button
-                      variant="danger"
-                      className="rounded-circle fs-5 shadow m-1"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(item.id);
-                      }}
-                      title="Excluir item"
-                    >
-                      <FaRegTrashAlt />
-                    </Button>
-                  </>
-                )}
-              />
-            </div>
-          ))}
-
-        {Object.keys(produtosFiltrados).length === 0 && (
-          <div className="text-center py-5">
-            <h4>
-              Nenhum item encontrado
-              {filtroAtivo !== 'Todos' ? ` na categoria ${filtroAtivo}` : ' no estoque'}
-            </h4>
-            <Button variant="primary" onClick={() => navigate('/cadastro_insumos')} className="mt-3">
-              Adicionar Novo Item
-            </Button>
-          </div>
-        )}
-      </Container>
+    <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+      <div className="spinner-border text-primary" role="status">
+        <span className="visually-hidden">Carregando...</span>
+      </div>
     </div>
   );
+}
+
+if (error) {
+  return (
+    <div className="alert alert-danger m-3">
+      <h4>Erro ao carregar estoque</h4>
+      <p>{error}</p>
+      <Button variant="primary" onClick={() => window.location.reload()}>
+        Tentar novamente
+      </Button>
+    </div>
+  );
+}
+
+return (
+  <div>
+    <NavBar />
+    <Container className="my-4">
+      <h1 style={{ marginTop: "100px" }}><b>INSUMOS</b></h1>
+
+      <Pesquisa
+        nomeDrop="Filtrar por"
+        navega="/cadastro_insumos"
+        TxtButton="Insumos +"
+        lista={[
+          { texto: 'Carnes', value: 'Carnes' },
+          { texto: 'Perecíveis', value: 'Perecíveis' },
+          { texto: 'Molhos', value: 'Molhos' },
+          { texto: 'Congelados', value: 'Congelados' }
+        ]}
+        onFilterChange={handleFiltroChange}
+        onSearchChange={handleSearchChange}
+      />
+
+      {Object.entries(produtosFiltrados)
+        .sort(([keyA], [keyB]) => keyA.localeCompare(keyB, 'pt-BR'))
+        .map(([normalizedCategoryKey, categoryData]) => (
+          <div key={normalizedCategoryKey} id={normalizedCategoryKey} className="mb-5">
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h2>{categoryData.displayName}</h2>
+            </div>
+
+            <CardGeral
+              card={categoryData.items.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'))}
+              onCardClick={handleCardClick}
+              imgHeight={250}
+              showButtons={false}
+              customButton={(item) => (
+                <>
+                  <Button
+                    variant="warning"
+                    className="rounded-circle fs-5 shadow m-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEdit(item.id);
+                    }}
+                    title="Editar item"
+                  >
+                    <FaEdit />
+                  </Button>
+                  <Button
+                    variant="danger"
+                    className="rounded-circle fs-5 shadow m-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(item.id);
+                    }}
+                    title="Excluir item"
+                  >
+                    <FaRegTrashAlt />
+                  </Button>
+                </>
+              )}
+            />
+          </div>
+        ))}
+
+      {Object.keys(produtosFiltrados).length === 0 && (
+        <div className="text-center py-5">
+          <h4>
+            Nenhum item encontrado
+            {filtroAtivo !== 'Todos' ? ` na categoria ${filtroAtivo}` : ' no estoque'}
+          </h4>
+          <Button variant="primary" onClick={() => navigate('/cadastro_insumos')} className="mt-3">
+            Adicionar Novo Item
+          </Button>
+        </div>
+      )}
+    </Container>
+  </div>
+);
 };
 
 export default Estoque;

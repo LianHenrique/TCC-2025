@@ -9,43 +9,44 @@ const Alerta = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetch('http://localhost:3000/insumos/alerta')
-      .then(res => res.json())
-      .then(data => {
-        if (!Array.isArray(data)) {
-          console.warn('Resposta inesperada:', data);
-          setInsumos([]);
-          return;
-        }
+    const buscarInsumos = () => {
+      fetch('http://localhost:3000/insumos/alerta')
+        .then(res => res.json())
+        .then(data => {
+          if (!Array.isArray(data)) return;
 
-        const insumosFormatados = data.map(insumo => ({
-          id: insumo.id_insumos,
-          nome: insumo.nome_insumos,
-          quantidade: insumo.quantidade_insumos,
-          tipoAlerta: insumo.tipo_alerta,
-          imagem: insumo.imagem_url || 'https://via.placeholder.com/150'
-        }));
+          const formatados = data.map(insumo => ({
+            id: insumo.id_insumos,
+            nome: insumo.nome_insumos,
+            quantidade: insumo.quantidade_insumos,
+            tipoEstoque: insumo.tipo_alerta_estoque,
+            tipoValidade: insumo.tipo_alerta_validade,
+            imagem: insumo.imagem_url || 'https://via.placeholder.com/150'
+          }));
 
-        setInsumos(insumosFormatados);
-      })
-      .catch(error => console.error('Erro ao buscar insumos:', error));
+          const ordenados = formatados.sort((a, b) => {
+            if (a.tipoEstoque === 'critico' && b.tipoEstoque !== 'critico') return -1;
+            if (a.tipoEstoque !== 'critico' && b.tipoEstoque === 'critico') return 1;
+            return a.quantidade - b.quantidade;
+          });
+
+          setInsumos(ordenados);
+        })
+        .catch(error => console.error('Erro ao buscar insumos:', error));
+    };
+
+    buscarInsumos();
+    const intervalo = setInterval(buscarInsumos, 10000);
+    return () => clearInterval(intervalo);
   }, []);
 
-  const handleNavigate = (id) => {
-    navigate(`/visualizar/${id}`);
-  };
-
-  const getCorDeFundo = (tipoAlerta) => {
-    if (tipoAlerta === 'critico') return '#f8d7da';      // vermelho claro
-    if (tipoAlerta === 'antecipado') return '#fff3cd';   // amarelo claro
+  const getCorDeFundo = (insumo) => {
+    if (insumo.tipoEstoque === 'critico') return '#f5b5b5';       
+    if (insumo.tipoEstoque === 'antecipado') return '#ffe082';   
     return 'white';
   };
 
-  const getCorDoIcone = (tipoAlerta) => {
-    if (tipoAlerta === 'critico') return 'red';
-    if (tipoAlerta === 'antecipado') return 'orange';
-    return 'black';
-  };
+  const handleNavigate = id => navigate(`/visualizar/${id}`);
 
   return (
     <div>
@@ -54,7 +55,7 @@ const Alerta = () => {
         <h1 className="mb-4">Insumos em Alerta de Estoque</h1>
 
         {insumos.length === 0 ? (
-          <p>Nenhum insumo atingiu o nível de alerta.</p>
+          <p>Nenhum insumo em alerta.</p>
         ) : (
           <Card.Body className="d-flex flex-wrap gap-4 justify-content-start">
             {insumos.map(insumo => (
@@ -65,7 +66,7 @@ const Alerta = () => {
                   width: '100%',
                   maxWidth: '625px',
                   padding: '10px',
-                  backgroundColor: getCorDeFundo(insumo.tipoAlerta)
+                  backgroundColor: getCorDeFundo(insumo)
                 }}
               >
                 <img
@@ -79,38 +80,21 @@ const Alerta = () => {
                     backgroundColor: '#f8f9fa'
                   }}
                 />
-
-                <div className="d-flex justify-content-between align-items-center w-100">
+                <div className="d-flex justify-content-between align-items-center" style={{ width: '100%' }}>
                   <div style={{ flexGrow: 1 }}>
-                    <div
-                      style={{
-                        display: 'flex',
-                        gap: '20px',
-                        fontSize: '18px',
-                        flexWrap: 'wrap',
-                        color: 'black'
-                      }}
-                    >
-                      <p><strong>Nome:</strong> {insumo.nome}</p>
-                      <p><strong>Quantidade:</strong> {insumo.quantidade}</p>
+                    <div style={{ display: 'flex', gap: '20px', fontSize: '20px', flexWrap: 'wrap' }}>
+                      <p>Nome: {insumo.nome}</p>
+                      <p>Quantidade: {insumo.quantidade}</p>
                     </div>
-                    <Button
-                      size="sm"
-                      variant="outline-dark"
-                      onClick={() => handleNavigate(insumo.id)}
-                    >
-                      Ver mais
+
+                    <Button onClick={() => handleNavigate(insumo.id)} variant="danger">
+                      Repor Estoque
                     </Button>
                   </div>
 
-                  <i
-                    className="bi bi-exclamation-triangle-fill"
-                    style={{
-                      fontSize: '32px',
-                      color: getCorDoIcone(insumo.tipoAlerta)
-                    }}
-                    title={insumo.tipoAlerta === 'critico' ? 'Alerta Crítico' : 'Alerta Antecipado'}
-                  />
+                  {insumo.tipoEstoque === 'critico' && (
+                    <i className="bi bi-exclamation-circle-fill" style={{ color: 'red', fontSize: '32px', marginLeft: '20px' }} />
+                  )}
                 </div>
               </div>
             ))}

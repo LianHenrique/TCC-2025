@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Pie } from 'react-chartjs-2';
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import NavBar from '../../components/NavBar/NavBar';
 import { Container, Table, Badge } from 'react-bootstrap';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+ChartJS.register(ArcElement, Tooltip, Legend);
 
 const RelatorioInsumos = () => {
   const [relatorioData, setRelatorioData] = useState(null);
@@ -28,22 +28,60 @@ const RelatorioInsumos = () => {
     fetchData();
   }, [periodo]);
 
-  // Gráfico dos 5 insumos com mais saídas
-  const topInsumosChart = {
-    labels: relatorioData?.dias || [],
-    datasets: Object.keys(relatorioData?.dados || {}).map((dia, index) => {
-      // Pegar os 5 insumos com mais saídas do dia
-      const top5 = relatorioData?.dados[dia]?.slice(0, 5) || [];
-      
+  // Prepara os dados para o gráfico de pizza
+  const preparePieData = () => {
+    if (!relatorioData || !relatorioData.dias || relatorioData.dias.length === 0) {
       return {
-        label: dia,
-        data: top5.map(insumo => insumo.quantidade),
-        backgroundColor: `hsl(${index * 60}, 70%, 50%)`,
-        borderColor: `hsl(${index * 60}, 70%, 30%)`,
-        borderWidth: 1,
+        labels: [],
+        datasets: []
       };
-    })
+    }
+
+    // Para o gráfico de pizza, vamos mostrar os 5 insumos mais utilizados no período
+    const todosInsumos = [];
+    
+    // Agregamos todos os insumos de todos os dias
+    relatorioData.dias.forEach(dia => {
+      const insumosDoDia = relatorioData.dados[dia] || [];
+      insumosDoDia.forEach(insumo => {
+        const existente = todosInsumos.find(i => i.nome === insumo.nome);
+        if (existente) {
+          existente.quantidade += insumo.quantidade;
+        } else {
+          todosInsumos.push({...insumo});
+        }
+      });
+    });
+
+    // Ordenamos por quantidade e pegamos os top 5
+    const top5 = todosInsumos
+      .sort((a, b) => b.quantidade - a.quantidade)
+      .slice(0, 5);
+
+    return {
+      labels: top5.map(insumo => insumo.nome),
+      datasets: [{
+        data: top5.map(insumo => insumo.quantidade),
+        backgroundColor: [
+          'rgba(255, 99, 132, 0.7)',
+          'rgba(54, 162, 235, 0.7)',
+          'rgba(255, 206, 86, 0.7)',
+          'rgba(75, 192, 192, 0.7)',
+          'rgba(153, 102, 255, 0.7)'
+        ],
+        borderColor: [
+          'rgba(255, 99, 132, 1)',
+          'rgba(54, 162, 235, 1)',
+          'rgba(255, 206, 86, 1)',
+          'rgba(75, 192, 192, 1)',
+          'rgba(153, 102, 255, 1)'
+        ],
+        borderWidth: 1,
+      }]
+    };
   };
+
+  const pieData = preparePieData();
 
   const options = {
     responsive: true,
@@ -58,23 +96,25 @@ const RelatorioInsumos = () => {
       tooltip: {
         callbacks: {
           afterLabel: (context) => {
-            const dia = context.dataset.label;
-            const index = context.dataIndex;
-            const insumo = relatorioData?.dados[dia]?.[index];
-            return insumo ? `Categoria: ${insumo.categoria}\nUnidade: ${insumo.unidade}` : '';
+            // Encontramos o insumo correspondente no conjunto completo de dados
+            const nomeInsumo = pieData.labels[context.dataIndex];
+            let insumoInfo = null;
+            
+            // Procuramos o insumo em todos os dias
+            for (const dia of relatorioData?.dias || []) {
+              const encontrado = relatorioData.dados[dia]?.find(i => i.nome === nomeInsumo);
+              if (encontrado) {
+                insumoInfo = encontrado;
+                break;
+              }
+            }
+            
+            return insumoInfo ? `Categoria: ${insumoInfo.categoria}\nUnidade: ${insumoInfo.unidade}` : '';
           }
         }
       }
     },
-    scales: {
-      y: {
-        beginAtZero: true,
-        title: {
-          display: true,
-          text: 'Quantidade'
-        }
-      }
-    }
+    maintainAspectRatio: false
   };
 
   return (
@@ -115,7 +155,13 @@ const RelatorioInsumos = () => {
               </div>
               <div className="card-body">
                 <div style={{ height: '400px' }}>
-                  <Bar data={topInsumosChart} options={options} />
+                  {pieData.labels.length > 0 ? (
+                    <Pie data={pieData} options={options} />
+                  ) : (
+                    <div className="d-flex justify-content-center align-items-center h-100">
+                      <p>Nenhum dado disponível para exibir</p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
