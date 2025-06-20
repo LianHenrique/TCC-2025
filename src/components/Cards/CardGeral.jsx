@@ -32,126 +32,164 @@ const CardGeral = ({
       {filtro && <h2>{filtro}</h2>}
 
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', padding: '10px' }}>
-        {card.map((item, index) => (
-          <div
-            key={item.id || index}
-            style={{
-              width: layout === 'desktop' ? 'calc(50% - 0.5rem)' : '100%',
-              minWidth: '300px',
-            }}
-          >
-            <Card
+        {card.map((item, index) => {
+          const isDisabled = item.estoqueInsuficiente;
+
+          return (
+            <div
+              key={item.id || index}
+              style={{
+                width: layout === 'desktop' ? 'calc(50% - 0.5rem)' : '100%',
+                minWidth: '300px',
+              }}
+            >
+              <Card
               className={`shadow rounded d-flex ${layout === 'mobile' ? 'flex-column' : 'flex-row'}`}
               style={{
                 minHeight: '200px',
-                height: '100%',
-                border: 'none',
+                height: '100%', 
                 cursor: onCardClick ? 'pointer' : 'default',
               }}
-              onClick={() => onCardClick?.(item.id)}
+              onClick={() => onCardClick?.(item.id)}  
             >
-              <Card.Img
-                className="rounded"
-                style={{
-                  width: layout === 'mobile' ? '100%' : '200px',
-                  height: layout === 'mobile' ? '200px' : '150px',
-                  objectFit: 'cover',
-                  borderRadius: layout === 'mobile' ? '20px 20px 0 0' : '0 0 0 20px',
-                  flexShrink: 0,
-                }}
-                variant="top"
-                src={item.link}
-                alt={item.nome}
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg';
-                }}
-              />
+                <Card.Img
+                  className="rounded"
+                  style={{
+                    width: layout === 'mobile' ? '100%' : '200px',
+                    height: layout === 'mobile' ? '200px' : '150px',
+                    objectFit: 'cover',
+                    borderRadius: layout === 'mobile' ? '20px 20px 0 0' : '0 0 0 20px',
+                    flexShrink: 0,
+                  }}
+                  variant="top"
+                  src={item.link}
+                  alt={item.nome}
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg';
+                  }}
+                />
 
-              <Card.Body style={{ flex: 1, overflowY: 'auto' }}>
-                <Card.Title className={ClassTitulo}>{item.nome}</Card.Title>
+                <Card.Body style={{ flex: 1 }}>
+                  <Card.Title className={ClassTitulo}>{item.nome}</Card.Title>
 
-                {Array.isArray(item.descricao) &&
-                  item.descricao.map((desc, i) => {
-                    const isVencimento = desc.texto?.toLowerCase().includes('vencimento');
-                    const isQuantidade = desc.texto?.toLowerCase().includes('quantidade');
-                    const isDanger = desc.badge === 'danger';
+                  {Array.isArray(item.descricao) &&
+                    item.descricao.map((desc, i) => {
+                      const isVencimento = desc.texto?.toLowerCase().includes('vencimento');
+                      const isQuantidade = desc.texto?.toLowerCase().includes('quantidade');
+                      const isDanger = desc.badge === 'danger';
 
-                    const aplicarFundo = isDanger && (isVencimento || isQuantidade);
+                      const aplicarFundo = isDanger && (isVencimento || isQuantidade);
 
-                    return (
-                      <Card.Text
-                        key={i}
-                        className={Desc}
+                      return (
+                        <Card.Text
+                          key={i}
+                          className={Desc}
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center',
+                            backgroundColor: aplicarFundo ? '#f5c6cb' : 'transparent',
+                            color: aplicarFundo ? '#8a1c1c' : 'inherit',
+                            borderRadius: aplicarFundo ? '6px' : '0',
+                            padding: aplicarFundo ? '6px 10px' : '0',
+                            ...(desc.style || {}),
+                          }}
+                          title={desc.tooltip || ''}
+                        >
+                          <span>{desc.texto || ''}</span>
+                          {desc.badge && (
+                            <span
+                              style={{
+                                backgroundColor: '#8a1c1c',
+                                color: 'white',
+                                borderRadius: '8px',
+                                padding: '2px 8px',
+                                fontSize: '0.8rem',
+                                marginLeft: '8px',
+                              }}
+                            >
+                              Vencendo
+                            </span>
+                          )}
+                        </Card.Text>
+                      );
+                    })}
+
+                  {/* BLOCO CENTRALIZADO DE ESTOQUE INSUFICIENTE */}
+                  {isDisabled && (
+                    <div
+                      className="d-flex flex-column align-items-center justify-content-center mt-3"
+                    >
+                      <div
                         style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                          backgroundColor: aplicarFundo ? '#f5c6cb' : 'transparent',
-                          color: aplicarFundo ? '#8a1c1c' : 'inherit',
-                          borderRadius: aplicarFundo ? '6px' : '0',
-                          padding: aplicarFundo ? '6px 10px' : '0',
-                          ...(desc.style || {}),
+                          backgroundColor: '#e74c3c',
+                          color: '#fff',
+                          fontWeight: 'bold',
+                          padding: '10px 20px',
+                          borderRadius: '30px',
+                          marginBottom: '10px',
+                          fontSize: '1rem',
+                          boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.2)',
                         }}
-                        title={desc.tooltip || ''}
                       >
-                        <span>{desc.texto || ''}</span>
-                        {desc.badge && (
-                          <span
-                            style={{
-                              backgroundColor: '#8a1c1c',
-                              color: 'white',
-                              borderRadius: '8px',
-                              padding: '2px 8px',
-                              fontSize: '0.8rem',
-                              marginLeft: '8px',
-                            }}
-                          >
-                            Vencendo
-                          </span>
-                        )}
-                      </Card.Text>
-                    );
-                  })}
+                        Estoque insuficiente
+                      </div>
+                      <Button
+                        variant="outline-danger"
+                        className="rounded-pill px-4 py-2"
+                        style={{ fontWeight: 'bold' }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          window.location.href = '/estoque';
+                        }}
+                      >
+                        Ver Estoque
+                      </Button>
+                    </div>
+                  )}
 
-                {customButton ? (
-                  customButton(item)
-                ) : showButtons ? (
-                  <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'flex-end',
-                      gap: '0.5rem',
-                      marginTop: '10px',
-                    }}
-                  >
-                    <Button
-                      variant="warning"
-                      className="rounded-circle fs-5 text-center shadow m-1"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        item.acoes?.[0]?.onClick?.();
+                  {/* BOTÕES DE EDIÇÃO/EXCLUSÃO */}
+                  {!isDisabled && (customButton ? (
+                    customButton(item)
+                  ) : showButtons ? (
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                        gap: '0.5rem',
+                        marginTop: '10px',
                       }}
                     >
-                      <FaEdit />
-                    </Button>
+                      <Button
+                        variant="warning"
+                        className="rounded-circle fs-5 text-center shadow m-1"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          item.acoes?.[0]?.onClick?.();
+                        }}
+                      >
+                        <FaEdit />
+                      </Button>
 
-                    <Button
-                      variant="danger"
-                      className="rounded-circle fs-5 text-center shadow m-1"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        item.acoes?.[1]?.onClick?.();
-                      }}
-                    >
-                      <FaRegTrashAlt />
-                    </Button>
-                  </div>
-                ) : null}
-              </Card.Body>
-            </Card>
-          </div>
-        ))}
+                      <Button
+                        variant="danger"
+                        className="rounded-circle fs-5 text-center shadow m-1"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          item.acoes?.[1]?.onClick?.();
+                        }}
+                      >
+                        <FaRegTrashAlt />
+                      </Button>
+                    </div>
+                  ) : null)}
+                </Card.Body>
+              </Card>
+            </div>
+          );
+        })}
       </div>
     </div>
   );

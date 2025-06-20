@@ -13,13 +13,9 @@ const Cardapio = () => {
   const [cardapioFiltrado, setCardapioFiltrado] = useState([]);
   const navigate = useNavigate();
 
-  // Normaliza texto para comparações
-  const normalizeString = (str) => {
-    if (!str) return '';
-    return String(str).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
-  };
+  const normalizeString = (str) =>
+    str ? String(str).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim() : '';
 
-  // Busca e formatação inicial do cardápio
   useEffect(() => {
     fetch(`http://localhost:3000/cardapio`)
       .then(res => res.json())
@@ -32,30 +28,26 @@ const Cardapio = () => {
         const cardapioFormatado = data.map(item => {
           let insumosArray = [];
 
-          if (Array.isArray(item.insumos)) {
-            insumosArray = item.insumos;
-          } else if (
-            typeof item.insumos === 'object' &&
-            item.insumos !== null &&
-            Object.keys(item.insumos).length > 0
-          ) {
-            insumosArray = [item.insumos];
-          } else if (typeof item.insumos === 'string') {
-            try {
+          try {
+            if (Array.isArray(item.insumos)) {
+              insumosArray = item.insumos;
+            } else if (typeof item.insumos === 'string') {
               const parsed = JSON.parse(item.insumos);
               insumosArray = Array.isArray(parsed) ? parsed : [parsed];
-            } catch {
-              insumosArray = [];
             }
+          } catch {
+            insumosArray = [];
           }
 
-          const ingredientesTexto =
-            insumosArray.length > 0 && insumosArray.some(i => i.nome_insumo)
-              ? `Ingredientes: ${insumosArray
-                .map(insumo => insumo.nome_insumo)
-                .filter(nome => !!nome)
-                .join(', ')}`
-              : 'Ingredientes: Não informado';
+          const estoqueInsuficiente = insumosArray.some(insumo => {
+            const disponivel = Number(insumo.quantidade_insumos);
+            const necessario = Number(insumo.quantidade_necessaria);
+            return !isFinite(disponivel) || !isFinite(necessario) || disponivel < necessario;
+          });
+
+          const ingredientesTexto = insumosArray.length
+            ? `Ingredientes: ${insumosArray.map(i => i?.nome_insumo || 'Desconhecido').join(', ')}`
+            : 'Ingredientes: Não informado';
 
           return {
             id: item.id_cardapio,
@@ -70,6 +62,7 @@ const Cardapio = () => {
               { texto: `Categoria: ${item.categoria || 'Não informada'}` }
             ],
             categoria: item.categoria || 'Não informada',
+            estoqueInsuficiente,
             acoes: [
               {
                 icone: <FaEdit />,
@@ -88,57 +81,37 @@ const Cardapio = () => {
       .catch(error => console.error('Erro ao buscar cardápio:', error));
   }, []);
 
-  // Filtra o cardápio toda vez que cardapio, filtro ou texto mudam
   useEffect(() => {
-    let filtered = [...cardapio];
+    let filtrado = [...cardapio];
 
-    if (filtroSelecionado && filtroSelecionado !== 'Todos') {
+    if (filtroSelecionado !== 'Todos') {
       const filtroNorm = normalizeString(filtroSelecionado);
-      filtered = filtered.filter(item => normalizeString(item.categoria) === filtroNorm);
+      filtrado = filtrado.filter(item => normalizeString(item.categoria) === filtroNorm);
     }
 
-    if (textoBusca && textoBusca.trim() !== '') {
+    if (textoBusca.trim()) {
       const textoBuscaNorm = normalizeString(textoBusca);
-
-      filtered = filtered.filter(item =>
+      filtrado = filtrado.filter(item =>
         normalizeString(item.nome).includes(textoBuscaNorm) ||
-        item.descricao.some(d => normalizeString(d.texto).includes(textoBuscaNorm))
+        item.descricao?.some(d => normalizeString(d.texto).includes(textoBuscaNorm))
       );
     }
 
-    setCardapioFiltrado(filtered);
+    setCardapioFiltrado(filtrado);
   }, [cardapio, filtroSelecionado, textoBusca]);
 
-  // Atualiza estados de filtro e texto a partir do componente Pesquisa
-  const handleFilterChange = (filtro) => {
-    setFiltroSelecionado(filtro);
-  };
-
-  const handleSearchChange = (texto) => {
-    setTextoBusca(texto);
-  };
-
-  function handleCardClick(id) {
-    navigate(`/Visualizar_Cardapio/${id}`);
-  }
-
-  function handleDelete(id) {
+  const handleDelete = (id) => {
     if (window.confirm('Tem certeza que deseja excluir este produto?')) {
-      fetch(`http://localhost:3000/cardapio/${id}`, {
-        method: 'DELETE'
-      })
-        .then(response => {
-          if (response.ok) {
-            setCardapio(prev => prev.filter(item => item.id !== id));
-          } else {
-            alert('Erro ao excluir produto');
-          }
+      fetch(`http://localhost:3000/cardapio/${id}`, { method: 'DELETE' })
+        .then(res => {
+          if (res.ok) setCardapio(prev => prev.filter(item => item.id !== id));
+          else alert('Erro ao excluir produto');
         })
         .catch(err => console.error('Erro ao excluir:', err));
     }
-  }
+  };
 
-  function handlePedir(id_cardapio) {
+  const handlePedir = (id_cardapio) => {
     fetch('http://localhost:3000/saida-venda', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -146,26 +119,21 @@ const Cardapio = () => {
     })
       .then(async res => {
         const data = await res.json();
-        if (!res.ok) {
-          const msg = data.error || 'Erro desconhecido';
-          throw new Error(msg);
-        }
-        return data;
-      })
-      .then(data => {
+        if (!res.ok) throw new Error(data?.error || 'Erro desconhecido');
         alert(data.message || 'Pedido registrado com sucesso!');
       })
       .catch(error => {
         console.error('Erro ao registrar pedido:', error.message);
-        alert(`Não foi efetuar o pedido:\n\n${error.message}`);
+        alert(`Não foi possível concluir o pedido:\n\n${error.message}`);
       });
-  }
+  };
 
   return (
     <div>
       <NavBar />
-      <Container>
-        <h1 style={{ marginTop: "100px" }}><b>PRODUTOS</b></h1>
+      <Container style={{ marginTop: '100px' }}>
+        <h1 className="fw-bold mb-2">PRODUTOS</h1>
+
         <Pesquisa
           nomeDrop="Filtro"
           navega="/cadastro_produto"
@@ -175,29 +143,65 @@ const Cardapio = () => {
             { value: 'Bebida', texto: 'Bebida' },
             { value: 'Sobremesa', texto: 'Sobremesa' }
           ]}
-          onFilterChange={handleFilterChange}
-          onSearchChange={handleSearchChange} // **PASSA O onSearchChange**
+          onFilterChange={setFiltroSelecionado}
+          onSearchChange={setTextoBusca}
         />
 
         <CardGeral
           card={cardapioFiltrado}
-          onCardClick={handleCardClick}
+          onCardClick={id => navigate(`/Visualizar_Cardapio/${id}`)}
           showButtons={false}
-          imgHeight={250}
-          customButton={item => (
-            <Button
-              variant="success"
-              style={{ padding: "15px" }}
-              className="fs-5 text-center shadow alert-success align-center bg-success text-white"
-              onClick={(e) => {
-                 e.preventDefault();
-                 e.stopPropagation();
-                 handlePedir(item.id);
-              }}
-            >
-              Pedir
-            </Button>
-          )}
+          customButton={item =>
+            item.estoqueInsuficiente ? (
+              <div
+                className="d-flex flex-column align-items-center justify-content-center"
+                style={{
+                  marginTop: '20px',
+                }}
+              >
+                <div
+                  style={{
+                    backgroundColor: '#e74c3c',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                    padding: '10px 20px',
+                    borderRadius: '30px',
+                    marginBottom: '10px',
+                    fontSize: '1rem',
+                    boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.2)',
+                  }}
+                >
+                  Estoque insuficiente
+                </div>
+                <Button
+                  variant="outline-danger"
+                  className="rounded-pill px-4 py-2"
+                  style={{ fontWeight: 'bold' }}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    navigate('/estoque');
+                  }}
+                >
+                  Ver Estoque
+                </Button>
+              </div>
+            ) : (
+              <div className="d-flex justify-content-center mt-3">
+                <Button
+                  variant="success"
+                  className="rounded-pill shadow-sm text-white px-4 py-2"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handlePedir(item.id);
+                  }}
+                >
+                  Pedir
+                </Button>
+              </div>
+            )
+          }
         />
       </Container>
     </div>

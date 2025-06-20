@@ -271,7 +271,6 @@ app.get('/insumos', (req, res) => {
 
 
 
-
 // Deletando os insumos por it
 app.delete('/InsumosDelete/:id', (req, res) => {
   const { id } = req.params;
