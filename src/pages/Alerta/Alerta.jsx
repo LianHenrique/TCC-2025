@@ -15,14 +15,16 @@ const Alerta = () => {
         .then(data => {
           if (!Array.isArray(data)) return;
 
-          const formatados = data.map(insumo => ({
-            id: insumo.id_insumos,
-            nome: insumo.nome_insumos,
-            quantidade: insumo.quantidade_insumos,
-            tipoEstoque: insumo.tipo_alerta_estoque,
-            tipoValidade: insumo.tipo_alerta_validade,
-            imagem: insumo.imagem_url || 'https://via.placeholder.com/150'
-          }));
+          const formatados = data
+            .map(insumo => ({
+              id: insumo.id_insumos,
+              nome: insumo.nome_insumos,
+              quantidade: insumo.quantidade_insumos,
+              tipoEstoque: insumo.tipo_alerta_estoque,
+              tipoValidade: insumo.tipo_alerta_validade,
+              imagem: insumo.imagem_url || 'https://via.placeholder.com/150'
+            }))
+            .filter(insumo => insumo.tipoEstoque); // 👈 aqui o ajuste
 
           const ordenados = formatados.sort((a, b) => {
             if (a.tipoEstoque === 'critico' && b.tipoEstoque !== 'critico') return -1;
@@ -41,8 +43,8 @@ const Alerta = () => {
   }, []);
 
   const getCorDeFundo = (insumo) => {
-    if (insumo.tipoEstoque === 'critico') return '#f5b5b5';       
-    if (insumo.tipoEstoque === 'antecipado') return '#ffe082';   
+    if (insumo.tipoEstoque === 'critico') return '#f5b5b5';
+    if (insumo.tipoEstoque === 'antecipado') return '#ffe082';
     return 'white';
   };
 

@@ -429,16 +429,16 @@ app.get('/insumos/alerta', (req, res) => {
       alertar_dias_antes,
       CASE
         WHEN quantidade_insumos <= alerta_estoque THEN 'critico'
-        WHEN quantidade_insumos <= (alerta_estoque + alertar_dias_antes) THEN 'antecipado'
         ELSE NULL
       END AS tipo_alerta_estoque,
       CASE
-        WHEN data_vencimento IS NOT NULL AND DATEDIFF(data_vencimento, CURDATE()) <= alertar_dias_antes THEN 'vencendo'
+        WHEN data_vencimento IS NOT NULL 
+             AND DATEDIFF(data_vencimento, CURDATE()) <= alertar_dias_antes THEN 'vencendo'
         ELSE NULL
       END AS tipo_alerta_validade
     FROM insumos
     WHERE 
-      quantidade_insumos <= (alerta_estoque + alertar_dias_antes)
+      quantidade_insumos <= alerta_estoque
       OR (data_vencimento IS NOT NULL AND DATEDIFF(data_vencimento, CURDATE()) <= alertar_dias_antes)
   `;
 
@@ -447,7 +447,6 @@ app.get('/insumos/alerta', (req, res) => {
       console.error('Erro ao buscar alertas:', err);
       return res.status(500).json({ error: 'Erro ao buscar alertas' });
     }
-
     res.status(200).json(results);
   });
 });

@@ -27,11 +27,12 @@ const AlertaCriticoGlobal = () => {
             id: insumo.id_insumos,
             nome: insumo.nome_insumos,
             quantidade: insumo.quantidade_insumos,
-            tipoAlerta: insumo.tipo_alerta,
+            tipoAlertaEstoque: insumo.tipo_alerta_estoque,
+            tipoAlertaValidade: insumo.tipo_alerta_validade,
             imagem: insumo.imagem_url || 'https://via.placeholder.com/150'
           }));
 
-          const criticos = formatados.filter(i => i.tipoAlerta === 'critico');
+          const criticos = formatados.filter(i => i.tipoAlertaEstoque === 'critico');
           const idsJaExibidos = getIdsJaExibidos();
           const novos = criticos.filter(i => !idsJaExibidos.includes(i.id));
 
