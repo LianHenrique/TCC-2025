@@ -157,7 +157,7 @@ const Cardapio = () => {
       })
       .catch(error => {
         console.error('Erro ao registrar pedido:', error.message);
-        alert(`Não foi possível concluir o pedido:\n\n${error.message}`);
+        alert(`Não foi efetuar o pedido:\n\n${error.message}`);
       });
   }
 
@@ -189,7 +189,11 @@ const Cardapio = () => {
               variant="success"
               style={{ padding: "15px" }}
               className="fs-5 text-center shadow alert-success align-center bg-success text-white"
-              onClick={() => handlePedir(item.id)}
+              onClick={(e) => {
+                 e.preventDefault();
+                 e.stopPropagation();
+                 handlePedir(item.id);
+              }}
             >
               Pedir
             </Button>

@@ -62,7 +62,7 @@ const Alerta = () => {
             className="text-white"
             onClick={() => navigate('/data/vencimento')}
           >
-            Vencimento dos produtos
+            Alertas De Vencimento
           </Button>
         </div>
 

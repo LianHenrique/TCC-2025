@@ -1,4 +1,3 @@
-
 import express from 'express';
 import connection from './db.js';
 import cors from 'cors';
@@ -797,96 +796,99 @@ app.get('/estoque', (req, res) => {
   );
 });
 
-
-
 // Rota para saída de venda
-app.post('/saida-venda', (req, res) => {
-  const { id_cardapio } = req.body;
+app.post('/saida-venda', async (req, res) => {
+  try {
+    const { id_cardapio } = req.body;
 
-  if (!id_cardapio) {
-    return res.status(400).json({ error: 'ID do item do cardápio não fornecido' });
-  }
+    // 1. Verifica estoque primeiro
+    const insumosNecessarios = await new Promise((resolve, reject) => {
+      const query = `
+        SELECT 
+          i.id_insumos,
+          i.nome_insumos,
+          i.quantidade_insumos AS estoque_atual,
+          ici.quantidade_necessaria,
+          i.unidade_medida
+        FROM ItemCardapioInsumo ici
+        JOIN Insumos i ON ici.id_insumo = i.id_insumos
+        WHERE ici.id_item_cardapio = ?
+      `;
+      connection.query(query, [id_cardapio], (err, results) => {
+        if (err) return reject(err);
+        resolve(results);
+      });
+    });
 
-  const data_saida = new Date().toISOString().slice(0, 10);
+    // 2. Verifica se há estoque suficiente
+    const insumosFaltantes = insumosNecessarios.filter(
+      insumo => insumo.estoque_atual < insumo.quantidade_necessaria
+    );
 
-  const buscarInsumosQuery = `
-    SELECT ici.id_insumo, ici.quantidade_necessaria, i.quantidade_insumos, i.nome_insumos
-    FROM itemcardapioinsumo ici
-    JOIN insumos i ON i.id_insumos = ici.id_insumo
-    WHERE ici.id_item_cardapio = ?
-  `;
-
-  connection.query(buscarInsumosQuery, [id_cardapio], (err, insumos) => {
-    if (err) {
-      console.error('Erro ao buscar insumos:', err);
-      return res.status(500).json({ error: 'Erro interno ao buscar insumos.' });
+    if (insumosFaltantes.length > 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'Estoque insuficiente',
+        faltando: insumosFaltantes.map(i => ({
+          id: i.id_insumos,
+          nome: i.nome_insumos,
+          estoque: i.estoque_atual,
+          necessario: i.quantidade_necessaria,
+          unidade: i.unidade_medida
+        }))
+      });
     }
 
-    if (insumos.length === 0) {
-      return res.status(404).json({ error: 'Nenhum insumo relacionado a este item.' });
-    }
-
-    // Verifica se todos os insumos têm quantidade suficiente
-    const insuficientes = insumos.filter(insumo => insumo.quantidade_insumos < insumo.quantidade_necessaria);
-
-    if (insuficientes.length > 0) {
-      const nomes = insuficientes.map(i => i.nome_insumos).join(', ');
-      return res.status(400).json({ error: `Estoque insuficiente para: ${nomes}` });
-    }
-
-    const registros = insumos.map(insumo => [
-      insumo.id_insumo,
+    // 3. Registra as saídas
+    const dataAtual = new Date().toISOString().slice(0, 19).replace('T', ' ');
+    const valoresSaida = insumosNecessarios.map(insumo => [
+      insumo.id_insumos,
       insumo.quantidade_necessaria,
-      data_saida,
+      dataAtual,
       'Venda'
     ]);
 
-    const insertSaidaQuery = `
-      INSERT INTO registrosaidaproduto
-      (id_insumos_registroSaidaProduto, quantidade_saida, data_saida, motivo_saida)
-      VALUES ?
-    `;
-
-    connection.query(insertSaidaQuery, [registros], (errInsert) => {
-      if (errInsert) {
-        console.error('Erro ao registrar saída:', errInsert);
-        return res.status(500).json({ error: 'Erro ao registrar a saída.' });
-      }
-
-      // Atualiza o estoque para cada insumo
-      const updates = insumos.map(insumo => {
-        return new Promise((resolve, reject) => {
-          const updateQuery = `
-            UPDATE insumos 
-            SET quantidade_insumos = quantidade_insumos - ?
-            WHERE id_insumos = ?
-          `;
-          connection.query(updateQuery, [insumo.quantidade_necessaria, insumo.id_insumo], (errUpdate) => {
-            if (errUpdate) {
-              console.error(`Erro ao atualizar estoque do insumo ${insumo.id_insumo}:`, errUpdate);
-              reject(errUpdate);
-            } else {
-              resolve();
-            }
-          });
-        });
+    await new Promise((resolve, reject) => {
+      const query = `
+        INSERT INTO RegistroSaidaProduto 
+        (id_insumos_RegistroSaidaProduto, quantidade_saida, data_saida, motivo_saida)
+        VALUES ?
+      `;
+      connection.query(query, [valoresSaida], (err) => {
+        if (err) return reject(err);
+        resolve();
       });
-
-      Promise.all(updates)
-        .then(() => {
-          return res.status(201).json({ message: 'Saída registrada e estoque atualizado com sucesso!' });
-        })
-        .catch(err => {
-          console.error('Erro durante atualização de estoque:', err);
-          if (!res.headersSent) {
-            return res.status(500).json({ error: 'Erro ao atualizar estoque após registrar saída.' });
-          }
-        });
     });
-  });
+
+    // 4. Atualiza estoque
+    await Promise.all(insumosNecessarios.map(insumo => {
+      return new Promise((resolve, reject) => {
+        const query = `
+          UPDATE Insumos 
+          SET quantidade_insumos = quantidade_insumos - ?
+          WHERE id_insumos = ?
+        `;
+        connection.query(query, 
+          [insumo.quantidade_necessaria, insumo.id_insumos], 
+          (err) => err ? reject(err) : resolve()
+        );
+      });
+    }));
+
+    res.json({ 
+      success: true,
+      message: 'Venda registrada com sucesso'
+    });
+
+  } catch (error) {
+    console.error('Erro em /saida-venda:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Erro ao processar venda',
+      details: error.message
+    });
+  }
 });
-
-
 
 
 // Deletando item do estoque
@@ -1068,15 +1070,18 @@ app.get("/fornecedores", (req, res) => {
 app.get('/alertas/vencimentos', (req, res) => {
   const sql = `
     SELECT 
-      id_insumos,
-      nome_insumos,
-      data_vencimento,
-      quantidade_insumos,
-      imagem_url,
-      categoria
-    FROM insumos
-    WHERE data_vencimento IS NOT NULL
-    ORDER BY data_vencimento ASC
+      i.id_insumos,
+      i.nome_insumos,
+      i.data_vencimento,
+      i.imagem_url,
+      f.id_fornecedor,
+      f.nome_fornecedor,
+      f.telefone_fornecedor
+    FROM insumos i
+    LEFT JOIN FornecedorInsumo fi ON i.id_insumos = fi.id_insumo
+    LEFT JOIN Fornecedor f ON fi.id_fornecedor = f.id_fornecedor
+    WHERE i.data_vencimento IS NOT NULL
+    ORDER BY i.data_vencimento ASC
   `;
 
   connection.query(sql, (error, results) => {
@@ -1085,7 +1090,29 @@ app.get('/alertas/vencimentos', (req, res) => {
       return res.status(500).json({ error: 'Erro ao buscar vencimentos.' });
     }
 
-    res.json(results);
+    // Agrupando fornecedores por insumo
+    const insumosMap = {};
+
+    results.forEach(row => {
+      if (!insumosMap[row.id_insumos]) {
+        insumosMap[row.id_insumos] = {
+          id_insumos: row.id_insumos,
+          nome_insumos: row.nome_insumos,
+          data_vencimento: row.data_vencimento,
+          imagem_url: row.imagem_url,
+          fornecedores: []
+        };
+      }
+
+      if (row.nome_fornecedor) {
+        insumosMap[row.id_insumos].fornecedores.push({
+          nome: row.nome_fornecedor,
+          telefone: row.telefone_fornecedor
+        });
+      }
+    });
+
+    res.json(Object.values(insumosMap));
   });
 });
 
