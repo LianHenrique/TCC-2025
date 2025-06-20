@@ -24,7 +24,7 @@ const Alerta = () => {
               tipoValidade: insumo.tipo_alerta_validade,
               imagem: insumo.imagem_url || 'https://via.placeholder.com/150'
             }))
-            .filter(insumo => insumo.tipoEstoque); // 👈 aqui o ajuste
+            .filter(insumo => insumo.tipoEstoque);  
 
           const ordenados = formatados.sort((a, b) => {
             if (a.tipoEstoque === 'critico' && b.tipoEstoque !== 'critico') return -1;

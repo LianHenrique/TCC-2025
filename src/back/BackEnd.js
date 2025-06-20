@@ -417,29 +417,31 @@ app.put('/insumos_tudo_POST/:id_insumos', (req, res) => {
 // Rota atualizada: alerta antecipado (<= alerta_estoque + 10) e crítico (<= alerta_estoque)
 app.get('/insumos/alerta', (req, res) => {
   const sql = `
-    SELECT 
-      id_insumos,
-      nome_insumos,
-      imagem_url,
-      quantidade_insumos,
-      valor_insumos,
-      categoria,
-      data_vencimento,
-      alerta_estoque,
-      alertar_dias_antes,
-      CASE
-        WHEN quantidade_insumos <= alerta_estoque THEN 'critico'
-        ELSE NULL
-      END AS tipo_alerta_estoque,
-      CASE
-        WHEN data_vencimento IS NOT NULL 
-             AND DATEDIFF(data_vencimento, CURDATE()) <= alertar_dias_antes THEN 'vencendo'
-        ELSE NULL
-      END AS tipo_alerta_validade
-    FROM insumos
-    WHERE 
-      quantidade_insumos <= alerta_estoque
-      OR (data_vencimento IS NOT NULL AND DATEDIFF(data_vencimento, CURDATE()) <= alertar_dias_antes)
+   SELECT 
+  id_insumos,
+  nome_insumos,
+  imagem_url,
+  quantidade_insumos,
+  valor_insumos,
+  categoria,
+  data_vencimento,
+  alerta_estoque,
+  alertar_dias_antes,
+  CASE
+    WHEN quantidade_insumos <= alerta_estoque THEN 'critico'
+    WHEN quantidade_insumos <= alerta_estoque + 10 THEN 'antecipado'
+    ELSE NULL
+  END AS tipo_alerta_estoque,
+  CASE
+    WHEN data_vencimento IS NOT NULL 
+         AND DATEDIFF(data_vencimento, CURDATE()) <= alertar_dias_antes THEN 'vencendo'
+    ELSE NULL
+  END AS tipo_alerta_validade
+FROM insumos
+WHERE 
+  quantidade_insumos <= alerta_estoque + 10
+  OR (data_vencimento IS NOT NULL AND DATEDIFF(data_vencimento, CURDATE()) <= alertar_dias_antes)
+
   `;
 
   connection.query(sql, (err, results) => {
