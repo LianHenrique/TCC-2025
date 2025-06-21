@@ -26,7 +26,12 @@ const Produto = () => {
 
   const navigate = useNavigate();
 
-  const uni = ["g", "Kg"];
+  useEffect(() => {
+    fetch('http://localhost:3000/unidades-medida')
+      .then(res => res.json())
+      .then(data => setUnidade(data))
+      .catch(() => setUnidade(['unidade', 'kg', 'litro', 'g', 'ml']));
+  }, []);
 
   useEffect(() => {
     fetch('http://localhost:3000/insumos')
@@ -60,8 +65,8 @@ const Produto = () => {
       nome_produto: nome,
       descricao_produto: descricao,
       filtro,
-      valor_produto: parseFloat(valor),
       imagem_url: imagemUrl,
+      valor_produto: parseFloat(valor),
       insumos: insumosSelecionados.map((i) => ({
         id_insumo: i.id,
         quantidade_necessaria: parseFloat(i.quantidade_necessaria),
@@ -86,9 +91,6 @@ const Produto = () => {
     } catch (error) {
       alert('Erro ao conectar ao servidor.');
     }
-
-
-
   };
 
   const handleReset = () => {
@@ -146,7 +148,7 @@ const Produto = () => {
           style={{
             padding: '30px',
             borderRadius: '20px',
-            border: '1px solid blue', textAlign:"center"
+            border: '1px solid blue', textAlign: "center"
           }}>
           <img
             src={logo} width={100} alt="" />
@@ -191,18 +193,23 @@ const Produto = () => {
 
             {/* Quantidade */}
             <Form.Control
-              type="number"
+              type="text"
               placeholder="Quantidade"
               value={insumoSelecionado.quantidade_necessaria}
-              onChange={(e) =>
+              onChange={(e) => {
+                let valorDigitado = e.target.value;
+ 
+                valorDigitado = valorDigitado.replace(/[^\d,]/g, '').replace('.', '');
+
+                const valor = parseFloat(valorDigitado.replace(',', '.'));
+
                 setInsumoSelecionado((prev) => ({
                   ...prev,
-                  quantidade_necessaria: e.target.value,
-                }))
-              }
+                  quantidade_necessaria: isNaN(valor) ? '' : valor
+                }));
+              }}
               className="shadow rounded-5"
               style={{ width: '150px' }}
-              min="0"
             />
 
             {/* Unidade de medida */}
@@ -213,7 +220,7 @@ const Produto = () => {
               </Dropdown.Toggle>
               <Dropdown.Menu
                 style={{ maxHeight: '200px', overflowY: 'auto' }}>
-                {uni.map((nome, index) => (
+                {unidade.map((nome, index) => (
                   <Dropdown.Item
                     key={`uni-${index}`}
                     onClick={() =>

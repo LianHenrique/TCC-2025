@@ -682,9 +682,24 @@ app.get('/cardapio', (req, res) => {
 
 // Inserir item no cardápio com insumos relacionados
 app.post('/cardapio/insert', (req, res) => {
-  const { nome_produto, descricao_produto, valor_produto, imagem_url, filtro: categoria, insumos } = req.body;
+  const {
+    nome_produto,
+    descricao_produto,
+    valor_produto,
+    imagem_url,
+    filtro: categoria,
+    insumos
+  } = req.body;
 
-  if (!nome_produto || !descricao_produto || !valor_produto || !imagem_url || !categoria || !Array.isArray(insumos) || insumos.length === 0) {
+  if (
+    !nome_produto ||
+    !descricao_produto ||
+    !valor_produto ||
+    !imagem_url ||
+    !categoria ||
+    !Array.isArray(insumos) ||
+    insumos.length === 0
+  ) {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios e ao menos um insumo deve ser selecionado.' });
   }
 
@@ -701,9 +716,25 @@ app.post('/cardapio/insert', (req, res) => {
 
     const id_item_cardapio = result.insertId;
 
+    // Função segura para parsear números vindo do frontend
+    const normalizarQuantidade = (valor) => {
+      if (typeof valor === 'number') return valor;
+      if (typeof valor === 'string') {
+        const normalizado = valor.replace(/\./g, '').replace(',', '.');
+        return parseFloat(normalizado);
+      }
+      return 0;
+    };
+
     const values = insumos.map(insumo => {
       const idInsumo = insumo.id_insumo || insumo.id_insumos;
-      return [id_item_cardapio, idInsumo, parseFloat(insumo.quantidade_necessaria), insumo.unidade_medida_receita];
+      const quantidade = normalizarQuantidade(insumo.quantidade_necessaria);
+      return [
+        id_item_cardapio,
+        idInsumo,
+        quantidade,
+        insumo.unidade_medida_receita
+      ];
     });
 
     const insertInsumosQuery = `
@@ -721,7 +752,6 @@ app.post('/cardapio/insert', (req, res) => {
     });
   });
 });
-
 
 
 // ROTA DO BOTÃO DE ALTERAR DA TELA DE CADASTRO DE VISUALIZAR CARDÁPIO (update)
@@ -1148,6 +1178,34 @@ app.get('/alertas/vencimentos', (req, res) => {
     });
 
     res.json(Object.values(insumosMap));
+  });
+});
+
+
+// Unidades de medida get
+app.get('/unidades-medida', (req, res) => {
+  const query = `
+    SHOW COLUMNS FROM insumos LIKE 'unidade_medida'
+  `;
+
+  connection.query(query, (err, results) => {
+    if (err) {
+      console.error('Erro ao buscar ENUM de unidade_medida:', err);
+      return res.status(500).json({ error: 'Erro ao buscar unidades de medida.' });
+    }
+
+    const enumStr = results[0].Type;
+    const match = enumStr.match(/enum\((.*)\)/i);
+
+    if (!match) {
+      return res.status(500).json({ error: 'Formato de ENUM inválido.' });
+    }
+
+    const values = match[1]
+      .split(',')
+      .map(val => val.trim().replace(/(^'|'$)/g, ''));
+
+    return res.json(values);
   });
 });
 

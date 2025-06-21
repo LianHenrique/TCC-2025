@@ -68,7 +68,6 @@ INSERT INTO insumos (nome_insumos, descricao_insumos, quantidade_insumos, unidad
 ('Alface Crespa', 'Alface fresca crespa', 75, 'unidades', 2.50, '2026-01-01', 'https://organicosinbox.com.br/wp-content/uploads/2020/11/alface-crespa-organica.jpg', 'Congelados'),
 ('Tomate Italiano', 'Tomate italiano fresco', 55, 'unidades', 3.20, '2025-12-19', 'https://www.biosementes.com.br/loja/product_images/p/805/tomateitaliano_paramolhos__47507_zoom.jpg.webp', 'Perecíveis');
 
-        
 -- Tabela de Ligação Fornecedor-Insumo (Muitos-para-Muitos)
 CREATE TABLE FornecedorInsumo (
     id_fornecedor INT NOT NULL,
@@ -84,8 +83,8 @@ CREATE TABLE Cardapio (
     nome_item VARCHAR(100) NOT NULL,
     descricao_item TEXT,
     valor_item DECIMAL(10, 2) NOT NULL, -- Preço de venda
-   imagem_url VARCHAR (250),
-   categoria VARCHAR (50),
+    imagem_url VARCHAR (250),
+    categoria VARCHAR (50),
     ativo BOOLEAN DEFAULT TRUE, -- Se o item está ativo no cardápio
     data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -95,7 +94,6 @@ VALUES
 ('Hambúrguer Simples', 'Pão, carne, queijo, alface', 20.00, 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/NCI_Visuals_Food_Hamburger.jpg/960px-NCI_Visuals_Food_Hamburger.jpg'),
 ('X-Duplo Hambúrguer', 'Pão, 2 carnes, 2 queijos, alface', 40.00, 'https://img.freepik.com/fotos-premium/hamburguer-duplo-delicioso-com-pepinos-de-bacon-de-carne-e-tomates-isolados_524291-2260.jpg'),
 ('X-Bacon', 'Pão, carne, queijo, alface, bacon', 35.00, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2iq1NJAbIYJHdnOj10joXxG1hGOQlo4_M5g&s');
-
 
 -- Tabela de Ligação ItemCardapio-Insumo (Muitos-para-Muitos - Receita)
 CREATE TABLE ItemCardapioInsumo (
@@ -154,6 +152,14 @@ VALUES
 (3, 4, '2025-06-14', 'Venda', 4),
 (4, 5, '2025-06-14', 'Venda', 5);
 
+-- Atualização segura da unidade_medida
+UPDATE Insumos SET unidade_medida = 'unidade' WHERE unidade_medida = 'unidades' AND id_insumos > 0;
+
+ALTER TABLE Insumos
+MODIFY unidade_medida ENUM('unidade', 'kg', 'litro', 'g', 'ml') NOT NULL;
+
+ALTER TABLE ItemCardapioInsumo
+MODIFY quantidade_necessaria DECIMAL(10, 1) NOT NULL;
 
 -- Adicionando Índices para Otimização (Exemplos)
 CREATE INDEX idx_insumos_nome ON Insumos(nome_insumos);
