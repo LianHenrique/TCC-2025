@@ -3,6 +3,7 @@ import '../Style/login.css';
 import NavBar from '../../components/NavBar/NavBar';
 import { Button, Container, FloatingLabel, Form, Spinner } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Dropdown } from 'react-bootstrap';
 
 const Visualizar = () => {
   const { id } = useParams();
@@ -21,6 +22,9 @@ const Visualizar = () => {
   const [alertaVencimento, setAlertaVencimento] = useState('');
   const [fornecedores, setFornecedores] = useState([]);
   const [idFornecedor, setIdFornecedor] = useState(null);
+  const [unidade, setUnidade] = useState('');
+
+  const unidadesDisponiveis = ['unidade', 'kg', 'g', 'litro', 'ml'];
 
   useEffect(() => {
     fetch('http://localhost:3000/fornecedores')
@@ -49,6 +53,7 @@ const Visualizar = () => {
         setAlertaEstoque(insumo.alerta_estoque || '');
         setAlertaVencimento(insumo.alertar_dias_antes || '');
         setIdFornecedor(insumo.id_fornecedor || null);
+        setUnidade(insumo.unidade_medida || 'unidade');
 
         const dataFormatada = insumo.data_vencimento
           ? new Date(insumo.data_vencimento).toISOString().split('T')[0]
@@ -80,9 +85,10 @@ const Visualizar = () => {
           data_vencimento: validade,
           alerta_estoque: alertaEstoque,
           alerta_vencimento: alertaVencimento,
-          id_fornecedor: idFornecedor
+          id_fornecedor: idFornecedor,
+          unidade_medida: unidade  
         })
-      });
+      })
 
       if (!response.ok) {
         const data = await response.json();
@@ -144,15 +150,23 @@ const Visualizar = () => {
             />
           </FloatingLabel>
 
-          <FloatingLabel controlId="preco" label="Preço (R$)" className="mb-3">
-            <Form.Control
-              type="number"
-              step="0.01"
-              value={preco}
-              onChange={(e) => setPreco(e.target.value)}
-              className="rounded-5 shadow"
-              required
-            />
+          <FloatingLabel controlId="unidade" className="mb-3">
+            <Dropdown className="shadow rounded-5" style={{ width: '100%' }}>
+              <Dropdown.Toggle
+                variant="outline-primary"
+                className="rounded-5"
+                style={{ width: '100%', textAlign: 'left' }}
+              >
+                {unidade}
+              </Dropdown.Toggle>
+              <Dropdown.Menu style={{ width: '100%' }}>
+                {['unidade', 'kg', 'litro', 'g', 'ml'].map((u) => (
+                  <Dropdown.Item key={u} onClick={() => setUnidade(u)}>
+                    {u}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
           </FloatingLabel>
 
           <FloatingLabel controlId="validade" label="Validade" className="mb-3">

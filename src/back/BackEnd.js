@@ -316,22 +316,25 @@ app.put('/insumos_tudo_POST/:id_insumos', (req, res) => {
     data_vencimento,
     alerta_estoque,
     alerta_vencimento,
-    id_fornecedor
+    id_fornecedor,
+    unidade_medida
   } = req.body;
+
 
   // Atualiza os dados do insumo
   const updateInsumoQuery = `
-    UPDATE insumos
-    SET 
-      nome_insumos = ?,
-      quantidade_insumos = ?,
-      valor_insumos = ?,
-      imagem_url = ?,
-      categoria = ?,
-      data_vencimento = ?,
-      alerta_estoque = ?,
-      alertar_dias_antes = ?
-    WHERE id_insumos = ?
+  UPDATE insumos
+  SET 
+  nome_insumos = ?,
+  quantidade_insumos = ?,
+  valor_insumos = ?,
+  imagem_url = ?,
+  categoria = ?,
+  data_vencimento = ?,
+  alerta_estoque = ?,
+  alertar_dias_antes = ?,
+  unidade_medida = ?
+WHERE id_insumos = ?
   `;
 
   const insumoValores = [
@@ -343,8 +346,10 @@ app.put('/insumos_tudo_POST/:id_insumos', (req, res) => {
     data_vencimento,
     alerta_estoque,
     alerta_vencimento,
+    unidade_medida,  
     id_insumos
   ];
+
 
   connection.query(updateInsumoQuery, insumoValores, (err, resultado) => {
     if (err) {
