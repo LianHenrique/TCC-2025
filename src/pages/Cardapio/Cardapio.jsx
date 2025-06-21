@@ -39,9 +39,17 @@ const Cardapio = () => {
             insumosArray = [];
           }
 
+          const parseNumero = (valor) => {
+            if (typeof valor === 'number') return valor;
+            if (typeof valor === 'string') {
+              return parseFloat(valor.replace(/\./g, '').replace(',', '.'));
+            }
+            return 0;
+          };
+
           const estoqueInsuficiente = insumosArray.some(insumo => {
-            const disponivel = Number(insumo.quantidade_insumos);
-            const necessario = Number(insumo.quantidade_necessaria);
+            const disponivel = parseNumero(insumo.quantidade_insumos);
+            const necessario = parseNumero(insumo.quantidade_necessaria);
             return !isFinite(disponivel) || !isFinite(necessario) || disponivel < necessario;
           });
 
