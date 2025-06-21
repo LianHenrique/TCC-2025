@@ -38,7 +38,7 @@ CREATE TABLE Insumos (
     nome_insumos VARCHAR(100) NOT NULL,
     descricao_insumos TEXT,
     quantidade_insumos INT UNSIGNED NOT NULL DEFAULT 0, -- Estoque atual
-    unidade_medida VARCHAR(20), -- Ex: 'kg', 'litro', 'unidade'
+    unidade_medida VARCHAR(20) NOT NULL, -- Ex: 'kg', 'litro', 'unidade'
     valor_insumos DECIMAL(10, 2) NOT NULL DEFAULT 0.00, -- Preço de custo ou referência
     data_entrada_insumos DATE, -- Última data de entrada significativa
     data_vencimento DATE,
@@ -52,6 +52,8 @@ CREATE TABLE Insumos (
     FOREIGN KEY (id_funcionario_cadastro) REFERENCES Funcionario(id_funcionario) ON DELETE SET NULL -- Permite manter o insumo se o funcionário for deletado
 );
 
+ALTER TABLE Insumos
+MODIFY unidade_medida ENUM('unidade', 'kg', 'litro', 'g', 'ml') NOT NULL;
 
 ALTER TABLE Insumos 
 MODIFY COLUMN categoria ENUM('Carnes', 'Perecíveis', 'Molhos', 'Congelados') NOT NULL;

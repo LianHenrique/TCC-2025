@@ -154,31 +154,6 @@ app.post("/cliente/insert", (req, res) => {
 })
 
 
-
-app.post("/insumos/insert", (req, res) => {
-  const {
-    nome_insumos,
-    valor_insumos,
-    categoria,
-    quantidade_insumos,
-    data_vencimento,
-    descricao_insumos,
-    imagem_url
-  } = req.body;
-
-  const sql = `INSERT INTO insumos (nome_insumos, valor_insumos, categoria, quantidade_insumos, data_vencimento, descricao_insumos, imagem_url) VALUES (?, ?, ?, ?, ?, ?, ?)`;
-
-  connection.query(sql, [nome_insumos, valor_insumos, categoria, quantidade_insumos, data_vencimento, descricao_insumos, imagem_url], (erro, data) => {
-    if (erro) {
-      console.log(erro);
-      return res.status(500).json({ error: 'Erro ao cadastrar insumo' });
-    }
-    res.status(201).json({ message: 'Insumo cadastrado' });
-  });
-});
-
-
-
 // Inserir funcionário
 app.post("/funcionarios/insert", (req, res) => {
   const { nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario, imagem_url } = req.body;
@@ -471,27 +446,83 @@ app.get('/insumos/:id_insumos', (req, res) => {
 
 // Inserir insumo
 app.post('/insumos/insert', (req, res) => {
-  const { nome_insumos, imagem_url, valor_insumos, categoria, quantidade_insumos, data_vencimento, descricao_insumos, alertar_dias_antes, alerta_estoque } = req.body;
+  console.log('Recebido no backend:', req.body);
 
-  if (
-    !nome_insumos || !imagem_url || valor_insumos === undefined || !categoria ||
-    quantidade_insumos === undefined || !data_vencimento || !descricao_insumos ||
-    alertar_dias_antes === undefined || alerta_estoque === undefined
-  ) {
-    return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+  const {
+    nome_insumos,
+    imagem_url,
+    valor_insumos,
+    categoria,
+    quantidade_insumos,
+    data_vencimento,
+    descricao_insumos,
+    alertar_dias_antes,
+    alerta_estoque,
+    unidade_medida
+  } = req.body;
+
+  const data_entrada_insumos = new Date().toISOString().split('T')[0];
+
+  const camposObrigatorios = {
+    nome_insumos,
+    imagem_url,
+    valor_insumos,
+    categoria,
+    quantidade_insumos,
+    data_vencimento,
+    descricao_insumos,
+    alertar_dias_antes,
+    alerta_estoque,
+    unidade_medida
+  };
+
+  const camposVazios = Object.entries(camposObrigatorios)
+    .filter(([_, valor]) => valor === undefined || valor === null || valor === '')
+    .map(([chave]) => chave);
+
+  if (camposVazios.length > 0) {
+    return res.status(400).json({ error: `Campos obrigatórios ausentes: ${camposVazios.join(', ')}` });
   }
 
-  const sql = `INSERT INTO insumos (nome_insumos, imagem_url, valor_insumos, categoria, quantidade_insumos, data_vencimento, descricao_insumos, alertar_dias_antes, alerta_estoque) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  const sql = `
+    INSERT INTO insumos (
+      nome_insumos,
+      descricao_insumos,
+      quantidade_insumos,
+      unidade_medida,
+      valor_insumos,
+      data_entrada_insumos,
+      data_vencimento,
+      imagem_url,
+      categoria,
+      alertar_dias_antes,
+      alerta_estoque
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
 
-  connection.query(sql, [nome_insumos, imagem_url, valor_insumos, categoria, quantidade_insumos, data_vencimento, descricao_insumos, alertar_dias_antes, alerta_estoque], (error) => {
+  const values = [
+    nome_insumos,
+    descricao_insumos,
+    quantidade_insumos,
+    unidade_medida,
+    valor_insumos,
+    data_entrada_insumos,
+    data_vencimento,
+    imagem_url,
+    categoria,
+    alertar_dias_antes,
+    alerta_estoque
+  ];
+
+  connection.query(sql, values, (error, results) => {
     if (error) {
-      console.error(error);
-      return res.status(500).json({ error: 'Erro ao cadastrar insumo' });
+      console.error('[Erro ao inserir insumo]:', error);
+      return res.status(500).json({ error: 'Erro ao cadastrar insumo no banco de dados' });
     }
-    res.status(201).json({ message: 'Insumo cadastrado com sucesso' });
+
+    res.status(201).json({ message: 'Insumo cadastrado com sucesso', id_inserido: results.insertId });
   });
 });
-
 
 
 // --- ROTAS PRODUTOS ---
@@ -867,14 +898,14 @@ app.post('/saida-venda', async (req, res) => {
           SET quantidade_insumos = quantidade_insumos - ?
           WHERE id_insumos = ?
         `;
-        connection.query(query, 
-          [insumo.quantidade_necessaria, insumo.id_insumos], 
+        connection.query(query,
+          [insumo.quantidade_necessaria, insumo.id_insumos],
           (err) => err ? reject(err) : resolve()
         );
       });
     }));
 
-    res.json({ 
+    res.json({
       success: true,
       message: 'Venda registrada com sucesso'
     });
