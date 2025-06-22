@@ -2,87 +2,111 @@ import React, { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 
 const AlertaCriticoGlobal = () => {
-  const [criticos, setCriticos] = useState([]);
-  const [indexCritico, setIndexCritico] = useState(0);
+  const [alertasPendentes, setAlertasPendentes] = useState([]);
+  const [indexAtual, setIndexAtual] = useState(0);
 
-  const getIdsJaExibidos = () => {
-    const item = sessionStorage.getItem('alertas_ja_exibidos');
-    return item ? JSON.parse(item) : [];
+  const getEstadosExibidos = () => {
+    const raw = sessionStorage.getItem('estados_alerta_exibidos');
+    return raw ? JSON.parse(raw) : {};
   };
 
-  const marcarIdsComoExibidos = novosIds => {
-    const atuais = getIdsJaExibidos();
-    const atualizados = Array.from(new Set([...atuais, ...novosIds]));
-    sessionStorage.setItem('alertas_ja_exibidos', JSON.stringify(atualizados));
+  const setEstadosExibidos = (estados) => {
+    sessionStorage.setItem('estados_alerta_exibidos', JSON.stringify(estados));
   };
 
   useEffect(() => {
-    const buscarInsumos = () => {
+    const buscarAlertas = () => {
+      const exibidos = getEstadosExibidos();
+
       fetch('http://localhost:3000/insumos/alerta')
         .then(res => res.json())
         .then(data => {
           if (!Array.isArray(data)) return;
 
-          const formatados = data.map(insumo => ({
-            id: insumo.id_insumos,
-            nome: insumo.nome_insumos,
-            quantidade: insumo.quantidade_insumos,
-            tipoAlertaEstoque: insumo.tipo_alerta_estoque,
-            tipoAlertaValidade: insumo.tipo_alerta_validade,
-            imagem: insumo.imagem_url || 'https://via.placeholder.com/150'
-          }));
+          const novosAlertas = [];
 
-          const criticos = formatados.filter(i => i.tipoAlertaEstoque === 'critico');
-          const idsJaExibidos = getIdsJaExibidos();
-          const novos = criticos.filter(i => !idsJaExibidos.includes(i.id));
+          data.forEach(insumo => {
+            const { id_insumos: id, nome_insumos: nome, quantidade_insumos: quantidade, tipo_alerta_estoque: tipo, imagem_url } = insumo;
 
-          if (novos.length > 0) {
-            setCriticos(novos);
-            setIndexCritico(0);
-            marcarIdsComoExibidos(novos.map(i => i.id));
+            if ((tipo === 'critico' || tipo === 'antecipado') && exibidos[id] !== tipo) {
+              novosAlertas.push({
+                id,
+                nome,
+                quantidade,
+                tipo,
+                imagem: imagem_url?.trim() ? imagem_url : 'https://via.placeholder.com/150'
+              });
+
+              exibidos[id] = tipo;
+            }
+          });
+
+          if (novosAlertas.length > 0) {
+            setAlertasPendentes(novosAlertas);
+            setIndexAtual(0);
+            setEstadosExibidos(exibidos);
           }
         })
-        .catch(err => console.error('Erro ao verificar alertas críticos:', err));
+        .catch(err => console.error('Erro ao buscar alertas:', err));
     };
 
-    buscarInsumos();
-    const interval = setInterval(buscarInsumos, 10000);
+    buscarAlertas();
+    const interval = setInterval(buscarAlertas, 4000);
     return () => clearInterval(interval);
   }, []);
 
-  const alertaCriticoVisivel = criticos[indexCritico] || null;
+  const alertaAtual = alertasPendentes[indexAtual] || null;
 
   const handleNext = () => {
-    if (indexCritico + 1 < criticos.length) {
-      setIndexCritico(indexCritico + 1);
+    if (indexAtual + 1 < alertasPendentes.length) {
+      setIndexAtual(indexAtual + 1);
     } else {
-      setCriticos([]);
+      setAlertasPendentes([]);
     }
   };
 
+  const getStyleCritico = tipo =>
+    tipo === 'critico'
+      ? {
+          border: '3px solid red',
+          backgroundColor: '#fff0f0',
+          color: 'red',
+          fontWeight: 'bold'
+        }
+      : {};
+
   return (
-    <Modal show={!!alertaCriticoVisivel} centered backdrop="static" keyboard={false}>
-      <Modal.Header>
-        <Modal.Title>⚠️ Alerta Crítico de Estoque</Modal.Title>
+    <Modal show={!!alertaAtual} centered backdrop="static" keyboard={false}>
+      <Modal.Header style={getStyleCritico(alertaAtual?.tipo)}>
+        <Modal.Title>
+          {alertaAtual?.tipo === 'critico'
+            ? '🚨 ALERTA CRÍTICO DE ESTOQUE'
+            : '⚠️ Atenção: Estoque Baixo'}
+        </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        {alertaCriticoVisivel && (
+      <Modal.Body style={getStyleCritico(alertaAtual?.tipo)}>
+        {alertaAtual && (
           <div className="text-center">
             <img
-              src={alertaCriticoVisivel.imagem}
-              alt={alertaCriticoVisivel.nome}
+              src={alertaAtual.imagem}
+              alt={alertaAtual.nome}
               style={{ maxWidth: '150px', marginBottom: '20px' }}
             />
-            <h4>{alertaCriticoVisivel.nome}</h4>
-            <p>
-              Estoque atual: <strong>{alertaCriticoVisivel.quantidade}</strong>
+            <h4>{alertaAtual.nome}</h4>
+            <p>Estoque atual: <strong>{alertaAtual.quantidade}</strong></p>
+            <p style={{ fontSize: '1.1rem' }}>
+              {alertaAtual.tipo === 'critico'
+                ? '🚨 REPOSIÇÃO URGENTE NECESSÁRIA!'
+                : 'Estoque abaixo do ideal.'}
             </p>
-            <p style={{ color: 'red', fontWeight: 'bold' }}>Reposição urgente necessária!</p>
           </div>
         )}
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="danger" onClick={handleNext}>
+      <Modal.Footer style={getStyleCritico(alertaAtual?.tipo)}>
+        <Button
+          variant={alertaAtual?.tipo === 'critico' ? 'danger' : 'warning'}
+          onClick={handleNext}
+        >
           OK
         </Button>
       </Modal.Footer>

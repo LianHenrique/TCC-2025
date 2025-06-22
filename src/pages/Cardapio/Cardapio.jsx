@@ -108,6 +108,7 @@ const Cardapio = () => {
     setCardapioFiltrado(filtrado);
   }, [cardapio, filtroSelecionado, textoBusca]);
 
+
   const handleDelete = (id) => {
     if (window.confirm('Tem certeza que deseja excluir este produto?')) {
       fetch(`http://localhost:3000/cardapio/${id}`, { method: 'DELETE' })
@@ -119,21 +120,38 @@ const Cardapio = () => {
     }
   };
 
-  const handlePedir = (id_cardapio) => {
-    fetch('http://localhost:3000/saida-venda', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id_cardapio })
-    })
-      .then(async res => {
-        const data = await res.json();
-        if (!res.ok) throw new Error(data?.error || 'Erro desconhecido');
-        alert(data.message || 'Pedido registrado com sucesso!');
-      })
-      .catch(error => {
-        console.error('Erro ao registrar pedido:', error.message);
-        alert(`Não foi possível concluir o pedido:\n\n${error.message}`);
+  const handlePedir = async (idItemCardapio, nomeProduto) => {
+    try {
+      const response = await fetch('http://localhost:3000/saida-venda', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_cardapio: idItemCardapio }),
       });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (data?.error?.includes('Estoque insuficiente')) {
+          alert(`Não foi possível concluir o pedido:\n\n${data.error}`);
+
+          setCardapio(prev =>
+            prev.map(prod =>
+              prod.nome === nomeProduto
+                ? { ...prod, estoqueInsuficiente: true }
+                : prod
+            )
+          );
+        } else {
+          alert('Erro ao realizar o pedido.');
+        }
+        return;
+      }
+
+      alert('Pedido realizado com sucesso!');
+    } catch (err) {
+      console.error(err);
+      alert('Erro de conexão com o servidor.');
+    }
   };
 
   return (
@@ -154,60 +172,23 @@ const Cardapio = () => {
           onFilterChange={setFiltroSelecionado}
           onSearchChange={setTextoBusca}
         />
-
         <CardGeral
+          filtro="Produtos"
           card={cardapioFiltrado}
-          onCardClick={id => navigate(`/Visualizar_Cardapio/${id}`)}
           showButtons={false}
-          customButton={item =>
-            item.estoqueInsuficiente ? (
-              <div
-                className="d-flex flex-column align-items-center justify-content-center"
-                style={{
-                  marginTop: '20px',
+          customButton={(item) =>
+            !item.estoqueInsuficiente && (
+              <Button
+                variant="success"
+                className="rounded-pill shadow-sm text-white px-4 py-2 mt-2"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handlePedir(item.id, item.nome);
                 }}
               >
-                <div
-                  style={{
-                    backgroundColor: '#e74c3c',
-                    color: '#fff',
-                    fontWeight: 'bold',
-                    padding: '10px 20px',
-                    borderRadius: '30px',
-                    marginBottom: '10px',
-                    fontSize: '1rem',
-                    boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.2)',
-                  }}
-                >
-                  Estoque insuficiente
-                </div>
-                <Button
-                  variant="outline-danger"
-                  className="rounded-pill px-4 py-2"
-                  style={{ fontWeight: 'bold' }}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    navigate('/estoque');
-                  }}
-                >
-                  Ver Estoque
-                </Button>
-              </div>
-            ) : (
-              <div className="d-flex justify-content-center mt-3">
-                <Button
-                  variant="success"
-                  className="rounded-pill shadow-sm text-white px-4 py-2"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handlePedir(item.id);
-                  }}
-                >
-                  Pedir
-                </Button>
-              </div>
+                Pedir
+              </Button>
             )
           }
         />
