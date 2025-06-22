@@ -164,6 +164,7 @@ MODIFY quantidade_necessaria DECIMAL(10, 1) NOT NULL;
 ALTER TABLE insumos 
 MODIFY quantidade_insumos DECIMAL(10,3);
 
+ALTER TABLE Cliente ADD palavra_chave VARCHAR(255) AFTER senha_cliente;
 
 -- Adicionando Índices para Otimização (Exemplos)
 CREATE INDEX idx_insumos_nome ON Insumos(nome_insumos);

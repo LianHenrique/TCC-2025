@@ -809,24 +809,34 @@ app.put('/AtualizarCardapio/:id', (req, res) => {
 
 // --- ROTA CLIENTE ---
 app.post('/cliente/insert', (req, res) => {
-  const { nome, email, senha } = req.body;
+  const { nome, email, senha, palavra_chave } = req.body;
 
-  if (!nome || !email || !senha) {
-    return res.status(400).json({ error: 'Nome, email e senha são obrigatórios' });
+  if (!nome || !email || !senha || !palavra_chave) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
   }
 
-  const sql = `INSERT INTO cliente (nome_cliente, email_cliente, senha_cliente) VALUES (?, ?, ?)`;
-
-  connection.query(sql, [nome, email, senha], (error) => {
-    if (error) {
-      console.error(error);
-      return res.status(500).json({ error: 'Erro ao cadastrar cliente' });
+  const checkSql = `SELECT * FROM cliente WHERE palavra_chave = ?`;
+  connection.query(checkSql, [palavra_chave], (checkError, results) => {
+    if (checkError) {
+      console.error(checkError);
+      return res.status(500).json({ error: 'Erro ao verificar palavra-chave.' });
     }
-    res.status(201).json({ message: 'Cliente cadastrado com sucesso' });
+
+    if (results.length > 0) {
+      return res.status(409).json({ error: 'Palavra-chave já está em uso.' });
+    }
+
+    const insertSql = `INSERT INTO cliente (nome_cliente, email_cliente, senha_cliente, palavra_chave) VALUES (?, ?, ?, ?)`;
+    connection.query(insertSql, [nome, email, senha, palavra_chave], (insertError) => {
+      if (insertError) {
+        console.error(insertError);
+        return res.status(500).json({ error: 'Erro ao cadastrar cliente.' });
+      }
+
+      res.status(201).json({ message: 'Cliente cadastrado com sucesso.' });
+    });
   });
 });
-
-
 
 
 // --- ROTA ESTOQUE ---
@@ -1218,6 +1228,119 @@ app.get('/unidades-medida', (req, res) => {
       .map(val => val.trim().replace(/(^'|'$)/g, ''));
 
     return res.json(values);
+  });
+});
+
+
+// Recuperar senha
+app.post('/recuperar-senha', (req, res) => {
+  const { palavraChave } = req.body;
+
+  if (!palavraChave) {
+    return res.status(400).json({ error: 'Palavra-chave obrigatória' });
+  }
+
+  const sql = 'SELECT * FROM cliente WHERE palavra_chave = ?';
+
+  connection.query(sql, [palavraChave], (error, results) => {
+    if (error) {
+      console.error('Erro ao recuperar senha:', error);
+      return res.status(500).json({ error: 'Erro no servidor' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Palavra-chave incorreta ou não encontrada' });
+    }
+
+    // Aqui você pode retornar a senha (ou redirecionar o usuário para um reset)
+    const senha = results[0].senha_cliente;
+    return res.status(200).json({ success: true, senha });
+  });
+});
+
+
+app.post('/checar-email', (req, res) => {
+  const { email } = req.body;
+
+  if (!email) {
+    return res.status(400).json({ error: 'Email obrigatório' });
+  }
+
+  const sql = 'SELECT * FROM cliente WHERE email_cliente = ?';
+
+  connection.query(sql, [email], (error, results) => {
+    if (error) {
+      console.error('Erro ao verificar email:', error);
+      return res.status(500).json({ error: 'Erro no servidor' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Email não encontrado' });
+    }
+
+    return res.status(200).json({ success: true });
+  });
+});
+
+app.post('/recuperar-senha', (req, res) => {
+  const { email, palavraChave } = req.body;
+
+  if (!email || !palavraChave) {
+    return res.status(400).json({ error: 'Email e palavra-chave obrigatórios' });
+  }
+
+  const sql = 'SELECT senha_cliente FROM cliente WHERE email_cliente = ? AND palavra_chave = ?';
+
+  connection.query(sql, [email, palavraChave], (error, results) => {
+    if (error) {
+      console.error('Erro ao recuperar senha:', error);
+      return res.status(500).json({ error: 'Erro no servidor' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Combinação incorreta de email e palavra-chave' });
+    }
+
+    const senha = results[0].senha_cliente;
+    return res.status(200).json({ success: true, senha });
+  });
+});
+
+app.put('/alterar-palavra-chave', (req, res) => {
+  const { email, novaPalavraChave } = req.body;
+
+  if (!email || !novaPalavraChave) {
+    return res.status(400).json({ error: 'Email e nova palavra-chave obrigatórios' });
+  }
+ 
+  const selectSql = 'SELECT palavra_chave FROM cliente WHERE email_cliente = ?';
+
+  connection.query(selectSql, [email], (selectError, results) => {
+    if (selectError) {
+      console.error('Erro ao buscar palavra-chave atual:', selectError);
+      return res.status(500).json({ error: 'Erro no servidor' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ error: 'Email não encontrado' });
+    }
+
+    const atual = results[0].palavra_chave;
+
+    if (novaPalavraChave === atual) {
+      return res.status(400).json({ error: 'A nova palavra-chave deve ser diferente da anterior.' });
+    }
+ 
+    const updateSql = 'UPDATE cliente SET palavra_chave = ? WHERE email_cliente = ?';
+
+    connection.query(updateSql, [novaPalavraChave, email], (updateError) => {
+      if (updateError) {
+        console.error('Erro ao alterar palavra-chave:', updateError);
+        return res.status(500).json({ error: 'Erro no servidor' });
+      }
+
+      return res.status(200).json({ success: true, message: 'Palavra-chave atualizada com sucesso' });
+    });
   });
 });
 

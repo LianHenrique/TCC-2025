@@ -109,20 +109,11 @@ const RelatorioInsumos = () => {
             Relatório de Insumos - {periodo === 'diario' ? 'Diário' : 'Semanal'}
           </h1>
           <div>
-            <button className="btn btn-outline-secondary me-2" onClick={handleDownloadPDF}>
+            <button
+              className="btn btn-primary shadow-sm rounded-pill px-4 py-2 fs-6"
+              onClick={handleDownloadPDF}
+            >
               Baixar PDF
-            </button>
-            <button
-              className={`btn ${periodo === 'diario' ? 'btn-primary' : 'btn-outline-primary'} me-2`}
-              onClick={() => setPeriodo('diario')}
-            >
-              Diário
-            </button>
-            <button
-              className={`btn ${periodo === 'semanal' ? 'btn-primary' : 'btn-outline-primary'}`}
-              onClick={() => setPeriodo('semanal')}
-            >
-              Semanal
             </button>
           </div>
         </div>
@@ -176,8 +167,8 @@ const RelatorioInsumos = () => {
                           <td>
                             <Badge bg={
                               i.categoria === 'Carnes' ? 'danger' :
-                              i.categoria === 'Perecíveis' ? 'dark' :
-                              i.categoria === 'Molhos' ? 'success' : 'primary'
+                                i.categoria === 'Perecíveis' ? 'dark' :
+                                  i.categoria === 'Molhos' ? 'success' : 'primary'
                             }>
                               {i.categoria}
                             </Badge>
