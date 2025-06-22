@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
+import html2pdf from 'html2pdf.js';
 import NavBar from '../../components/NavBar/NavBar';
 import { Container, Table, Badge } from 'react-bootstrap';
 
@@ -8,14 +9,15 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 
 const RelatorioInsumos = () => {
   const [relatorioData, setRelatorioData] = useState(null);
-  const [periodo, setPeriodo] = useState('diario'); // 'diario' ou 'semanal'
+  const [periodo, setPeriodo] = useState('diario');
+  const relatorioRef = useRef();
 
   const fetchData = async () => {
     try {
-      const endpoint = periodo === 'diario' 
-        ? 'http://localhost:3000/relatorios/insumos-diario' 
+      const endpoint = periodo === 'diario'
+        ? 'http://localhost:3000/relatorios/insumos-diario'
         : 'http://localhost:3000/relatorios/insumos-semanal';
-      
+
       const response = await fetch(endpoint);
       const data = await response.json();
       setRelatorioData(data);
@@ -28,40 +30,39 @@ const RelatorioInsumos = () => {
     fetchData();
   }, [periodo]);
 
-  // Prepara os dados para o gráfico de pizza
+  const handleDownloadPDF = () => {
+    const element = relatorioRef.current;
+    const opt = {
+      margin: 0.5,
+      filename: `RelatorioInsumos_${periodo}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 1.5 },
+      jsPDF: { unit: 'in', format: 'a4', orientation: 'landscape' }
+    };
+    html2pdf().set(opt).from(element).save();
+  };
+
   const preparePieData = () => {
-    if (!relatorioData || !relatorioData.dias || relatorioData.dias.length === 0) {
-      return {
-        labels: [],
-        datasets: []
-      };
+    if (!relatorioData || !relatorioData.dias?.length) {
+      return { labels: [], datasets: [] };
     }
 
-    // Para o gráfico de pizza, vamos mostrar os 5 insumos mais utilizados no período
     const todosInsumos = [];
-    
-    // Agregamos todos os insumos de todos os dias
+
     relatorioData.dias.forEach(dia => {
-      const insumosDoDia = relatorioData.dados[dia] || [];
-      insumosDoDia.forEach(insumo => {
+      (relatorioData.dados[dia] || []).forEach(insumo => {
         const existente = todosInsumos.find(i => i.nome === insumo.nome);
-        if (existente) {
-          existente.quantidade += insumo.quantidade;
-        } else {
-          todosInsumos.push({...insumo});
-        }
+        if (existente) existente.quantidade += insumo.quantidade;
+        else todosInsumos.push({ ...insumo });
       });
     });
 
-    // Ordenamos por quantidade e pegamos os top 5
-    const top5 = todosInsumos
-      .sort((a, b) => b.quantidade - a.quantidade)
-      .slice(0, 5);
+    const top5 = todosInsumos.sort((a, b) => b.quantidade - a.quantidade).slice(0, 5);
 
     return {
-      labels: top5.map(insumo => insumo.nome),
+      labels: top5.map(i => i.nome),
       datasets: [{
-        data: top5.map(insumo => insumo.quantidade),
+        data: top5.map(i => i.quantidade),
         backgroundColor: [
           'rgba(255, 99, 132, 0.7)',
           'rgba(54, 162, 235, 0.7)',
@@ -76,7 +77,7 @@ const RelatorioInsumos = () => {
           'rgba(75, 192, 192, 1)',
           'rgba(153, 102, 255, 1)'
         ],
-        borderWidth: 1,
+        borderWidth: 1
       }]
     };
   };
@@ -86,32 +87,10 @@ const RelatorioInsumos = () => {
   const options = {
     responsive: true,
     plugins: {
-      legend: {
-        position: 'top',
-      },
+      legend: { position: 'top' },
       title: {
         display: true,
-        text: `Top 5 Insumos com Mais Saídas - ${periodo === 'diario' ? 'Diário' : 'Semanal'}`,
-      },
-      tooltip: {
-        callbacks: {
-          afterLabel: (context) => {
-            // Encontramos o insumo correspondente no conjunto completo de dados
-            const nomeInsumo = pieData.labels[context.dataIndex];
-            let insumoInfo = null;
-            
-            // Procuramos o insumo em todos os dias
-            for (const dia of relatorioData?.dias || []) {
-              const encontrado = relatorioData.dados[dia]?.find(i => i.nome === nomeInsumo);
-              if (encontrado) {
-                insumoInfo = encontrado;
-                break;
-              }
-            }
-            
-            return insumoInfo ? `Categoria: ${insumoInfo.categoria}\nUnidade: ${insumoInfo.unidade}` : '';
-          }
-        }
+        text: `Top 5 Insumos com Mais Saídas - ${periodo === 'diario' ? 'Diário' : 'Semanal'}`
       }
     },
     maintainAspectRatio: false
@@ -121,24 +100,25 @@ const RelatorioInsumos = () => {
     <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <NavBar />
 
-      <Container style={{
-        flex: 1,
-        paddingTop: '15vh',  
-        paddingBottom: '20px',
-        marginTop: '0'        
-      }}>
+      <Container
+        ref={relatorioRef}
+        style={{ flex: 1, paddingTop: '15vh', paddingBottom: '20px' }}
+      >
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h1 style={{ fontSize: '2rem' }}>
             Relatório de Insumos - {periodo === 'diario' ? 'Diário' : 'Semanal'}
           </h1>
           <div>
-            <button 
+            <button className="btn btn-outline-secondary me-2" onClick={handleDownloadPDF}>
+              Baixar PDF
+            </button>
+            <button
               className={`btn ${periodo === 'diario' ? 'btn-primary' : 'btn-outline-primary'} me-2`}
               onClick={() => setPeriodo('diario')}
             >
               Diário
             </button>
-            <button 
+            <button
               className={`btn ${periodo === 'semanal' ? 'btn-primary' : 'btn-outline-primary'}`}
               onClick={() => setPeriodo('semanal')}
             >
@@ -153,14 +133,12 @@ const RelatorioInsumos = () => {
               <div className="card-header bg-white">
                 <h5 style={{ fontWeight: '600' }}>Top 5 Insumos com Mais Saídas</h5>
               </div>
-              <div className="card-body">
-                <div style={{ height: '400px' }}>
+              <div className="card-body text-center">
+                <div style={{ height: '400px', maxWidth: '600px', margin: '0 auto' }}>
                   {pieData.labels.length > 0 ? (
                     <Pie data={pieData} options={options} />
                   ) : (
-                    <div className="d-flex justify-content-center align-items-center h-100">
-                      <p>Nenhum dado disponível para exibir</p>
-                    </div>
+                    <p className="mt-5">Nenhum dado disponível para exibir</p>
                   )}
                 </div>
               </div>
@@ -177,7 +155,7 @@ const RelatorioInsumos = () => {
             {relatorioData?.dias?.length ? (
               relatorioData.dias.map(dia => (
                 <div key={dia} className="mb-4">
-                  <h6 className="mb-3" style={{ fontWeight: '500', color: '#333' }}>
+                  <h6 className="mb-3" style={{ fontWeight: '500' }}>
                     {periodo === 'diario' ? new Date(dia).toLocaleDateString('pt-BR') : `Semana ${dia}`}
                   </h6>
                   <Table bordered hover>
@@ -191,21 +169,21 @@ const RelatorioInsumos = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {relatorioData.dados[dia]?.map((insumo, index) => (
-                        <tr key={index}>
-                          <td>{index + 1}</td>
-                          <td>{insumo.nome}</td>
+                      {relatorioData.dados[dia]?.map((i, idx) => (
+                        <tr key={idx}>
+                          <td>{idx + 1}</td>
+                          <td>{i.nome}</td>
                           <td>
                             <Badge bg={
-                              insumo.categoria === 'Carnes' ? 'danger' : 
-                              insumo.categoria === 'Perecíveis' ? 'dark' :
-                              insumo.categoria === 'Molhos' ? 'success' : 'primary'
+                              i.categoria === 'Carnes' ? 'danger' :
+                              i.categoria === 'Perecíveis' ? 'dark' :
+                              i.categoria === 'Molhos' ? 'success' : 'primary'
                             }>
-                              {insumo.categoria}
+                              {i.categoria}
                             </Badge>
                           </td>
-                          <td>{insumo.quantidade}</td>
-                          <td>{insumo.unidade}</td>
+                          <td>{i.quantidade}</td>
+                          <td>{i.unidade}</td>
                         </tr>
                       ))}
                     </tbody>

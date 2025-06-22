@@ -1,19 +1,17 @@
 import React, { useState } from 'react';
 import { Form, Button, Dropdown } from 'react-bootstrap';
 
-const Pesquisa = ({ nomeDrop, lista, onFilterChange, onSearchChange, navega, TxtButton }) => {
-  const [filtroSelecionado, setFiltroSelecionado] = useState('Todos');
-  const [textoBusca, setTextoBusca] = useState('');
+const Pesquisa = ({ nomeDrop, lista = [], onFilterChange, onSearchChange, navega, TxtButton }) => {
+  const [filtroSelecionado, setFiltroSelecionado] = useState('');
 
   const handleSelect = (value) => {
     setFiltroSelecionado(value);
-    if(onFilterChange) onFilterChange(value);
+    if (onFilterChange) onFilterChange(value); // '' representa "Todos"
   };
 
   const handleInputChange = (e) => {
     const texto = e.target.value;
-    setTextoBusca(texto);
-    if(onSearchChange) onSearchChange(texto);
+    if (onSearchChange) onSearchChange(texto);
   };
 
   return (
@@ -21,18 +19,17 @@ const Pesquisa = ({ nomeDrop, lista, onFilterChange, onSearchChange, navega, Txt
       <Form.Control
         type="text"
         placeholder="Pesquisar..."
-        value={textoBusca}
         onChange={handleInputChange}
         style={{ maxWidth: '300px', marginRight: '10px' }}
       />
 
-      {lista && (
+      {lista.length > 0 && (
         <Dropdown onSelect={handleSelect} className="me-3">
           <Dropdown.Toggle variant="secondary" id="dropdown-filtro">
-            {filtroSelecionado === 'Todos' ? nomeDrop : filtroSelecionado}
+            {filtroSelecionado ? filtroSelecionado : nomeDrop}
           </Dropdown.Toggle>
           <Dropdown.Menu>
-            <Dropdown.Item eventKey="Todos">Todos</Dropdown.Item>
+            <Dropdown.Item eventKey="">Todos</Dropdown.Item>
             {lista.map(({ texto, value }) => (
               <Dropdown.Item key={value} eventKey={value}>
                 {texto}
