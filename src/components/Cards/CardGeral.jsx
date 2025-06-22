@@ -44,14 +44,14 @@ const CardGeral = ({
               }}
             >
               <Card
-              className={`shadow rounded d-flex ${layout === 'mobile' ? 'flex-column' : 'flex-row'}`}
-              style={{
-                minHeight: '200px',
-                height: '100%', 
-                cursor: onCardClick ? 'pointer' : 'default',
-              }}
-              onClick={() => onCardClick?.(item.id)}  
-            >
+                className={`shadow rounded d-flex ${layout === 'mobile' ? 'flex-column' : 'flex-row'}`}
+                style={{
+                  minHeight: '200px',
+                  height: '100%',
+                  cursor: onCardClick ? 'pointer' : 'default',
+                }}
+                onClick={() => onCardClick?.(item.id)}
+              >
                 <Card.Img
                   className="rounded"
                   style={{
@@ -97,7 +97,22 @@ const CardGeral = ({
                           }}
                           title={desc.tooltip || ''}
                         >
-                          <span>{desc.texto || ''}</span>
+                          <span>
+                            {desc.texto?.toLowerCase().includes('quantidade')
+                              ? (() => {
+                                const match = desc.texto.match(/quantidade:\s*([\d.,]+)\s*(\w+)?/i);
+                                const valor = match?.[1] ? parseFloat(match[1].replace(',', '.')) : null;
+                                const unidade = match?.[2] || ''; // Se existir, mostra
+
+                                return valor !== null
+                                  ? `Quantidade: ${valor.toLocaleString('pt-BR', {
+                                    minimumFractionDigits: valor % 1 === 0 ? 0 : 2,
+                                    maximumFractionDigits: 3,
+                                  })} ${unidade}`
+                                  : desc.texto;
+                              })()
+                              : desc.texto}
+                          </span>
                           {desc.badge && (
                             <span
                               style={{

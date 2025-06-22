@@ -897,21 +897,10 @@ app.post('/saida-venda', async (req, res) => {
   try {
     const insumos = await getInsumosDoItem(id_cardapio);
 
-    // 1. Verificação de estoque
-    for (const insumo of insumos) {
-      const quantidadeConvertida = convertToStockUnit(
-        insumo.quantidade_necessaria,
-        insumo.unidade_receita,
-        insumo.unidade_estoque
-      );
-      const estoqueConvertido = parseFloat(quantidadeConvertida.toFixed(3));
+    // 1. Verificação de estoque segura (em memória, antes de atualizar o banco)
+    let erroEstoque = null;
+    const insumosValidados = [];
 
-      if (insumo.estoque_atual < estoqueConvertido) {
-        return res.status(400).json({ error: `Estoque insuficiente de ${insumo.nome_insumos}` });
-      }
-    }
-
-    // 2. Dedução de estoque + registro
     for (const insumo of insumos) {
       const quantidadeConvertida = convertToStockUnit(
         insumo.quantidade_necessaria,
@@ -920,24 +909,37 @@ app.post('/saida-venda', async (req, res) => {
       );
       const quantidadeParaDeduzir = parseFloat(quantidadeConvertida.toFixed(3));
 
-      console.log('🔧 Atualizando estoque do insumo:', insumo.id_insumos, 'Deduzindo:', quantidadeParaDeduzir);
+      if (insumo.estoque_atual < quantidadeParaDeduzir) {
+        erroEstoque = `Estoque insuficiente de ${insumo.nome_insumos}`;
+        break;
+      }
 
-      // Atualiza o estoque
+      // Simula a dedução para garantir que não ultrapasse
+      insumo.estoque_atual -= quantidadeParaDeduzir;
+      insumosValidados.push({ ...insumo, quantidadeParaDeduzir });
+    }
+
+    if (erroEstoque) {
+      return res.status(400).json({ error: erroEstoque });
+    }
+
+    // 2. Deduz do banco e registra saída
+    for (const insumo of insumosValidados) {
+      console.log('🔧 Atualizando estoque do insumo:', insumo.id_insumos, 'Deduzindo:', insumo.quantidadeParaDeduzir);
+
       await new Promise((resolve, reject) => {
         connection.query(
           `UPDATE Insumos SET quantidade_insumos = quantidade_insumos - ? WHERE id_insumos = ?`,
-          [quantidadeParaDeduzir, insumo.id_insumos],
+          [insumo.quantidadeParaDeduzir, insumo.id_insumos],
           (err, result) => {
             if (err) return reject(err);
-            if (result.changedRows === 0) {
-              console.warn(`⚠️ Nenhuma alteração feita para o insumo ID ${insumo.id_insumos}`);
-            }
+            console.log('✅ Resultado do UPDATE:', result);
             resolve();
           }
         );
       });
 
-      // Registra a saída
+      // Registro da saída
       await new Promise((resolve, reject) => {
         const data_saida = new Date().toISOString().split('T')[0];
         const motivo_saida = 'Venda';
@@ -945,7 +947,7 @@ app.post('/saida-venda', async (req, res) => {
         connection.query(
           `INSERT INTO registrosaidaproduto (id_insumos_registroSaidaProduto, quantidade_saida, data_saida, motivo_saida)
            VALUES (?, ?, ?, ?)`,
-          [insumo.id_insumos, quantidadeParaDeduzir, data_saida, motivo_saida],
+          [insumo.id_insumos, insumo.quantidadeParaDeduzir, data_saida, motivo_saida],
           (err, result) => {
             if (err) return reject(err);
             console.log('📝 Registro de saída inserido:', result.insertId);
