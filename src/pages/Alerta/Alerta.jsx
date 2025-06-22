@@ -22,6 +22,7 @@ const Alerta = () => {
               quantidade: insumo.quantidade_insumos,
               tipoEstoque: insumo.tipo_alerta_estoque,
               tipoValidade: insumo.tipo_alerta_validade,
+              unidade: insumo.unidade_medida || '',
               imagem: insumo.imagem_url || 'https://via.placeholder.com/150'
             }))
             .filter(insumo => insumo.tipoEstoque);
@@ -96,7 +97,9 @@ const Alerta = () => {
                   <div style={{ flexGrow: 1 }}>
                     <div style={{ display: 'flex', gap: '20px', fontSize: '20px', flexWrap: 'wrap' }}>
                       <p>Nome: {insumo.nome}</p>
-                      <p>Quantidade: {insumo.quantidade}</p>
+                      <p>
+                        Quantidade: {Number(insumo.quantidade).toLocaleString('pt-BR')} {insumo.unidade}
+                      </p>
                     </div>
 
                     <Button onClick={() => handleNavigate(insumo.id)} variant="danger">

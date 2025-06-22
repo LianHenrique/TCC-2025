@@ -378,11 +378,12 @@ WHERE id_insumos = ?
 // Rota atualizada: alerta antecipado (<= alerta_estoque + 10) e crítico (<= alerta_estoque)
 app.get('/insumos/alerta', (req, res) => {
   const sql = `
-   SELECT 
+  SELECT 
   id_insumos,
   nome_insumos,
   imagem_url,
   quantidade_insumos,
+  unidade_medida,  -- <-- adicionado aqui
   valor_insumos,
   categoria,
   data_vencimento,
@@ -402,7 +403,6 @@ FROM insumos
 WHERE 
   quantidade_insumos <= alerta_estoque + 10
   OR (data_vencimento IS NOT NULL AND DATEDIFF(data_vencimento, CURDATE()) <= alertar_dias_antes)
-
   `;
 
   connection.query(sql, (err, results) => {
