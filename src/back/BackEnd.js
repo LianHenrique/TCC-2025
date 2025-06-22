@@ -137,23 +137,6 @@ app.get('/produtos/notificacao', (req, res) => {
 // });
 
 
-
-// cadastro adm
-app.post("/cliente/insert", (req, res) => {
-  const email = req.body.email
-  const senha = req.body.senha
-
-  const sql = `INSERT INTO cliente (email_cliente, senha_cliente) VALUES (?, ?)`;
-  connection.query(sql, [email, senha], (erro, data) => {
-    if (erro) {
-      console.log(erro);
-      return res.status(500).json({ error: 'Erro ao cadastrar funcionário' });
-    }
-    res.status(201).json({ message: 'Cliente cadastrado' });
-  });
-})
-
-
 // Inserir funcionário
 app.post("/funcionarios/insert", (req, res) => {
   const { nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario, imagem_url } = req.body;
@@ -346,7 +329,7 @@ WHERE id_insumos = ?
     data_vencimento,
     alerta_estoque,
     alerta_vencimento,
-    unidade_medida,  
+    unidade_medida,
     id_insumos
   ];
 
@@ -862,96 +845,106 @@ app.get('/estoque', (req, res) => {
 });
 
 // Rota para saída de venda
-app.post('/saida-venda', async (req, res) => {
-  try {
-    const { id_cardapio } = req.body;
+// Função auxiliar para buscar os insumos do item do cardápio
+function getInsumosDoItem(id_cardapio) {
+  return new Promise((resolve, reject) => {
+    const sql = `
+      SELECT 
+        i.id_insumos,
+        i.nome_insumos,
+        i.quantidade_insumos AS estoque_atual,
+        i.unidade_medida AS unidade_estoque,
+        ici.quantidade_necessaria,
+        ici.unidade_medida_receita AS unidade_receita
+      FROM itemcardapioinsumo ici
+      JOIN insumos i ON ici.id_insumo = i.id_insumos
+      WHERE ici.id_item_cardapio = ?
+    `;
 
-    // 1. Verifica estoque primeiro
-    const insumosNecessarios = await new Promise((resolve, reject) => {
-      const query = `
-        SELECT 
-          i.id_insumos,
-          i.nome_insumos,
-          i.quantidade_insumos AS estoque_atual,
-          ici.quantidade_necessaria,
-          i.unidade_medida
-        FROM ItemCardapioInsumo ici
-        JOIN Insumos i ON ici.id_insumo = i.id_insumos
-        WHERE ici.id_item_cardapio = ?
-      `;
-      connection.query(query, [id_cardapio], (err, results) => {
-        if (err) return reject(err);
-        resolve(results);
-      });
+    connection.query(sql, [id_cardapio], (err, results) => {
+      if (err) return reject(err);
+      resolve(results);
     });
+  });
+}
 
-    // 2. Verifica se há estoque suficiente
-    const insumosFaltantes = insumosNecessarios.filter(
-      insumo => insumo.estoque_atual < insumo.quantidade_necessaria
-    );
+ // Conversão de unidades para checagem e dedução de estoque
+function convertToStockUnit(qtdReceita, unidadeReceita, unidadeEstoque) {
+  const from = unidadeReceita.toLowerCase();
+  const to = unidadeEstoque.toLowerCase();
 
-    if (insumosFaltantes.length > 0) {
-      return res.status(400).json({
-        success: false,
-        error: 'Estoque insuficiente',
-        faltando: insumosFaltantes.map(i => ({
-          id: i.id_insumos,
-          nome: i.nome_insumos,
-          estoque: i.estoque_atual,
-          necessario: i.quantidade_necessaria,
-          unidade: i.unidade_medida
-        }))
+  if (from === to) return qtdReceita;
+
+  const conversion = {
+    g: { kg: (v) => v / 1000 },
+    kg: { g: (v) => v * 1000 },
+    ml: { l: (v) => v / 1000 },
+    l: { ml: (v) => v * 1000 },
+  };
+
+  if (conversion[from] && conversion[from][to]) {
+    return conversion[from][to](qtdReceita);
+  }
+
+  console.warn(`❗ Conversão não suportada: ${from} -> ${to}. Assumindo 1:1.`);
+  return qtdReceita;
+}
+
+// Aqui começa a rota 
+app.post('/saida-venda', async (req, res) => {
+  const { id_cardapio } = req.body;
+
+  try {
+    const insumos = await getInsumosDoItem(id_cardapio);
+
+    for (const insumo of insumos) {
+      const estoqueConvertido = convertToStockUnit(insumo.quantidade_necessaria, insumo.unidade_receita, insumo.unidade_estoque);
+      console.log(`Estoque atual: ${insumo.estoque_atual} ${insumo.unidade_estoque} | Necessário: ${estoqueConvertido}`);
+
+      if (insumo.estoque_atual < estoqueConvertido) {
+        return res.status(400).json({ error: `Estoque insuficiente de ${insumo.nome_insumos}` });
+      }
+    }
+    for (const insumo of insumos) {
+      const quantidadeParaDeduzir = convertToStockUnit(insumo.quantidade_necessaria, insumo.unidade_receita, insumo.unidade_estoque);
+
+      console.log('Tentando atualizar estoque de insumo:', insumo.id_insumos, 'Deduzindo:', quantidadeParaDeduzir);
+
+      await new Promise((resolve, reject) => {
+        connection.query(
+          `UPDATE Insumos SET quantidade_insumos = quantidade_insumos - ? WHERE id_insumos = ?`,
+          [quantidadeParaDeduzir, insumo.id_insumos],
+          (err, result) => {
+            if (err) return reject(err);
+            console.log('Resultado do UPDATE:', result);
+            resolve();
+          }
+        );
+      });
+
+      // Registrar saída na tabela de histórico
+      await new Promise((resolve, reject) => {
+        const data_saida = new Date().toISOString().split('T')[0];
+        const motivo_saida = 'Venda';
+
+        connection.query(
+          `INSERT INTO registrosaidaproduto (id_insumos_registroSaidaProduto, quantidade_saida, data_saida, motivo_saida)
+           VALUES (?, ?, ?, ?)`,
+          [insumo.id_insumos, quantidadeParaDeduzir, data_saida, motivo_saida],
+          (err, result) => {
+            if (err) return reject(err);
+            console.log('Registro de saída inserido:', result.insertId);
+            resolve();
+          }
+        );
       });
     }
 
-    // 3. Registra as saídas
-    const dataAtual = new Date().toISOString().slice(0, 19).replace('T', ' ');
-    const valoresSaida = insumosNecessarios.map(insumo => [
-      insumo.id_insumos,
-      insumo.quantidade_necessaria,
-      dataAtual,
-      'Venda'
-    ]);
+    return res.status(200).json({ message: 'Pedido realizado com sucesso e estoque atualizado.' });
 
-    await new Promise((resolve, reject) => {
-      const query = `
-        INSERT INTO RegistroSaidaProduto 
-        (id_insumos_RegistroSaidaProduto, quantidade_saida, data_saida, motivo_saida)
-        VALUES ?
-      `;
-      connection.query(query, [valoresSaida], (err) => {
-        if (err) return reject(err);
-        resolve();
-      });
-    });
-
-    // 4. Atualiza estoque
-    await Promise.all(insumosNecessarios.map(insumo => {
-      return new Promise((resolve, reject) => {
-        const query = `
-          UPDATE Insumos 
-          SET quantidade_insumos = quantidade_insumos - ?
-          WHERE id_insumos = ?
-        `;
-        connection.query(query,
-          [insumo.quantidade_necessaria, insumo.id_insumos],
-          (err) => err ? reject(err) : resolve()
-        );
-      });
-    }));
-
-    res.json({
-      success: true,
-      message: 'Venda registrada com sucesso'
-    });
-
-  } catch (error) {
-    console.error('Erro em /saida-venda:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Erro ao processar venda',
-      details: error.message
-    });
+  } catch (err) {
+    console.error('Erro ao processar pedido:', err);
+    return res.status(500).json({ error: 'Erro interno ao processar pedido.' });
   }
 });
 
@@ -959,6 +952,7 @@ app.post('/saida-venda', async (req, res) => {
 // Deletando item do estoque
 app.delete('/insumos/:id', (req, res) => {
   const { id } = req.params;
+
   connection.query('DELETE FROM insumos WHERE id_insumos = ?', [id], (error, results) => {
     if (error) {
       return res.status(500).json({ error: 'Erro ao deletar insumo do estoque' });
@@ -969,6 +963,7 @@ app.delete('/insumos/:id', (req, res) => {
     res.status(200).json({ message: 'Insumo deletado com sucesso' });
   });
 });
+
 
 
 

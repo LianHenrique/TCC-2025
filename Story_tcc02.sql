@@ -161,6 +161,10 @@ MODIFY unidade_medida ENUM('unidade', 'kg', 'litro', 'g', 'ml') NOT NULL;
 ALTER TABLE ItemCardapioInsumo
 MODIFY quantidade_necessaria DECIMAL(10, 1) NOT NULL;
 
+ALTER TABLE insumos 
+MODIFY quantidade_insumos DECIMAL(10,3);
+
+
 -- Adicionando Índices para Otimização (Exemplos)
 CREATE INDEX idx_insumos_nome ON Insumos(nome_insumos);
 CREATE INDEX idx_cardapio_nome ON Cardapio(nome_item);
