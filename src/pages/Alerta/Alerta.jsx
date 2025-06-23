@@ -127,8 +127,8 @@ const Alerta = () => {
                                         style={{
                                             backgroundColor: colort,
                                             border: '1px solid black',
-                                            width: '40px',
-                                            height: '40px',
+                                            minWidth: '40px',
+                                            minHeight: '40px',
                                             textAlign: 'center',
                                             marginLeft: '20px'
                                         }}

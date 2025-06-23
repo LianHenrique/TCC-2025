@@ -23,19 +23,38 @@ const NavBar = () => {
 
   return (
 
-    <div >
+    <div>
       {/* Coloquei fixed-top na navbar */}
-      <Navbar expand="lg" bg="primary" data-bs-theme="dark" fixed="top">
+      <Navbar 
+      className="d-flex"
+      style={{
+
+      }}
+      expand="lg" bg="primary" data-bs-theme="dark" fixed="top">
+          <img src={logo} alt="" width={50} className="rounded"
+          style={{
+            marginLeft: "50px",
+            marginRight: "15px"
+          }} />
           <Navbar.Brand className={styles.Titulo} href={tit}>
             StoryBox
           </Navbar.Brand>
-          <Navbar.Toggle aria-controls="minha-nav" />
+          <Navbar.Toggle aria-controls="minha-nav" 
+          style={{
+              marginRight: "50px"
+            }}/>
           <Navbar.Collapse
-            id="minha-nav" className="justify-content-between">
+            id="minha-nav" className="justify-content-between"
+            style={{
+              marginRight: "165px"
+            }}>
 
             {!!usuarioNome?.trim() ? (
               <>
-                <Nav>
+                <Nav
+                style={{
+                  margin: "auto"
+                }}>
                   <Nav.Link href="/relatorio" className={styles.button}>Relatório</Nav.Link>
                   <Nav.Link href="/estoque" className={styles.button}>Insumos</Nav.Link>
                   <Nav.Link href="/funcionarios" className={styles.button}>Funcionários</Nav.Link>
@@ -44,7 +63,8 @@ const NavBar = () => {
                   <Nav.Link href="/alertas" className={styles.button}>Alertas</Nav.Link>
                 </Nav>
                 <Button variant="danger"
-                  style={{ marginTop: "20px", marginBottom: "20px", width: "100px" }} onClick={logout} href="/login">Sair</Button>
+                  style={{ marginTop: "20px", marginRight: "50px", marginBottom: "20px", width: "100px" }} onClick={logout} href="/login">
+                    Sair</Button>
               </>
             ) : (
               <div className="d-flex align-items-center gap-3"
@@ -55,7 +75,11 @@ const NavBar = () => {
                 <Nav.Link href="/cadastro" className={styles.botaoCadastro} style={{
                   color: "white"
                 }}>Cadastre-se</Nav.Link>
-                <Button variant="light" href="/login" className="text-primary">Login</Button>
+                <Button style={{
+                  marginRight: "50px"
+                }} variant="light" href="/login" className="text-primary">
+                  Login
+                  </Button>
               </div>
             )}
           </Navbar.Collapse>
