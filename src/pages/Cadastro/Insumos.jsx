@@ -4,6 +4,8 @@ import NavBar from '../../components/NavBar/NavBar';
 import { Button, Container, Dropdown, FloatingLabel, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router';
 
+import logo from "../../assets/logo.png"
+
 const Insumos = () => {
   // Estados do formulário
   const [formData, setFormData] = useState({
@@ -18,7 +20,7 @@ const Insumos = () => {
 
   // Opções de categoria conforme ENUM do banco
   const categoriasDisponiveis = ['Carnes', 'Perecíveis', 'Molhos', 'Congelados'];
-  
+
   const navigate = useNavigate();
   const today = new Date().toISOString().split('T')[0];
 
@@ -36,8 +38,8 @@ const Insumos = () => {
     e.preventDefault();
 
     // Validação dos campos obrigatórios
-    if (Object.values(formData).some(val => 
-      val === '' || 
+    if (Object.values(formData).some(val =>
+      val === '' ||
       (typeof val === 'number' && isNaN(val))
     )) {
       alert('Todos os campos são obrigatórios.');
@@ -93,7 +95,7 @@ const Insumos = () => {
   };
 
   //valida insumos
-  const validarInsumos = () =>{
+  const validarInsumos = () => {
     if (formData.nome_insumos.length < 3) {
       alert('O nome do insumo deve ter pelo menos 3 caracteres.');
       return false;
@@ -135,9 +137,11 @@ const Insumos = () => {
           style={{
             padding: '30px',
             border: '1px blue solid',
-            marginBottom: "10px"
+            marginBottom: "10px", textAlign:"center"
           }}
         >
+          <img
+            src={logo} width={100} alt="" />
           <h1 style={{ textAlign: 'center' }}>Cadastro de Insumos</h1>
 
           <FloatingLabel controlId="nome_insumos" label="Nome do Insumo" className="m-2">
@@ -187,8 +191,7 @@ const Insumos = () => {
               type="number"
               name="quantidade_insumos"
               min="0"
-              placeholder="Quantidade em Estoque"
-              value={formData.quantidade_insumos}
+              placeholder={formData.quantidade_insumos}
               onChange={handleChange}
               className="rounded-3 shadow mt-3"
               style={{ border: 'none' }}
@@ -196,8 +199,8 @@ const Insumos = () => {
             />
           </FloatingLabel>
 
-          <FloatingLabel 
-          controlId="imagem_url" label="URL da Imagem" className="m-2">
+          <FloatingLabel
+            controlId="imagem_url" label="URL da Imagem" className="m-2">
             <Form.Control
               type="text"
               name="imagem_url"
@@ -210,8 +213,8 @@ const Insumos = () => {
             />
           </FloatingLabel>
 
-          <FloatingLabel 
-          controlId="descricao_insumos" label="Descrição do Produto" className="m-2">
+          <FloatingLabel
+            controlId="descricao_insumos" label="Descrição do Produto" className="m-2">
             <Form.Control
               as="textarea"
               name="descricao_insumos"
@@ -236,7 +239,7 @@ const Insumos = () => {
                 {categoriasDisponiveis.map((item) => (
                   <Dropdown.Item
                     key={item}
-                    onClick={() => setFormData({...formData, categoria: item})}
+                    onClick={() => setFormData({ ...formData, categoria: item })}
                     className="dropdown-item rounded-3"
                   >
                     {item}
@@ -255,7 +258,7 @@ const Insumos = () => {
           </div>
 
           <div className="d-flex justify-content-center gap-3"
-          style={{width: "95%", margin: "auto"}}>
+            style={{ width: "95%", margin: "auto" }}>
             <Button
               type="submit"
               className="shadow mt-4 rounded"

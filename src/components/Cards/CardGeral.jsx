@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Card } from 'react-bootstrap';
-import { FaEdit, FaRegTrashAlt } from 'react-icons/fa';
+import { Card } from 'react-bootstrap';
 
 const CardGeral = ({
   filtro,
@@ -10,23 +9,19 @@ const CardGeral = ({
   Desc,
   showButtons = false,
   customButton,
+  onCardClick, // ← ADICIONADO
 }) => {
-  const [layout, setLayout] = useState('desktop'); // 'mobile', 'split', 'desktop'
+  const [layout, setLayout] = useState('desktop');
 
   useEffect(() => {
     const handleResize = () => {
       const width = window.innerWidth;
-
-      if (width < 576) {
-        setLayout('mobile');
-      } else if (width < 992) {
-        setLayout('split');
-      } else {
-        setLayout('desktop');
-      }
+      if (width < 576) setLayout('mobile');
+      else if (width < 992) setLayout('split');
+      else setLayout('desktop');
     };
 
-    handleResize(); // Inicial
+    handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
@@ -47,10 +42,7 @@ const CardGeral = ({
           <div
             key={item.id || index}
             style={{
-              width:
-                layout === 'desktop'
-                  ? 'calc(50% - 0.5rem)'
-                  : '100%', // full width for mobile and split
+              width: layout === 'desktop' ? 'calc(50% - 0.5rem)' : '100%',
               minWidth: '300px',
             }}
           >
@@ -62,7 +54,9 @@ const CardGeral = ({
                 minHeight: '200px',
                 height: '100%',
                 border: 'none',
+                cursor: onCardClick ? 'pointer' : 'default', // cursor para indicar clique
               }}
+              onClick={() => onCardClick?.(item.id)} // ← CHAMANDO A FUNÇÃO DE CLIQUE
             >
               <Card.Img
                 className="rounded"
@@ -95,39 +89,15 @@ const CardGeral = ({
                   ))}
 
                 {customButton ? (
-                  customButton(item)
-                ) : showButtons ? (
                   <div
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'flex-end',
-                      gap: '0.5rem',
-                      marginTop: '10px',
-                    }}
-                  >
-                    <Button
-                      variant="warning"
-                      className="rounded-circle fs-5 text-center shadow m-1"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        item.acoes?.[0]?.onClick?.();
-                      }}
-                    >
-                      <FaEdit />
-                    </Button>
-
-                    <Button
-                      variant="danger"
-                      className="rounded-circle fs-5 text-center shadow m-1"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        item.acoes?.[1]?.onClick?.();
-                      }}
-                    >
-                      <FaRegTrashAlt />
-                    </Button>
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "end"
+                  }}>
+                    {customButton(item)}
                   </div>
-                ) : null}
+                ) : showButtons && null}
               </Card.Body>
             </Card>
           </div>

@@ -3,7 +3,8 @@ import '../Style/login.css';
 import NavBar from '../../components/NavBar/NavBar';
 import { Button, Container, Dropdown, FloatingLabel, Form } from 'react-bootstrap';
 import { useNavigate } from 'react-router';
-import Pesquisa from '../../components/Pesquisa/Pesquisa'; // Certifique-se de importar corretamente
+
+import logo from "../../assets/logo.png"
 
 const Funcionarios = () => {
   const [nomeFuncionario, setNomeFuncionario] = useState('');
@@ -73,8 +74,9 @@ const Funcionarios = () => {
         <Form
           onSubmit={handleSubmit}
           className="shadow rounded"
-          style={{ padding: '30px', border: '1px blue solid' }}>
-
+          style={{ padding: '30px', border: '1px blue solid', textAlign:"center" }}>
+          <img
+            src={logo} width={100} alt="" />
           <h1 style={{ textAlign: 'center' }}>Cadastro</h1>
 
           {error && (
@@ -138,7 +140,7 @@ const Funcionarios = () => {
             />
           </FloatingLabel>
 
-          <Form.Select
+          {/* <Form.Select
             aria-label="Selecione o cargo"
             value={cargoFuncionario}
             onChange={(e) => setCargoFuncionario(e.target.value)}
@@ -149,7 +151,7 @@ const Funcionarios = () => {
             <option value="Gerente">Gerente</option>
             <option value="Estoquista">Estoquista</option>
             <option value="Geral">Geral</option>
-          </Form.Select>
+          </Form.Select> */}
 
           <div className="d-flex m-2" style={{ alignContent: 'center' }}>
             <Dropdown className="d-flex shadow rounded mt-2" style={{ width: '150px', height: '60px' }}>
@@ -186,11 +188,11 @@ const Funcionarios = () => {
           </div>
 
           <div className="d-flex gap-3"
-            style={{ width: "95%", margin: "auto"}}>
+            style={{ width: "95%", margin: "auto" }}>
             <Button
               type="submit"
               className="shadow mt-4"
-              style={{ padding: '15px', width: '50%', margin: "auto"}}>
+              style={{ padding: '15px', width: '50%', margin: "auto" }}>
               Cadastrar
             </Button>
             <Button

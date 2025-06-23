@@ -6,6 +6,8 @@ import NavBar from '../../components/NavBar/NavBar';
 import { useNavigate } from 'react-router';
 import { AuthContext } from '../../Contexts/UserContext';
 
+import logo from "../../assets/logo.png"
+
 const Cadastro = () => {
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
@@ -101,7 +103,9 @@ const Cadastro = () => {
       <NavBar />
       <Container style={{ maxWidth: '500px' }}>
         <Form onSubmit={handleSubmit} className="shadow" 
-        style={{ padding: '30px', borderRadius: '20px', border: '1px blue solid' }}>
+        style={{ padding: '30px', textAlign:"center", borderRadius: '20px', border: '1px blue solid' }}>
+          <img 
+          src={logo} width={100} alt="" />
           <h1 style={{ textAlign: 'center' }}>Cadastro</h1>
 
           <FloatingLabel controlId="nome" label="Nome" className="m-2">

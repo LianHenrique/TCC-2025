@@ -50,7 +50,7 @@ const Alerta = () => {
                     marginTop: "100px"
                 }}>
                 {/* Título do alerta */}
-                <h1>Insumos para serem repostos</h1>
+                <h1 style={{ marginBottom: "50px"}}>Insumos para serem repostos</h1>
                 {/* Seção para ícones ou legendas (comentada) */}
                 <section style={{
                     display: 'flex',
@@ -111,7 +111,8 @@ const Alerta = () => {
                                                 display: 'flex',
                                                 gap: '20px',
                                                 fontSize: '20px',
-                                                flexWrap: 'wrap'
+                                                flexWrap: 'wrap',
+                                                color: "black"
                                             }}
                                         >
                                             <p>Nome: {insumo.nome}</p>
@@ -130,7 +131,8 @@ const Alerta = () => {
                                             minWidth: '40px',
                                             minHeight: '40px',
                                             textAlign: 'center',
-                                            marginLeft: '20px'
+                                            marginLeft: '20px',
+                                            color: "black"
                                         }}
                                     >
                                         !

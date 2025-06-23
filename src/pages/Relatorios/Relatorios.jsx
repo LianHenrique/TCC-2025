@@ -134,7 +134,7 @@ const RelatorioInsumos = () => {
                   <h6 className="mb-3" style={{ fontWeight: '500', color: '#333' }}>
                     {periodo === 'diario' ? new Date(dia).toLocaleDateString('pt-BR') : `Semana ${dia}`}
                   </h6>
-                  <Table striped bordered hover>
+                  <Table bordered hover>
                     <thead>
                       <tr>
                         <th>#</th>
@@ -152,8 +152,8 @@ const RelatorioInsumos = () => {
                           <td>
                             <Badge bg={
                               insumo.categoria === 'Carnes' ? 'danger' : 
-                              insumo.categoria === 'Perecíveis' ? 'warning' :
-                              insumo.categoria === 'Molhos' ? 'primary' : 'success'
+                              insumo.categoria === 'Perecíveis' ? 'dark' :
+                              insumo.categoria === 'Molhos' ? 'success' : 'primary'
                             }>
                               {insumo.categoria}
                             </Badge>
