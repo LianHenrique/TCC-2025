@@ -616,26 +616,28 @@ app.post('/login', (req, res) => {
 // Buscar todos os itens do cardápio 
 app.get('/cardapio', (req, res) => {
   const sql = `
-    SELECT 
-      c.id_cardapio,
-      c.nome_item,
-      c.descricao_item,
-      c.valor_item,
-      c.imagem_url,
-      c.ativo,
-      c.data_cadastro,
-      c.categoria,
-      GROUP_CONCAT(
-        CONCAT(
-          '{"nome_insumo":"', IFNULL(i.nome_insumos, ''), '",',
-          '"quantidade":"', IFNULL(ici.quantidade_necessaria, ''), '",',
-          '"unidade_medida":"', IFNULL(ici.unidade_medida_receita, ''), '"}'
-        )
-      ) AS insumos
-    FROM Cardapio c
-    LEFT JOIN ItemCardapioInsumo ici ON ici.id_item_cardapio = c.id_cardapio
-    LEFT JOIN Insumos i ON i.id_insumos = ici.id_insumo
-    GROUP BY c.id_cardapio
+      SELECT 
+    c.id_cardapio,
+    c.nome_item,
+    c.descricao_item,
+    c.valor_item,
+    c.imagem_url,
+    c.ativo,
+    c.data_cadastro,
+    c.categoria,
+    GROUP_CONCAT(
+      CONCAT(
+        '{"nome_insumo":"', IFNULL(i.nome_insumos, ''), '",',
+        '"quantidade_necessaria":"', IFNULL(ici.quantidade_necessaria, ''), '",',
+        '"unidade_medida_receita":"', IFNULL(ici.unidade_medida_receita, ''), '",',
+        '"quantidade_insumos":"', IFNULL(i.quantidade_insumos, ''), '",',
+        '"unidade_medida":"', IFNULL(i.unidade_medida, ''), '"}'
+      )
+    ) AS insumos
+  FROM Cardapio c
+  LEFT JOIN ItemCardapioInsumo ici ON ici.id_item_cardapio = c.id_cardapio
+  LEFT JOIN Insumos i ON i.id_insumos = ici.id_insumo
+  GROUP BY c.id_cardapio
   `;
 
   connection.query(sql, (error, results) => {
@@ -878,36 +880,57 @@ function getInsumosDoItem(id_cardapio) {
   });
 }
 
-// Conversão de unidades para checagem e dedução de estoque
-function convertToStockUnit(qtdReceita, unidadeReceita, unidadeEstoque) {
-  const from = unidadeReceita.toLowerCase();
-  const to = unidadeEstoque.toLowerCase();
 
-  if (from === to) return qtdReceita;
-
-  const conversion = {
-    g: { kg: (v) => v / 1000 },
-    kg: { g: (v) => v * 1000 },
-    ml: { l: (v) => v / 1000 },
-    l: { ml: (v) => v * 1000 },
-  };
-
-  if (conversion[from] && conversion[from][to]) {
-    return conversion[from][to](qtdReceita);
-  }
-
-  console.warn(`❗ Conversão não suportada: ${from} -> ${to}. Assumindo 1:1.`);
-  return qtdReceita;
+function normalizarUnidade(unidade) {
+  if (!unidade) return '';
+  const u = unidade.toLowerCase().trim();
+  if (u === 'l') return 'litro';
+  if (u === 'ml' || u === 'mililitro') return 'ml';
+  if (u === 'kg') return 'kg';
+  if (u === 'g' || u === 'grama') return 'g';
+  if (u === 'unidade' || u === 'unidades') return 'unidade';
+  return u;
 }
 
-// Aqui começa a rota 
+// Função utilitária de conversão
+function convertToStockUnit(valor, unidadeReceita, unidadeEstoque) {
+  const from = normalizarUnidade(unidadeReceita);
+  const to = normalizarUnidade(unidadeEstoque);
+  const val = parseFloat(valor);
+
+  if (!isFinite(val)) return NaN;
+
+  if (from === to) return val;
+
+  // Massa
+  if (from === 'g' && to === 'kg') return val / 1000;
+  if (from === 'kg' && to === 'g') return val * 1000;
+
+  // Volume
+  if (from === 'ml' && to === 'litro') return val / 1000;
+  if (from === 'litro' && to === 'ml') return val * 1000;
+
+  // Unidade
+  if (from === 'unidade' && to === 'unidade') return val;
+
+  return NaN;
+}
+
 app.post('/saida-venda', async (req, res) => {
   const { id_cardapio } = req.body;
 
   try {
-    const insumos = await getInsumosDoItem(id_cardapio);
+    let insumos = await getInsumosDoItem(id_cardapio);
 
-    // 1. Verificação de estoque segura (em memória, antes de atualizar o banco)
+    // Filtro para ignorar insumos inválidos
+    insumos = insumos.filter(insumo =>
+      insumo.nome_insumos &&
+      isFinite(insumo.quantidade_necessaria) &&
+      isFinite(insumo.estoque_atual) &&
+      insumo.unidade_receita &&
+      insumo.unidade_estoque
+    );
+
     let erroEstoque = null;
     const insumosValidados = [];
 
@@ -917,6 +940,16 @@ app.post('/saida-venda', async (req, res) => {
         insumo.unidade_receita,
         insumo.unidade_estoque
       );
+
+      if (
+        quantidadeConvertida === undefined ||
+        quantidadeConvertida === null ||
+        isNaN(quantidadeConvertida)
+      ) {
+        erroEstoque = `Não foi possível converter unidade do insumo: ${insumo.nome_insumos}`;
+        break;
+      }
+
       const quantidadeParaDeduzir = parseFloat(quantidadeConvertida.toFixed(3));
 
       if (insumo.estoque_atual < quantidadeParaDeduzir) {
@@ -924,7 +957,6 @@ app.post('/saida-venda', async (req, res) => {
         break;
       }
 
-      // Simula a dedução para garantir que não ultrapasse
       insumo.estoque_atual -= quantidadeParaDeduzir;
       insumosValidados.push({ ...insumo, quantidadeParaDeduzir });
     }
@@ -933,34 +965,27 @@ app.post('/saida-venda', async (req, res) => {
       return res.status(400).json({ error: erroEstoque });
     }
 
-    // 2. Deduz do banco e registra saída
+    // Dedução do estoque e registro da saída
     for (const insumo of insumosValidados) {
-      console.log('🔧 Atualizando estoque do insumo:', insumo.id_insumos, 'Deduzindo:', insumo.quantidadeParaDeduzir);
-
       await new Promise((resolve, reject) => {
         connection.query(
           `UPDATE Insumos SET quantidade_insumos = quantidade_insumos - ? WHERE id_insumos = ?`,
           [insumo.quantidadeParaDeduzir, insumo.id_insumos],
           (err, result) => {
             if (err) return reject(err);
-            console.log('✅ Resultado do UPDATE:', result);
             resolve();
           }
         );
       });
 
-      // Registro da saída
       await new Promise((resolve, reject) => {
         const data_saida = new Date().toISOString().split('T')[0];
-        const motivo_saida = 'Venda';
-
         connection.query(
           `INSERT INTO registrosaidaproduto (id_insumos_registroSaidaProduto, quantidade_saida, data_saida, motivo_saida)
            VALUES (?, ?, ?, ?)`,
-          [insumo.id_insumos, insumo.quantidadeParaDeduzir, data_saida, motivo_saida],
+          [insumo.id_insumos, insumo.quantidadeParaDeduzir, data_saida, 'Venda'],
           (err, result) => {
             if (err) return reject(err);
-            console.log('📝 Registro de saída inserido:', result.insertId);
             resolve();
           }
         );
@@ -970,10 +995,11 @@ app.post('/saida-venda', async (req, res) => {
     return res.status(200).json({ message: 'Pedido realizado com sucesso e estoque atualizado.' });
 
   } catch (err) {
-    console.error('❌ Erro ao processar pedido:', err);
+    console.error('Erro ao processar pedido:', err);
     return res.status(500).json({ error: 'Erro interno ao processar pedido.' });
   }
 });
+
 
 
 // Deletando item do estoque
@@ -1312,7 +1338,7 @@ app.put('/alterar-palavra-chave', (req, res) => {
   if (!email || !novaPalavraChave) {
     return res.status(400).json({ error: 'Email e nova palavra-chave obrigatórios' });
   }
- 
+
   const selectSql = 'SELECT palavra_chave FROM cliente WHERE email_cliente = ?';
 
   connection.query(selectSql, [email], (selectError, results) => {
@@ -1330,7 +1356,7 @@ app.put('/alterar-palavra-chave', (req, res) => {
     if (novaPalavraChave === atual) {
       return res.status(400).json({ error: 'A nova palavra-chave deve ser diferente da anterior.' });
     }
- 
+
     const updateSql = 'UPDATE cliente SET palavra_chave = ? WHERE email_cliente = ?';
 
     connection.query(updateSql, [novaPalavraChave, email], (updateError) => {
