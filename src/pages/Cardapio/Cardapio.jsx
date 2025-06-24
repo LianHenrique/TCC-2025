@@ -176,6 +176,7 @@ const Cardapio = () => {
           filtro="Produtos"
           card={cardapioFiltrado}
           showButtons={false}
+          onCardClick={(id) => navigate(`/Visualizar_Cardapio/${id}`)}  
           customButton={(item) =>
             !item.estoqueInsuficiente && (
               <Button
