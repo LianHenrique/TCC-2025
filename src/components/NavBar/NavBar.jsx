@@ -68,6 +68,21 @@ const NavBar = () => {
             </>
           ) : (
             <div className="d-flex align-items-center gap-3 w-100 justify-content-end">
+              <Button
+                variant={darkMode ? "light" : "dark"}
+                onClick={toggleTheme}
+                title="Alternar tema"
+                style={{
+                  width: "40px",
+                  height: "40px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center"
+                }}
+                className="rounded-circle"
+              >
+                {darkMode ? <FaSun size={22} /> : <FaMoon size={22} />}
+              </Button>
               <Nav.Link href="/cadastro" className={styles.botaoCadastro} style={{ color: "white" }}>
                 Cadastre-se
               </Nav.Link>

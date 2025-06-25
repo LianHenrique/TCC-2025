@@ -42,28 +42,42 @@ function Home() {
         </div>
 
         <div className={styles.beneficios}>
-          <div className={`${styles.beneficioCard} ${styles.beneficio2}`}>Acesso em tempo real</div>
-          <div className={`${styles.beneficioCard} ${styles.beneficio2}`}>Redução de erros</div>
-          <div className={`${styles.beneficioCard} ${styles.beneficio2}`}>Relatórios detalhados</div>
+          <div style={{
+              color: "black"
+            }} className={`${styles.beneficioCard} ${styles.beneficio2}`}>Acesso em tempo real</div>
+          <div style={{
+              color: "black"
+            }} className={`${styles.beneficioCard} ${styles.beneficio2}`}>Redução de erros</div>
+          <div style={{
+              color: "black"
+            }} className={`${styles.beneficioCard} ${styles.beneficio2}`}>Relatórios detalhados</div>
         </div>
 
         <div className={styles.planos}>
           <div className={styles.card}>
-            <h3>Grátis</h3>
-            <p className={styles.cardText}>
+            <h3 style={{
+              color: "black"
+            }}>Grátis</h3>
+            <p className={styles.cardText} style={{
+              color: "black"
+            }}>
               Experimente gratuitamente por 30 dias<br /><br />
               • Uso limitado<br />
               • Sem recursos avançados<br />
               • Sem registro em reconhecimento<br />
               • Sem obrigação de faturamento
             </p>
-            <button className={styles.botaoTesteGratis2} onClick={() => navigate("/cadastro")}>
+            <button style={{
+              color: "black"
+            }} className={styles.botaoTesteGratis2} onClick={() => navigate("/cadastro")}>
               Começar
             </button>
           </div>
 
           <div className={styles.card}>
-            <h3>Plano 1</h3>
+            <h3 style={{
+              color: "black"
+            }}>Plano 1</h3>
             <p className={styles.cardText}>
               Experimente o melhor plano<br /><br />
               • Uso ilimitado<br />
@@ -77,7 +91,9 @@ function Home() {
           </div>
 
           <div className={styles.card}>
-            <h3>Plano 2</h3>
+            <h3 style={{
+              color: "black"
+            }}>Plano 2</h3>
             <p className={styles.cardText}>
               Experimente o primeiro plano <br /><br />
               • Uso ilimitado<br />
