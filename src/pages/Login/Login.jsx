@@ -14,7 +14,7 @@ const Login = () => {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
-  const funcionarioFuncio = "select nome_funcionario, cargo_funcionario from Funcionario where cargo_funcionario = 'gerente'"
+  // const funcionarioFuncio = "select nome_funcionario, cargo_funcionario from Funcionario where cargo_funcionario = 'gerente'"
 
 
 
