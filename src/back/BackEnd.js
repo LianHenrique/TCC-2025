@@ -1364,7 +1364,7 @@ app.put('/alterar-palavra-chave', (req, res) => {
         console.error('Erro ao alterar palavra-chave:', updateError);
         return res.status(500).json({ error: 'Erro no servidor' });
       }
-
+      
       return res.status(200).json({ success: true, message: 'Palavra-chave atualizada com sucesso' });
     });
   });
