@@ -40,7 +40,7 @@ const Pesquisa = ({ nomeDrop, lista = [], onFilterChange, onSearchChange, navega
       )}
 
       {navega && TxtButton && (
-        <Button variant="primary" onClick={() => window.location.href = navega}>
+        <Button variant="success" onClick={() => window.location.href = navega}>
           {TxtButton}
         </Button>
       )}

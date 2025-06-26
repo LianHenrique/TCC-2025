@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import NavBar from '../../components/NavBar/NavBar';
-import { Container, Card, Button } from 'react-bootstrap';
+import { Container, Card, Button, Badge, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
@@ -43,10 +43,20 @@ const Alerta = () => {
     return () => clearInterval(intervalo);
   }, []);
 
-  const getCorDeFundo = (insumo) => {
-    if (insumo.tipoEstoque === 'critico') return '#f5b5b5';
-    if (insumo.tipoEstoque === 'antecipado') return '#ffe082';
-    return 'white';
+  const getCorDeFundo = (tipoEstoque) => {
+    switch (tipoEstoque) {
+      case 'critico': return '#ffe6e6';
+      case 'antecipado': return '#fff9e6';
+      default: return '#ffffff';
+    }
+  };
+
+  const getBadge = (tipoEstoque) => {
+    switch (tipoEstoque) {
+      case 'critico': return <Badge bg="danger">Crítico</Badge>;
+      case 'antecipado': return <Badge bg="warning" text="dark">Antecipado</Badge>;
+      default: return null;
+    }
   };
 
   const handleNavigate = id => navigate(`/visualizar/${id}`);
@@ -55,65 +65,66 @@ const Alerta = () => {
     <div>
       <NavBar />
       <Container style={{ marginTop: '100px' }}>
-        <h1 className="mb-4">Insumos em Alerta de Estoque</h1>
+        <h1 className="mb-4 text-center">📦 Insumos em Alerta de Estoque</h1>
 
-        <div className="mb-4">
+        <div className="d-flex justify-content-center mb-4">
           <Button
-            variant="primary"
-            className="text-white"
+            variant="outline-primary"
+            className="text-nowrap"
             onClick={() => navigate('/data/vencimento')}
           >
-            Alertas De Vencimento
+            <i className="bi bi-calendar-event me-2" />
+            Alertas de Vencimento
           </Button>
         </div>
 
         {insumos.length === 0 ? (
-          <p>Nenhum insumo em alerta.</p>
+          <p className="text-center">✅ Nenhum insumo em alerta.</p>
         ) : (
-          <Card.Body className="d-flex flex-wrap gap-4 justify-content-start">
+          <Row className="g-4 justify-content-center">
             {insumos.map(insumo => (
-              <div
-                key={insumo.id}
-                className="shadow rounded d-flex gap-3 align-items-center"
-                style={{
-                  width: '100%',
-                  maxWidth: '625px',
-                  padding: '10px',
-                  backgroundColor: getCorDeFundo(insumo)
-                }}
-              >
-                <img
-                  src={insumo.imagem}
-                  alt={insumo.nome}
-                  className="img-fluid rounded-5"
+              <Col key={insumo.id} xs={12} md={6} lg={5}>
+                <Card
+                  className="h-100 shadow-sm"
                   style={{
-                    width: '100px',
-                    height: '100px',
-                    objectFit: 'contain',
-                    backgroundColor: '#f8f9fa'
+                    backgroundColor: getCorDeFundo(insumo.tipoEstoque),
+                    transition: 'all 0.3s ease'
                   }}
-                />
-                <div className="d-flex justify-content-between align-items-center" style={{ width: '100%' }}>
-                  <div style={{ flexGrow: 1 }}>
-                    <div style={{ display: 'flex', gap: '20px', fontSize: '20px', flexWrap: 'wrap' }}>
-                      <p>Nome: {insumo.nome}</p>
-                      <p>
+                >
+                  <Card.Body className="d-flex gap-3 align-items-center">
+                    <img
+                      src={insumo.imagem}
+                      alt={insumo.nome}
+                      className="rounded-4"
+                      style={{
+                        width: '100px',
+                        height: '100px',
+                        objectFit: 'contain',
+                        backgroundColor: '#f8f9fa'
+                      }}
+                    />
+                    <div style={{ flex: 1 }}>
+                      <Card.Title className="mb-1 d-flex justify-content-between align-items-center">
+                        <span>{insumo.nome}</span>
+                        {getBadge(insumo.tipoEstoque)}
+                      </Card.Title>
+                      <Card.Text>
                         Quantidade: {Number(insumo.quantidade).toLocaleString('pt-BR')} {insumo.unidade}
-                      </p>
+                      </Card.Text>
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        onClick={() => handleNavigate(insumo.id)}
+                      >
+                        <i className="bi bi-arrow-repeat me-1" />
+                        Repor Estoque
+                      </Button>
                     </div>
-
-                    <Button onClick={() => handleNavigate(insumo.id)} variant="danger">
-                      Repor Estoque
-                    </Button>
-                  </div>
-
-                  {insumo.tipoEstoque === 'critico' && (
-                    <i className="bi bi-exclamation-circle-fill" style={{ color: 'red', fontSize: '32px', marginLeft: '20px' }} />
-                  )}
-                </div>
-              </div>
+                  </Card.Body>
+                </Card>
+              </Col>
             ))}
-          </Card.Body>
+          </Row>
         )}
       </Container>
     </div>

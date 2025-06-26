@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 
 const AlertaCriticoGlobal = () => {
@@ -26,7 +26,13 @@ const AlertaCriticoGlobal = () => {
           const novosAlertas = [];
 
           data.forEach(insumo => {
-            const { id_insumos: id, nome_insumos: nome, quantidade_insumos: quantidade, tipo_alerta_estoque: tipo, imagem_url } = insumo;
+            const {
+              id_insumos: id,
+              nome_insumos: nome,
+              quantidade_insumos: quantidade,
+              tipo_alerta_estoque: tipo,
+              imagem_url
+            } = insumo;
 
             if ((tipo === 'critico' || tipo === 'antecipado') && exibidos[id] !== tipo) {
               novosAlertas.push({
@@ -65,51 +71,73 @@ const AlertaCriticoGlobal = () => {
     }
   };
 
-  const getStyleCritico = tipo =>
-    tipo === 'critico'
+  const estiloAlerta = (tipo) => {
+    return tipo === 'critico'
       ? {
-          border: '3px solid red',
-          backgroundColor: '#fff0f0',
-          color: 'red',
-          fontWeight: 'bold'
-        }
-      : {};
+        icon: '🚨',
+        corTexto: '#b71c1c',
+        corBotao: 'danger',
+        titulo: 'Alerta Crítico de Estoque',
+        descricao: 'Reposição urgente necessária!'
+      }
+      : {
+        icon: '⚠️',
+        corTexto: '#8a6d3b',
+        corBotao: 'warning',
+        titulo: 'Estoque Baixo',
+        descricao: 'Estoque abaixo do ideal.'
+      };
+  };
+
+  const estilo = alertaAtual ? estiloAlerta(alertaAtual.tipo) : null;
 
   return (
-    <Modal show={!!alertaAtual} centered backdrop="static" keyboard={false}>
-      <Modal.Header style={getStyleCritico(alertaAtual?.tipo)}>
-        <Modal.Title>
-          {alertaAtual?.tipo === 'critico'
-            ? '🚨 ALERTA CRÍTICO DE ESTOQUE'
-            : '⚠️ Atenção: Estoque Baixo'}
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body style={getStyleCritico(alertaAtual?.tipo)}>
-        {alertaAtual && (
-          <div className="text-center">
-            <img
-              src={alertaAtual.imagem}
-              alt={alertaAtual.nome}
-              style={{ maxWidth: '150px', marginBottom: '20px' }}
-            />
-            <h4>{alertaAtual.nome}</h4>
-            <p>Estoque atual: <strong>{alertaAtual.quantidade}</strong></p>
-            <p style={{ fontSize: '1.1rem' }}>
-              {alertaAtual.tipo === 'critico'
-                ? '🚨 REPOSIÇÃO URGENTE NECESSÁRIA!'
-                : 'Estoque abaixo do ideal.'}
-            </p>
-          </div>
-        )}
-      </Modal.Body>
-      <Modal.Footer style={getStyleCritico(alertaAtual?.tipo)}>
-        <Button
-          variant={alertaAtual?.tipo === 'critico' ? 'danger' : 'warning'}
-          onClick={handleNext}
+    <Modal
+      show={!!alertaAtual}
+      centered
+      backdrop="static"
+      keyboard={false}
+      dialogClassName="custom-alert-modal"
+    >
+      {alertaAtual && (
+        <div
+          style={{
+            background: 'rgba(255,255,255,0.95)',
+            padding: '25px',
+            borderRadius: '20px',
+            textAlign: 'center',
+            boxShadow: '0 8px 30px rgba(0,0,0,0.2)',
+            animation: 'fadeInScale 0.4s ease-out'
+          }}
         >
-          OK
-        </Button>
-      </Modal.Footer>
+          <div style={{ fontSize: '48px', color: estilo.corTexto, marginBottom: '10px' }}>
+            {estilo.icon}
+          </div>
+          <h4 style={{ fontWeight: 'bold', color: estilo.corTexto }}>{estilo.titulo}</h4>
+          <img
+            src={alertaAtual.imagem}
+            alt={alertaAtual.nome}
+            style={{
+              width: '100px',
+              height: '100px',
+              objectFit: 'contain',
+              margin: '20px 0',
+              borderRadius: '10px',
+              border: '1px solid #ccc',
+              backgroundColor: '#fff',
+              padding: '5px'
+            }}
+          />
+          <h5 className="fw-semibold">{alertaAtual.nome}</h5>
+          <p>
+            Estoque atual: <strong>{alertaAtual.quantidade}</strong>
+          </p>
+          <p style={{ fontSize: '1.1rem' }}>{estilo.descricao}</p>
+          <Button variant={estilo.corBotao} size="lg" onClick={handleNext}>
+            Entendi
+          </Button>
+        </div>
+      )}
     </Modal>
   );
 };

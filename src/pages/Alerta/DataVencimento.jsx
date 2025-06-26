@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import NavBar from '../../components/NavBar/NavBar';
-import { Container, Card, Dropdown } from 'react-bootstrap';
-import { Button } from 'react-bootstrap';
-import { useNavigate } from 'react-router';
+import { Container, Card, Dropdown, Button, Row, Col, Badge } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 
 const DataVencimento = () => {
     const [insumos, setInsumos] = useState([]);
@@ -23,95 +22,91 @@ const DataVencimento = () => {
     const calcularDiasRestantes = (dataVenc) => {
         const hoje = new Date();
         const vencimento = new Date(dataVenc);
-        return Math.floor((vencimento - hoje) / (1000 * 60 * 60 * 24));
+        return Math.ceil((vencimento - hoje) / (1000 * 60 * 60 * 24));
     };
 
-    const getCorDeFundo = (dias) => {
-        if (dias <= 7) return '#ef5350'; // vermelho forte
-        if (dias <= 90) return '#fff3cd'; // amarelo claro
-        return '#d4edda'; // verde claro
-
-        /*
-      Lógica das cores de fundo dos cartões:
-    
-      - Vermelho forte (#ef5350): vencimento em até 7 dias
-      - Amarelo claro (#fff3cd): vencimento entre 8 e 90 dias
-      - Verde claro (#d4edda): vencimento acima de 90 dias
-    
-      Quando o fundo for vermelho, o texto e o botão ficam brancos para melhor contraste.
-    */
-
-
+    const getCor = (dias) => {
+        if (dias <= 7) return { bg: '#f8d7da', border: '#f5c6cb', text: '#721c24' }; // vermelho claro
+        if (dias <= 90) return { bg: '#fff3cd', border: '#ffeeba', text: '#856404' }; // amarelo claro
+        return { bg: '#d4edda', border: '#c3e6cb', text: '#155724' }; // verde claro
     };
 
     return (
         <div>
             <NavBar />
             <Container style={{ marginTop: '100px' }}>
-                <h2 className="mb-4">Alertas de Vencimento dos Insumos</h2>
-                <Button
-                    variant="primary"
-                    className="text-white mb-4"
-                    onClick={() => navigate('/alertas')}
-                >
-                    Alertas De Quantidade
-                </Button>
+                <h2 className="mb-4 text-center">⏳ Alertas de Vencimento dos Insumos</h2>
 
-                {insumos.map((insumo) => {
-                    const dias = calcularDiasRestantes(insumo.data_vencimento);
-                    const bgColor = getCorDeFundo(dias);
-                    const textoBranco = bgColor === '#ef5350';
+                <div className="d-flex justify-content-center mb-4">
+                    <Button variant="outline-primary" onClick={() => navigate('/alertas')}>
+                        <i className="bi bi-exclamation-circle me-2" />
+                        Ver Alertas de Quantidade
+                    </Button>
+                </div>
 
-                    return (
-                        <Card
-                            key={insumo.id_insumos}
-                            className="mb-3 shadow-sm"
-                            style={{
-                                backgroundColor: bgColor,
-                                color: textoBranco ? 'white' : 'black',
-                                padding: '15px',
-                                borderRadius: '10px',
-                            }}
-                        >
-                            <div className="d-flex align-items-center">
-                                <img
-                                    src={insumo.imagem_url}
-                                    alt={insumo.nome_insumos}
+                <Row className="g-4">
+                    {insumos.map((insumo) => {
+                        const dias = calcularDiasRestantes(insumo.data_vencimento);
+                        const { bg, border, text } = getCor(dias);
+
+                        return (
+                            <Col key={insumo.id_insumos} xs={12} md={6}>
+                                <Card
                                     style={{
-                                        width: '100px',
-                                        height: '100px',
-                                        objectFit: 'contain',
-                                        borderRadius: '10px',
-                                        marginRight: '20px',
-                                        backgroundColor: textoBranco ? 'white' : 'transparent'
+                                        backgroundColor: bg,
+                                        borderColor: border,
+                                        color: text,
+                                        borderLeft: `6px solid ${text}`,
+                                        padding: '15px',
+                                        borderRadius: '12px',
+                                        boxShadow: '0 0 6px rgba(0,0,0,0.1)',
                                     }}
-                                />
-                                <div style={{ flexGrow: 1 }}>
-                                    <h5>{insumo.nome_insumos}</h5>
-                                    <p className="mb-0">
-                                        Vencimento: {new Date(insumo.data_vencimento).toLocaleDateString()}
-                                    </p>
-                                </div>
+                                >
+                                    <div className="d-flex align-items-center">
+                                        <img
+                                            src={insumo.imagem_url || 'https://via.placeholder.com/100'}
+                                            alt={insumo.nome_insumos}
+                                            style={{
+                                                width: '90px',
+                                                height: '90px',
+                                                objectFit: 'contain',
+                                                borderRadius: '8px',
+                                                marginRight: '20px',
+                                                backgroundColor: '#fff',
+                                                padding: '5px',
+                                            }}
+                                        />
+                                        <div style={{ flex: 1 }}>
+                                            <h5 className="mb-1">{insumo.nome_insumos}</h5>
+                                            <p className="mb-1">
+                                                Vence em: <strong>{dias}</strong> dia(s)
+                                            </p>
+                                            <p className="mb-0">
+                                                Data: {new Date(insumo.data_vencimento).toLocaleDateString()}
+                                            </p>
+                                        </div>
 
-                                {insumo.fornecedores?.length > 0 && (
-                                    <Dropdown>
-                                        <Dropdown.Toggle variant={textoBranco ? 'light' : 'secondary'} size="sm">
-                                            Ver Fornecedores
-                                        </Dropdown.Toggle>
-                                        <Dropdown.Menu>
-                                            {insumo.fornecedores.map((fornecedor, idx) => (
-                                                <Dropdown.Item key={idx}>
-                                                    <strong>{fornecedor.nome}</strong><br />
-                                                    {fornecedor.telefone}
-                                                </Dropdown.Item>
-                                            ))}
-                                        </Dropdown.Menu>
-                                    </Dropdown>
-                                )}
-                            </div>
-                        </Card>
-                    );
-                })}
+                                        {insumo.fornecedores?.length > 0 && (
+                                            <Dropdown>
+                                                <Dropdown.Toggle variant="light" size="sm">
+                                                    Fornecedores
+                                                </Dropdown.Toggle>
+                                                <Dropdown.Menu>
+                                                    {insumo.fornecedores.map((fornecedor, idx) => (
+                                                        <Dropdown.Item key={idx}>
+                                                            <strong>{fornecedor.nome}</strong><br />
+                                                            <span>{fornecedor.telefone}</span>
+                                                        </Dropdown.Item>
+                                                    ))}
+                                                </Dropdown.Menu>
+                                            </Dropdown>
+                                        )}
+                                    </div>
+                                </Card>
+                            </Col>
+                        );
+                    })}
+                </Row>
             </Container>
         </div>
     );
