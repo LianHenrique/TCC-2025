@@ -14,6 +14,7 @@ const Cadastro = () => {
   const [senha, setSenha] = useState('');
   const [confSenha, setConfSenha] = useState('');
   const [palavraChave, setPalavraChave] = useState('');
+  const [cargo, setCargo] = useState(''); // Adicionado para capturar o cargo do funcionário
   // const [cnpj, setCnpj] = useState('');
 
   const validarEmail = (email) => {
@@ -28,7 +29,7 @@ const Cadastro = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!nome || !email || !senha || !confSenha) { //removido cnpj
+    if (!nome || !email || !senha || !confSenha || !cargo) { //removido cnpj
       alert('Todos os campos são obrigatórios!');
       return false;
     }
@@ -160,6 +161,17 @@ const Cadastro = () => {
               placeholder="Palavra-chave"
               value={palavraChave}
               onChange={(e) => setPalavraChave(e.target.value)}
+              className="rounded-3 shadow mt-3"
+              style={{ border: 'none' }}
+            />
+          </FloatingLabel>
+
+           <FloatingLabel controlId="Cargo" label="Cargo do funcionario" className="m-2">
+            <Form.Control
+              type="text"
+              placeholder="Cargo do funcionario: 'ADM','Gerente','Funcionario'"
+              value={cargo}
+              onChange={(e) => setCargo(e.target.value)}
               className="rounded-3 shadow mt-3"
               style={{ border: 'none' }}
             />
