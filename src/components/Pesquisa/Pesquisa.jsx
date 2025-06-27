@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Form, Button, Dropdown } from 'react-bootstrap';
 
 const Pesquisa = ({ nomeDrop, lista = [], onFilterChange, onSearchChange, navega, TxtButton }) => {

@@ -166,7 +166,7 @@ const Cadastro = () => {
             />
           </FloatingLabel>
 
-           <FloatingLabel controlId="Cargo" label="Cargo do funcionario" className="m-2">
+           {/* <FloatingLabel controlId="Cargo" label="Cargo do funcionario" className="m-2">
             <Form.Control
               type="text"
               placeholder="Cargo do funcionario: 'ADM','Gerente','Funcionario'"
@@ -175,7 +175,7 @@ const Cadastro = () => {
               className="rounded-3 shadow mt-3"
               style={{ border: 'none' }}
             />
-          </FloatingLabel>
+          </FloatingLabel> */}
 
           {/* <FloatingLabel controlId="cnpj" label="CNPJ" className="m-2">
             <Form.Control
