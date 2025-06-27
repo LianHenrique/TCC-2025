@@ -71,7 +71,7 @@ const RelatorioInsumos = () => {
   const pieData = preparePieData();
 
   return (
-    <div className="bg-light" style={{ minHeight: '100vh' }}>
+    <div  style={{ minHeight: '100vh' }}>
       <NavBar />
       <Container ref={relatorioRef} className="pt-5 pb-5" style={{ marginTop: "70px" }}>
         <div className="d-flex flex-wrap justify-content-between align-items-center mb-4">
@@ -84,11 +84,6 @@ const RelatorioInsumos = () => {
               variant={periodo === 'diario' ? 'primary' : 'outline-primary'} 
               onClick={() => setPeriodo('diario')}>
               Diário
-            </Button>
-            <Button 
-              variant={periodo === 'semanal' ? 'primary' : 'outline-primary'} 
-              onClick={() => setPeriodo('semanal')}>
-              Semanal
             </Button>
             <Button variant="success" onClick={handleDownloadPDF}>
               📥 Exportar PDF

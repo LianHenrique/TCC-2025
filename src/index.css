@@ -42,3 +42,16 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
+body {
+  transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+.light-mode {
+  background-color: white;
+  color: black;
+}
+
+.dark-mode {
+  background-color: #001f3f;
+  color: white;
+}

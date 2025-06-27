@@ -1,26 +1,27 @@
-.Titulo{
-    font-size: 40px;
+.Titulo {
+  font-size: 40px;
 }
 
 .botaoCadastro:hover {
   text-decoration: underline;
 }
 
-/* .Titulo:hover{
-    transform: translateY(-8px) scale(1.03);
-} */
-
-/* .button{
-    transition: transform 0.2s;
+.navDark {
+  background-color: #0047AB !important; /* Azul cobalto para tema escuro */
+  color: white;
 }
-.button:hover{
-    transform: translateY(-8px) scale(1.03);
-} */
 
-/* .exemplo {
+.navLight {
+  background-color: rgb(0, 90, 216) !important;
+  color: white;
+  border-bottom: 1px solid #ddd;
+}
+
+.button {
+  color: inherit;
   transition: transform 0.2s;
 }
 
-.exemplo:hover {
-  transform: translateY(-8px) scale(1.03);
-} */
+.button:hover {
+  transform: translateY(-4px) scale(1.02);
+}

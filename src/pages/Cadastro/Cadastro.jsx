@@ -6,7 +6,8 @@ import NavBar from '../../components/NavBar/NavBar';
 import { useNavigate } from 'react-router';
 import { AuthContext } from '../../Contexts/UserContext';
 
-import logo from "../../assets/logo.png"
+import logo from "../../assets/logo.png";
+import { ThemeContext } from '../../Contexts/ThemeContext';
 
 const Cadastro = () => {
   const [nome, setNome] = useState('');
@@ -14,7 +15,6 @@ const Cadastro = () => {
   const [senha, setSenha] = useState('');
   const [confSenha, setConfSenha] = useState('');
   const [palavraChave, setPalavraChave] = useState('');
-  const [cargo, setCargo] = useState(''); // Adicionado para capturar o cargo do funcionário
   // const [cnpj, setCnpj] = useState('');
 
   const validarEmail = (email) => {
@@ -25,11 +25,15 @@ const Cadastro = () => {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
-  //validador de campus funciona 
+  // Pegando o tema atual (assumindo que ThemeContext retorna um objeto)
+  const theme = useContext(ThemeContext);
+  const darkMode = theme.darkMode; // ajuste conforme a estrutura do seu ThemeContext
+
+  //validador de campos funciona
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!nome || !email || !senha || !confSenha || !cargo) { //removido cnpj
+    if (!nome || !email || !senha || !confSenha /* || !cargo */) { // removido cnpj e cargo comentado, ajuste conforme necessidade
       alert('Todos os campos são obrigatórios!');
       return false;
     }
@@ -44,19 +48,14 @@ const Cadastro = () => {
       return false;
     }
 
-    // if (cnpj.length !== 14) {
-    //   alert('CNPJ deve ter 14 dígitos!');
-    //   return false;
-    // }
-
     if (nome.length < 4) {
-      alert('O nome deve ter pello menos 4 caracteres!');
+      alert('O nome deve ter pelo menos 4 caracteres!');
       return false;
     }
 
     if (senha !== confSenha) {
       alert('As senhas não coincidem!');
-      return;
+      return false;
     }
 
     try {
@@ -65,8 +64,7 @@ const Cadastro = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ nome, email, senha, palavra_chave: palavraChave })
-
+        body: JSON.stringify({ nome, email, senha, palavra_chave: palavraChave }),
       });
 
       if (res.ok) {
@@ -83,13 +81,13 @@ const Cadastro = () => {
 
         if (loginRes.ok && loginData.usuario) {
           login(loginData.usuario); // Atualiza o contexto
-          alert("Cadastro realizados com sucesso!");
+          alert("Cadastro realizado com sucesso!");
           navigate("/estoque");
         } else {
           alert("Cadastro feito, mas houve um problema ao fazer login automático.");
           navigate("/login");
         }
-      } else { 
+      } else {
         const erro = await res.json();
         alert(erro.error || 'Erro ao cadastrar. Palavra chave inválida.');
       }
@@ -105,10 +103,12 @@ const Cadastro = () => {
     <div style={{ marginTop: '100px' }}>
       <NavBar />
       <Container style={{ maxWidth: '500px' }}>
-        <Form onSubmit={handleSubmit} className="shadow"
-          style={{ padding: '30px', textAlign: "center", borderRadius: '20px', border: '1px blue solid' }}>
-          <img
-            src={logo} width={100} alt="" />
+        <Form
+          onSubmit={handleSubmit}
+          className="shadow"
+          style={{ padding: '30px', textAlign: "center", borderRadius: '20px', border: '1px blue solid' }}
+        >
+          <img src={logo} width={100} alt="Logo" />
           <h1 style={{ textAlign: 'center' }}>Cadastro</h1>
 
           <FloatingLabel controlId="nome" label="Nome" className="m-2">
@@ -166,32 +166,13 @@ const Cadastro = () => {
             />
           </FloatingLabel>
 
-           {/* <FloatingLabel controlId="Cargo" label="Cargo do funcionario" className="m-2">
-            <Form.Control
-              type="text"
-              placeholder="Cargo do funcionario: 'ADM','Gerente','Funcionario'"
-              value={cargo}
-              onChange={(e) => setCargo(e.target.value)}
-              className="rounded-3 shadow mt-3"
-              style={{ border: 'none' }}
-            />
-          </FloatingLabel> */}
-
-          {/* <FloatingLabel controlId="cnpj" label="CNPJ" className="m-2">
-            <Form.Control
-              type="text"
-              placeholder="CNPJ"
-              value={cnpj}
-              onChange={(e) => setCnpj(e.target.value)}
-              className="rounded-3 shadow mt-3"
-              style={{ border: 'none' }}
-            />
-          </FloatingLabel> */}
+          {/* Outros campos comentados */}
 
           <Button
             type="submit"
             className="shadow mt-4"
-            style={{ padding: '15px', width: '90%', marginLeft: '20px' }}>
+            style={{ padding: '15px', width: '90%', marginLeft: '20px' }}
+          >
             Cadastrar
           </Button>
 
@@ -199,14 +180,22 @@ const Cadastro = () => {
             className="shadow mt-4"
             variant="outline-primary"
             href="/"
-            style={{ padding: '15px', width: '90%', marginLeft: '20px' }}>
+            style={{ padding: '15px', width: '90%', marginLeft: '20px' }}
+          >
             Voltar
           </Button>
 
           <Button
             href="/login"
+            variant="link"
             className="m-3"
-            style={{ background: "none", color: "black", border: "none" }}>
+            style={{
+              color: darkMode ? 'white' : 'black',
+              background: "none",
+              border: "none",
+              padding: 0,
+            }}
+          >
             Já tem uma conta? Log-in
           </Button>
         </Form>

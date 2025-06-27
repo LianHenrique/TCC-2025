@@ -7,6 +7,7 @@ import { Button, Container, FloatingLabel } from "react-bootstrap";
 import { AuthContext } from "../../Contexts/UserContext";
 
 import logo from "../../assets/logo.png"
+import { ThemeContext } from "../../Contexts/ThemeContext";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -53,6 +54,9 @@ const Login = () => {
     }
   };
 
+  const theme = useContext(ThemeContext);
+  const darkMode = theme.darkMode;
+
   return (
 
     <div
@@ -68,7 +72,7 @@ const Login = () => {
           className='shadow rounded-4'
           style={{
             padding: "30px",
-            border: "1px blue solid", textAlign:"center"
+            border: "1px blue solid", textAlign: "center"
           }}>
           <img
             src={logo} width={100} alt="" />
@@ -125,10 +129,10 @@ const Login = () => {
               }}>Esqueceu a senha? <a
                 href="/recuperar_senha"
                 style={{
+                  color: darkMode ? 'white' : 'black',
                   background: "none",
-                  color: "black",
                   border: "none",
-                  padding: "0",
+                  padding: 0,
                 }}>
                 recuperar senha
               </a></p>
@@ -154,17 +158,17 @@ const Login = () => {
               }}>Ainda não cadastrou? <a
                 href="/cadastro"
                 style={{
+                  color: darkMode ? 'white' : 'black',
                   background: "none",
-                  color: "black",
                   border: "none",
-                  padding: "0",
+                  padding: 0,
                 }}>
                 cadastre-se
               </a></p>
-          </div>
-        </Form>
-      </Container>
-    </div>
+        </div>
+      </Form>
+    </Container>
+    </div >
 
   )
 }

@@ -4,19 +4,18 @@ html, body {
   padding: 0;
   box-sizing: border-box;
   font-family: 'Alexandria', sans-serif;
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 /* Temas */
 .light-mode {
   background-color: white;
   color: black;
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .dark-mode {
-  background-color: black;
+  background-color: #001f3f;
   color: white;
-  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* App container */
@@ -37,7 +36,8 @@ html, body {
   transform: translateX(-150px);
 }
 
-.header h1 {
+.header h1,
+.header h2 {
   font-size: 2.5rem;
   font-weight: bold;
   transform: translateX(-10px);
@@ -45,7 +45,6 @@ html, body {
 
 .header p {
   font-size: 1.1rem;
-  color: #444;
   max-width: 800px;
   margin: 0 auto;
   text-align: justify;
@@ -72,7 +71,6 @@ html, body {
   transform: translateX(-350px);
 }
 
-/* Alinhamento para a esquerda */
 .alinharEsquerda {
   justify-content: flex-start;
   padding-left: 3rem;
@@ -142,9 +140,13 @@ html, body {
   min-width: 180px;
 }
 
-/* Movimento individual */
+.dark-mode .beneficioCard {
+  background-color: #1a1a1a;
+  color: white;
+}
+
 .beneficio1 { transform: translateX(-150px); }
-.beneficio2 { transform: translateX(0px); }
+.beneficio2 { transform: translateX(0); }
 .beneficio3 { transform: translateX(150px); }
 
 .beneficioCard:hover {
@@ -189,4 +191,77 @@ html, body {
   color: #333;
   text-align: left;
   flex: 1;
+}
+
+.dark-mode .card {
+  background-color: #1a1a1a;
+  color: white;
+}
+
+.dark-mode .cardText {
+  color: #ccc;
+}
+
+/* Responsividade */
+@media (max-width: 1024px) {
+  .header {
+    transform: none;
+    padding-left: 1rem;
+    text-align: center;
+  }
+
+  .header h1,
+  .header h2 {
+    font-size: 2rem;
+    transform: none;
+  }
+
+  .header p {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    text-align: justify;
+  }
+
+  .testeGratisContainer {
+    transform: none;
+    justify-content: center;
+    padding-left: 0;
+  }
+
+  .alinharEsquerda {
+    justify-content: center;
+    padding-left: 0;
+  }
+
+  .beneficios {
+    gap: 2rem;
+    flex-direction: column;
+  }
+
+  .planos {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .card {
+    width: 90%;
+  }
+}
+
+@media (max-width: 600px) {
+  .header h1,
+  .header h2 {
+    font-size: 1.8rem;
+  }
+
+  .botaoTesteGratis,
+  .botaoTesteGratis1,
+  .botaoTesteGratis2 {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .cardText {
+    font-size: 1rem;
+  }
 }
