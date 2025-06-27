@@ -1,166 +1,154 @@
-.EscopoRelatorio h4{ 
-    padding-left: 55vw;
-    font-size:1.2vw !important;
-    width: 85vw;
-    font-weight: bold;
-    font-family:'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
-}
-
-.EscopoRelatorio{
+/* ========================
+   ESCOPOS E DESCRIÇÕES
+=========================== */
+.EscopoRelatorio {
     display: flex;
-    flex-direction:column;
+    flex-direction: column;
     align-items: flex-start;
     margin-bottom: 5vh;
 }
 
-.EscopoRelatorio p{
-    font-size: clamp(12px, 1vw, 1.5vw)!important;
+.EscopoRelatorio h4 {
+    padding-left: 55vw;
+    font-size: clamp(14px, 1.2vw, 18px);
+    width: 85vw;
+    font-weight: bold;
+    font-family: 'Lucida Sans', Verdana, sans-serif;
+}
+
+.EscopoRelatorio p {
+    font-size: clamp(12px, 1vw, 1.2vw);
     max-width: 50vw;
     padding-right: 10vw;
     margin-left: 55%;
 }
 
-.EscopoRelatorio img{
-    position: absolute; 
-    margin-left: 15vw; 
+.EscopoRelatorio img {
+    position: absolute;
+    margin-left: 15vw;
     width: 35vw;
     margin-top: -1vh;
 }
 
-/* Estilo do card */
-.Card_Funcionario{
+/* ========================
+   CARD FUNCIONÁRIO
+=========================== */
+.Card_Funcionario {
     margin-left: 16.5vw;
-    width: 15vw !important;
+    width: 15vw;
     margin-bottom: 13vh;
     box-shadow: 1px 10px 20px rgba(0, 0, 0, 0.2);
 }
 
-/* Contatenando os botões para deixar responsivo */
-.Contatenando_Butoes{
+/* ========================
+   BOTÕES DE AÇÃO
+=========================== */
+.Contatenando_Butoes {
     display: flex;
     justify-content: center;
 }
 
-/* Estilização da tag do nome do funcoinário */
-.p{
+.p {
     margin-left: 4vw;
-    font-size: 1vw !important;
+    font-size: 1vw;
 }
 
-/* Estilização do botão de (deletar), o botão vermelho*/
-.BotaoVermelho{
+.BotaoVermelho,
+.BotaoAmarelo {
+    border-radius: 50%;
+    width: 3vw;
+    height: auto;
+    margin-top: -10%;
+}
+
+.BotaoVermelho {
     margin-left: 65%;
-    margin-top: -10%;
-    width: 3vw;
-    height: auto;
     color: #E33F42;
-    border-radius: 50%;
 }
 
-/* Estilização do botão de (atualizar), o botão amarelo*/
- .BotaoAmarelo{
-    border-radius: 50%;
-    margin-left: 5%; 
-    width: 3vw;
-    height: auto;
-    margin-top: -10%;
+.BotaoAmarelo {
+    margin-left: 5%;
 }
 
-.img2{
-    margin-top: 80vh !important;
+/* ========================
+   OUTROS ELEMENTOS
+=========================== */
+.img2 {
+    margin-top: 80vh;
 }
 
-/* Relatório de insumos */
-.h4_2{
+.h4_2 {
     margin-top: 25vh;
 }
 
-.Qtd_Saida_Insumo{
+.Qtd_Saida_Insumo {
     padding-left: 1vw;
 }
 
-.Card_Insumos{
-    width: 15vw !important;
+.Card_Insumos {
+    width: 15vw;
     margin-bottom: 13vh;
     box-shadow: 1px 10px 20px rgba(0, 0, 0, 0.2);
 }
 
-@media (max-width:600px){
-
-    .EscopoRelatorio p{
-        font-size: 4vw !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        max-width: 0;
-        padding-right: 0;
+/* ========================
+   MEDIA QUERY MOBILE
+=========================== */
+@media (max-width: 600px) {
+    .EscopoRelatorio p {
+        font-size: 4vw;
+        max-width: 100%;
         margin-left: 0;
+        padding-right: 0;
     }
 
-    .EscopoRelatorio h4{
-        padding-left: 2vw;
-        padding-right: 10vw; 
-        margin-top: -5vh;
-        margin-bottom: 15px;
-        font-size: 4vw !important;
-        width: 100vw;
+    .EscopoRelatorio h4 {
+        padding: 0 10vw;
+        font-size: 4vw;
+        width: 100%;
+        margin: -5vh 0 15px;
     }
 
-    .EscopoRelatorio img{
+    .EscopoRelatorio img {
         position: relative;
-        justify-content: center;
-        bottom: 7vh;
         width: 55vh;
+        margin: 0 1vw -7vh;
         height: auto;
-        margin-left: 1vw; 
     }
 
-    .img2{
+    .img2 {
         margin-bottom: -50vh;
-        height: auto;
         width: 55vh;
     }
 
-    .Card_Funcionario{
+    .Card_Funcionario {
         margin-top: 45%;
         margin-left: 25%;
-        width: 48vw !important;
+        width: 48vw;
         height: 28vh;
         position: relative;
         top: -18vh;
     }
 
-    .BotaoAmarelo{
-        width: 40% !important;
+    .BotaoVermelho,
+    .BotaoAmarelo {
+        width: 20% !important;
+        height: 3vh;
+        margin-top: 2%;
     }
 
-    .BotaoVermelho{
-        margin-top: 2%;
+    .BotaoVermelho {
         margin-left: 53%;
-        width: 20% !important;
-        height: 3vh;
     }
 
-    .BotaoAmarelo{
-        margin-top: 2%;
-        width: 20% !important;
-        height: 3vh;
-    }
-
-    .BotaoVermelho img{
-        margin-top: 10%;
-        position: relative;
+    .BotaoVermelho img,
+    .BotaoAmarelo img {
         top: -1vh;
         left: -1vw;
-    }
-
-    .BotaoAmarelo img{
         position: relative;
-        top: -1vh;
-        left: -1vw;
     }
 
-    /* Mexer na tela */
-    .p{
+    .p {
         font-size: 25px !important;
     }
 }

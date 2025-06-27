@@ -13,13 +13,9 @@ const Cardapio = () => {
   const [cardapioFiltrado, setCardapioFiltrado] = useState([]);
   const navigate = useNavigate();
 
-  // Normaliza texto para comparações
-  const normalizeString = (str) => {
-    if (!str) return '';
-    return String(str).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
-  };
+  const normalizeString = (str) =>
+    str ? String(str).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim() : '';
 
-  // Busca e formatação inicial do cardápio
   useEffect(() => {
     fetch(`http://localhost:3000/cardapio`)
       .then(res => res.json())
@@ -32,30 +28,93 @@ const Cardapio = () => {
         const cardapioFormatado = data.map(item => {
           let insumosArray = [];
 
-          if (Array.isArray(item.insumos)) {
-            insumosArray = item.insumos;
-          } else if (
-            typeof item.insumos === 'object' &&
-            item.insumos !== null &&
-            Object.keys(item.insumos).length > 0
-          ) {
-            insumosArray = [item.insumos];
-          } else if (typeof item.insumos === 'string') {
-            try {
+          try {
+            if (Array.isArray(item.insumos)) {
+              insumosArray = item.insumos;
+            } else if (typeof item.insumos === 'string') {
               const parsed = JSON.parse(item.insumos);
               insumosArray = Array.isArray(parsed) ? parsed : [parsed];
-            } catch {
-              insumosArray = [];
             }
+          } catch {
+            insumosArray = [];
           }
 
-          const ingredientesTexto =
-            insumosArray.length > 0 && insumosArray.some(i => i.nome_insumo)
-              ? `Ingredientes: ${insumosArray
-                .map(insumo => insumo.nome_insumo)
-                .filter(nome => !!nome)
-                .join(', ')}`
-              : 'Ingredientes: Não informado';
+          const parseNumero = (valor) => {
+            if (typeof valor === 'number') return valor;
+            if (typeof valor === 'string') {
+              // Remove separadores de milhar (ponto), transforma vírgula decimal em ponto
+              const limpo = valor.replace(/\./g, '').replace(',', '.');
+              const num = Number(limpo);
+              return isNaN(num) ? 0 : num;
+            }
+            return 0;
+          };
+
+
+
+          const estoqueInsuficiente = insumosArray.some(insumo => {
+            const disponivel = parseNumero(insumo.quantidade_insumos);
+            const necessario = parseNumero(insumo.quantidade_necessaria);
+            const normalizarUnidade = (str) => {
+              if (!str) return '';
+              const u = str.toLowerCase().trim();
+              if (u === 'l') return 'litro';
+              if (u === 'ml' || u === 'mililitro') return 'ml';
+              if (u === 'kg') return 'kg';
+              if (u === 'g' || u === 'grama') return 'g';
+              if (u === 'unidade' || u === 'unidades') return 'unidade';
+              return u;
+            };
+
+            const unidadeEstoque = normalizarUnidade(insumo.unidade_medida);
+            const unidadeReceita = normalizarUnidade(insumo.unidade_medida_receita);
+
+
+            if (!isFinite(disponivel) || !isFinite(necessario)) return true;
+
+            console.log({
+              nomeInsumo: insumo.nome_insumo,
+              disponivel,
+              unidadeEstoque,
+              necessario,
+              unidadeReceita,
+              comparado: unidadeEstoque === unidadeReceita ? disponivel < necessario
+                : unidadeEstoque === 'kg' && unidadeReceita === 'g' ? disponivel * 1000 < necessario
+                  : unidadeEstoque === 'g' && unidadeReceita === 'kg' ? disponivel < necessario * 1000
+                    : unidadeEstoque === 'litro' && unidadeReceita === 'ml' ? disponivel * 1000 < necessario
+                      : unidadeEstoque === 'ml' && unidadeReceita === 'litro' ? disponivel < necessario * 1000
+                        : 'incompatível'
+            });
+
+
+            // Conversões
+            if (unidadeEstoque === unidadeReceita) {
+              return disponivel < necessario;
+            }
+
+            // Conversão entre massa
+            if (unidadeEstoque === 'kg' && unidadeReceita === 'g') {
+              return disponivel * 1000 < necessario;
+            }
+            if (unidadeEstoque === 'g' && unidadeReceita === 'kg') {
+              return disponivel < necessario * 1000;
+            }
+
+            // Conversão entre volume
+            if (unidadeEstoque === 'litro' && unidadeReceita === 'ml') {
+              return disponivel * 1000 < necessario;
+            }
+            if (unidadeEstoque === 'ml' && unidadeReceita === 'litro') {
+              return disponivel < necessario * 1000;
+            }
+
+            // Unidades incompatíveis são consideradas insuficientes por segurança
+            return true;
+          });
+
+          const ingredientesTexto = insumosArray.length
+            ? `Ingredientes: ${insumosArray.map(i => i?.nome_insumo || 'Desconhecido').join(', ')}`
+            : 'Ingredientes: Não informado';
 
           return {
             id: item.id_cardapio,
@@ -70,6 +129,7 @@ const Cardapio = () => {
               { texto: `Categoria: ${item.categoria || 'Não informada'}` }
             ],
             categoria: item.categoria || 'Não informada',
+            estoqueInsuficiente,
             acoes: [
               {
                 icone: <FaEdit />,
@@ -88,84 +148,77 @@ const Cardapio = () => {
       .catch(error => console.error('Erro ao buscar cardápio:', error));
   }, []);
 
-  // Filtra o cardápio toda vez que cardapio, filtro ou texto mudam
   useEffect(() => {
-    let filtered = [...cardapio];
+    let filtrado = [...cardapio];
 
-    if (filtroSelecionado && filtroSelecionado !== 'Todos') {
+    if (filtroSelecionado !== 'Todos') {
       const filtroNorm = normalizeString(filtroSelecionado);
-      filtered = filtered.filter(item => normalizeString(item.categoria) === filtroNorm);
+      filtrado = filtrado.filter(item => normalizeString(item.categoria) === filtroNorm);
     }
 
-    if (textoBusca && textoBusca.trim() !== '') {
+    if (textoBusca.trim()) {
       const textoBuscaNorm = normalizeString(textoBusca);
-
-      filtered = filtered.filter(item =>
+      filtrado = filtrado.filter(item =>
         normalizeString(item.nome).includes(textoBuscaNorm) ||
-        item.descricao.some(d => normalizeString(d.texto).includes(textoBuscaNorm))
+        item.descricao?.some(d => normalizeString(d.texto).includes(textoBuscaNorm))
       );
     }
 
-    setCardapioFiltrado(filtered);
+    setCardapioFiltrado(filtrado);
   }, [cardapio, filtroSelecionado, textoBusca]);
 
-  // Atualiza estados de filtro e texto a partir do componente Pesquisa
-  const handleFilterChange = (filtro) => {
-    setFiltroSelecionado(filtro);
-  };
 
-  const handleSearchChange = (texto) => {
-    setTextoBusca(texto);
-  };
-
-  function handleCardClick(id) {
-    navigate(`/Visualizar_Cardapio/${id}`);
-  }
-
-  function handleDelete(id) {
+  const handleDelete = (id) => {
     if (window.confirm('Tem certeza que deseja excluir este produto?')) {
-      fetch(`http://localhost:3000/cardapio/${id}`, {
-        method: 'DELETE'
-      })
-        .then(response => {
-          if (response.ok) {
-            setCardapio(prev => prev.filter(item => item.id !== id));
-          } else {
-            alert('Erro ao excluir produto');
-          }
+      fetch(`http://localhost:3000/cardapio/${id}`, { method: 'DELETE' })
+        .then(res => {
+          if (res.ok) setCardapio(prev => prev.filter(item => item.id !== id));
+          else alert('Erro ao excluir produto');
         })
         .catch(err => console.error('Erro ao excluir:', err));
     }
-  }
+  };
 
-  function handlePedir(id_cardapio) {
-    fetch('http://localhost:3000/saida-venda', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ id_cardapio })
-    })
-      .then(async res => {
-        const data = await res.json();
-        if (!res.ok) {
-          const msg = data.error || 'Erro desconhecido';
-          throw new Error(msg);
-        }
-        return data;
-      })
-      .then(data => {
-        alert(data.message || 'Pedido registrado com sucesso!');
-      })
-      .catch(error => {
-        console.error('Erro ao registrar pedido:', error.message);
-        alert(`Não foi possível concluir o pedido:\n\n${error.message}`);
+  const handlePedir = async (idItemCardapio, nomeProduto) => {
+    try {
+      const response = await fetch('http://localhost:3000/saida-venda', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id_cardapio: idItemCardapio }),
       });
-  }
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (data?.error?.includes('Estoque insuficiente')) {
+          alert(`Não foi possível concluir o pedido:\n\n${data.error}`);
+
+          setCardapio(prev =>
+            prev.map(prod =>
+              prod.nome === nomeProduto
+                ? { ...prod, estoqueInsuficiente: true }
+                : prod
+            )
+          );
+        } else {
+          alert('Erro ao realizar o pedido.');
+        }
+        return;
+      }
+
+      alert('Pedido realizado com sucesso!');
+    } catch (err) {
+      console.error(err);
+      alert('Erro de conexão com o servidor.');
+    }
+  };
 
   return (
     <div>
       <NavBar />
-      <Container>
-        <h1 style={{ marginTop: "100px" }}><b>PRODUTOS</b></h1>
+      <Container style={{ marginTop: '100px' }}>
+        <h1 className="fw-bold mb-2">PRODUTOS</h1>
+
         <Pesquisa
           nomeDrop="Filtro"
           navega="/cadastro_produto"
@@ -175,25 +228,29 @@ const Cardapio = () => {
             { value: 'Bebida', texto: 'Bebida' },
             { value: 'Sobremesa', texto: 'Sobremesa' }
           ]}
-          onFilterChange={handleFilterChange}
-          onSearchChange={handleSearchChange} // **PASSA O onSearchChange**
+          onFilterChange={setFiltroSelecionado}
+          onSearchChange={setTextoBusca}
         />
-
         <CardGeral
+          filtro="Produtos"
           card={cardapioFiltrado}
-          onCardClick={handleCardClick}
           showButtons={false}
-          imgHeight={250}
-          customButton={item => (
-            <Button
-              variant="success"
-              style={{ padding: "15px" }}
-              className="fs-5 text-center shadow alert-success align-center bg-success text-white"
-              onClick={() => handlePedir(item.id)}
-            >
-              Pedir
-            </Button>
-          )}
+          onCardClick={(id) => navigate(`/Visualizar_Cardapio/${id}`)}
+          customButton={(item) =>
+            !item.estoqueInsuficiente && (
+              <Button
+                variant="success"
+                className="rounded-pill shadow-sm text-white px-4 py-2 mt-2"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handlePedir(item.id, item.nome);
+                }}
+              >
+                Pedir
+              </Button>
+            )
+          }
         />
       </Container>
     </div>

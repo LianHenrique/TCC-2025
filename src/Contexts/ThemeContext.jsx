@@ -10,7 +10,7 @@ export const ThemeProvider = ({ children }) => {
   });
 
   useEffect(() => {
-    document.body.style.backgroundColor = darkMode ? '#121212' : '#fff';
+    document.body.style.backgroundColor = darkMode ? '#001f3f' : '#fff';
     document.body.style.color = darkMode ? '#fff' : '#000';
 
     // Salva o tema sempre que mudar

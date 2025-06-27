@@ -13,12 +13,14 @@ const Cadastro = () => {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [confSenha, setConfSenha] = useState('');
+  const [palavraChave, setPalavraChave] = useState('');
+  const [cargo, setCargo] = useState(''); // Adicionado para capturar o cargo do funcionário
   // const [cnpj, setCnpj] = useState('');
 
-    const validarEmail = (email) => {
-        const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
-        return regex.test(email);
-       };
+  const validarEmail = (email) => {
+    const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    return regex.test(email);
+  };
 
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
@@ -27,7 +29,7 @@ const Cadastro = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-     if (!nome || !email || !senha || !confSenha){ //removido cnpj
+    if (!nome || !email || !senha || !confSenha || !cargo) { //removido cnpj
       alert('Todos os campos são obrigatórios!');
       return false;
     }
@@ -47,7 +49,7 @@ const Cadastro = () => {
     //   return false;
     // }
 
-    if(nome.length < 4){
+    if (nome.length < 4) {
       alert('O nome deve ter pello menos 4 caracteres!');
       return false;
     }
@@ -63,7 +65,8 @@ const Cadastro = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ nome, email, senha }), //removido cnpj
+        body: JSON.stringify({ nome, email, senha, palavra_chave: palavraChave })
+
       });
 
       if (res.ok) {
@@ -86,9 +89,9 @@ const Cadastro = () => {
           alert("Cadastro feito, mas houve um problema ao fazer login automático.");
           navigate("/login");
         }
-      } else {
+      } else { 
         const erro = await res.json();
-        alert(erro.message || 'Erro ao cadastrar.');
+        alert(erro.error || 'Erro ao cadastrar. Palavra chave inválida.');
       }
     } catch (err) {
       console.error(err);
@@ -102,10 +105,10 @@ const Cadastro = () => {
     <div style={{ marginTop: '100px' }}>
       <NavBar />
       <Container style={{ maxWidth: '500px' }}>
-        <Form onSubmit={handleSubmit} className="shadow" 
-        style={{ padding: '30px', textAlign:"center", borderRadius: '20px', border: '1px blue solid' }}>
-          <img 
-          src={logo} width={100} alt="" />
+        <Form onSubmit={handleSubmit} className="shadow"
+          style={{ padding: '30px', textAlign: "center", borderRadius: '20px', border: '1px blue solid' }}>
+          <img
+            src={logo} width={100} alt="" />
           <h1 style={{ textAlign: 'center' }}>Cadastro</h1>
 
           <FloatingLabel controlId="nome" label="Nome" className="m-2">
@@ -151,6 +154,28 @@ const Cadastro = () => {
               style={{ border: 'none' }}
             />
           </FloatingLabel>
+
+          <FloatingLabel controlId="palavraChave" label="Palavra-chave de recuperação" className="m-2">
+            <Form.Control
+              type="text"
+              placeholder="Palavra-chave"
+              value={palavraChave}
+              onChange={(e) => setPalavraChave(e.target.value)}
+              className="rounded-3 shadow mt-3"
+              style={{ border: 'none' }}
+            />
+          </FloatingLabel>
+
+           {/* <FloatingLabel controlId="Cargo" label="Cargo do funcionario" className="m-2">
+            <Form.Control
+              type="text"
+              placeholder="Cargo do funcionario: 'ADM','Gerente','Funcionario'"
+              value={cargo}
+              onChange={(e) => setCargo(e.target.value)}
+              className="rounded-3 shadow mt-3"
+              style={{ border: 'none' }}
+            />
+          </FloatingLabel> */}
 
           {/* <FloatingLabel controlId="cnpj" label="CNPJ" className="m-2">
             <Form.Control

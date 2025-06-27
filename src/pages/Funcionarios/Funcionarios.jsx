@@ -52,7 +52,9 @@ const Funcionarios = () => {
       const buscaTexto = removerAcentos(texto.toLowerCase());
 
       const correspondeNome = texto ? nome.includes(buscaTexto) : true;
-      const correspondeCargo = cargo ? cargoFunc === cargo.toLowerCase() : true;
+      const correspondeCargo = cargo && cargo.toLowerCase() !== 'todos'
+        ? cargoFunc === cargo.toLowerCase()
+        : true;
 
       return correspondeNome && correspondeCargo;
     });
