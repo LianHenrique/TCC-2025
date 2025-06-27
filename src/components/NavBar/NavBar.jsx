@@ -17,7 +17,12 @@ const NavBar = () => {
   const tit = usuarioNome ? "/estoque" : "/home";
 
   return (
-    <Navbar expand="lg" bg="primary" data-bs-theme="dark" fixed="top">
+    <Navbar
+      expand="lg"
+      fixed="top"
+      className={darkMode ? styles.navDark : styles.navLight}
+      variant="dark"
+    >
       <Container>
         <div className="d-flex align-items-center">
           <img src={logo} width={50} height={50} alt="logo" className="me-2" />
@@ -36,12 +41,8 @@ const NavBar = () => {
                 <Nav.Link href="/alertas" className={styles.button}>Alertas</Nav.Link>
               </Nav>
 
-              <div className="d-flex align-items-center gap-3"
-                style={{
-                  justifyContent: "center"
-                }}>
+              <div className="d-flex align-items-center gap-3" style={{ justifyContent: "center" }}>
                 <Button
-                  variant={darkMode ? "light" : "dark"}
                   onClick={toggleTheme}
                   title="Alternar tema"
                   style={{
@@ -83,7 +84,7 @@ const NavBar = () => {
               >
                 {darkMode ? <FaSun size={22} /> : <FaMoon size={22} />}
               </Button>
-              <Nav.Link href="/cadastro" className={styles.botaoCadastro} style={{ color: "white" }}>
+              <Nav.Link href="/cadastro" className={styles.botaoCadastro}>
                 Cadastre-se
               </Nav.Link>
               <Button variant="light" href="/login" className="text-primary">Login</Button>

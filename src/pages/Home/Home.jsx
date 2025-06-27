@@ -67,9 +67,7 @@ function Home() {
               • Sem registro em reconhecimento<br />
               • Sem obrigação de faturamento
             </p>
-            <button style={{
-              color: "black"
-            }} className={styles.botaoTesteGratis2} onClick={() => navigate("/cadastro")}>
+            <button className={styles.botaoTesteGratis2} onClick={() => navigate("/cadastro")}>
               Começar
             </button>
           </div>
