@@ -4,11 +4,11 @@ import Nav from "react-bootstrap/Nav";
 import Button from "react-bootstrap/Button";
 import { useContext } from "react";
 import { AuthContext } from "../../Contexts/UserContext";
-import { ThemeContext } from "../../Contexts/ThemeContext";
 import { FaSun, FaMoon } from "react-icons/fa";
 import styles from "./NavBar.module.css";
 
 import logo from "../../assets/logo.png";
+import { ThemeContext } from "../../Contexts/ThemeContext";
 
 const NavBar = () => {
   const { usuarioNome, logout } = useContext(AuthContext);

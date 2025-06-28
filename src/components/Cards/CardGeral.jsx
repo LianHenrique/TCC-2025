@@ -70,7 +70,7 @@ const CardGeral = ({
                   }}
                 />
 
-                <Card.Body style={{ flex: 1 }}>
+                <Card.Body style={{ flex: 1, position: 'relative' }}>
                   <Card.Title className={ClassTitulo}>{item.nome}</Card.Title>
 
                   {Array.isArray(item.descricao) &&
@@ -78,7 +78,6 @@ const CardGeral = ({
                       const isVencimento = desc.texto?.toLowerCase().includes('vencimento');
                       const isQuantidade = desc.texto?.toLowerCase().includes('quantidade');
                       const isDanger = desc.badge === 'danger';
-
                       const aplicarFundo = isDanger && (isVencimento || isQuantidade);
 
                       return (
@@ -102,8 +101,7 @@ const CardGeral = ({
                               ? (() => {
                                 const match = desc.texto.match(/quantidade:\s*([\d.,]+)\s*(\w+)?/i);
                                 const valor = match?.[1] ? parseFloat(match[1].replace(',', '.')) : null;
-                                const unidade = match?.[2] || ''; // Se existir, mostra
-
+                                const unidade = match?.[2] || '';
                                 return valor !== null
                                   ? `Quantidade: ${valor.toLocaleString('pt-BR', {
                                     minimumFractionDigits: valor % 1 === 0 ? 0 : 2,
@@ -131,19 +129,15 @@ const CardGeral = ({
                       );
                     })}
 
-                  {/* BLOCO CENTRALIZADO DE ESTOQUE INSUFICIENTE */}
                   {isDisabled && (
-                    <div
-                      className="d-flex flex-column align-items-center justify-content-center mt-3"
-                    >
+                    <div className="d-flex flex-column align-items-center justify-content-center mt-3">
                       <div
                         style={{
                           backgroundColor: '#e74c3c',
                           color: '#fff',
                           fontWeight: 'bold',
-                          padding: '10px 20px',
+                          padding: '10px',
                           borderRadius: '30px',
-                          marginBottom: '10px',
                           fontSize: '1rem',
                           boxShadow: '0px 2px 6px rgba(0, 0, 0, 0.2)',
                         }}
@@ -165,41 +159,20 @@ const CardGeral = ({
                     </div>
                   )}
 
-                  {/* BOTÕES DE EDIÇÃO/EXCLUSÃO */}
-                  {!isDisabled && (customButton ? (
-                    customButton(item)
-                  ) : showButtons ? (
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'flex-end',
-                        gap: '0.5rem',
-                        marginTop: '10px',
-                      }}
-                    >
-                      <Button
-                        variant="warning"
-                        className="rounded-circle fs-5 text-center shadow m-1"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          item.acoes?.[0]?.onClick?.();
+                  {!isDisabled &&
+                    (customButton ? (
+                      <div
+                        style={{
+                          display: 'flex',
+                          width: "100%",
+                          justifyContent: "end"
                         }}
                       >
-                        <FaEdit />
-                      </Button>
 
-                      <Button
-                        variant="danger"
-                        className="rounded-circle fs-5 text-center shadow m-1"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          item.acoes?.[1]?.onClick?.();
-                        }}
-                      >
-                        <FaRegTrashAlt />
-                      </Button>
-                    </div>
-                  ) : null)}
+                        {customButton(item)}
+
+                      </div>
+                    ) : null)}
                 </Card.Body>
               </Card>
             </div>
