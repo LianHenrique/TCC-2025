@@ -13,7 +13,8 @@ CREATE TABLE Funcionario (
     email_funcionario VARCHAR(255) UNIQUE NOT NULL,
     senha_funcionario VARCHAR(255) NOT NULL, -- Considerar armazenar hash da senha
     data_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    imagem_url varchar (250)
+    imagem_url varchar (250),
+    palavra_chave VARCHAR(40)
 );
 INSERT INTO funcionario (nome_funcionario, cargo_funcionario, email_funcionario, senha_funcionario, data_cadastro, imagem_url)
 VALUES 

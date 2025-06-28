@@ -42,19 +42,22 @@ const Cardapio = () => {
           const parseNumero = (valor) => {
             if (typeof valor === 'number') return valor;
             if (typeof valor === 'string') {
-              // Remove separadores de milhar (ponto), transforma vírgula decimal em ponto
-              const limpo = valor.replace(/\./g, '').replace(',', '.');
+              const limpo = valor.replace(/[^\d,.-]/g, '').replace(/\./g, '').replace(',', '.');
               const num = Number(limpo);
               return isNaN(num) ? 0 : num;
             }
             return 0;
           };
 
-
-
           const estoqueInsuficiente = insumosArray.some(insumo => {
             const disponivel = parseNumero(insumo.quantidade_insumos);
             const necessario = parseNumero(insumo.quantidade_necessaria);
+
+            if (!isFinite(disponivel) || !isFinite(necessario)) {
+              console.warn(`[VALOR INVÁLIDO] ${insumo.nome_insumo} → disponível: ${disponivel}, necessário: ${necessario}`);
+              return true; // previne falhas
+            }
+
             const normalizarUnidade = (str) => {
               if (!str) return '';
               const u = str.toLowerCase().trim();
@@ -62,45 +65,39 @@ const Cardapio = () => {
               if (u === 'ml' || u === 'mililitro') return 'ml';
               if (u === 'kg') return 'kg';
               if (u === 'g' || u === 'grama') return 'g';
-              if (u === 'unidade' || u === 'unidades') return 'unidade';
+              if (u === 'unidade' || u === 'unidades' || u === 'un') return 'unidade'; // 👈 aqui
               return u;
             };
 
             const unidadeEstoque = normalizarUnidade(insumo.unidade_medida);
             const unidadeReceita = normalizarUnidade(insumo.unidade_medida_receita);
 
-
-            if (!isFinite(disponivel) || !isFinite(necessario)) return true;
-
             console.log({
               nomeInsumo: insumo.nome_insumo,
               disponivel,
-              unidadeEstoque,
               necessario,
+              unidadeEstoque,
               unidadeReceita,
-              comparado: unidadeEstoque === unidadeReceita ? disponivel < necessario
-                : unidadeEstoque === 'kg' && unidadeReceita === 'g' ? disponivel * 1000 < necessario
-                  : unidadeEstoque === 'g' && unidadeReceita === 'kg' ? disponivel < necessario * 1000
-                    : unidadeEstoque === 'litro' && unidadeReceita === 'ml' ? disponivel * 1000 < necessario
-                      : unidadeEstoque === 'ml' && unidadeReceita === 'litro' ? disponivel < necessario * 1000
-                        : 'incompatível'
+              resultado: (() => {
+                if (unidadeEstoque === unidadeReceita) return disponivel < necessario;
+                if (unidadeEstoque === 'kg' && unidadeReceita === 'g') return disponivel * 1000 < necessario;
+                if (unidadeEstoque === 'g' && unidadeReceita === 'kg') return disponivel < necessario * 1000;
+                if (unidadeEstoque === 'litro' && unidadeReceita === 'ml') return disponivel * 1000 < necessario;
+                if (unidadeEstoque === 'ml' && unidadeReceita === 'litro') return disponivel < necessario * 1000;
+                return 'incompatível';
+              })()
             });
 
-
-            // Conversões
             if (unidadeEstoque === unidadeReceita) {
               return disponivel < necessario;
             }
 
-            // Conversão entre massa
             if (unidadeEstoque === 'kg' && unidadeReceita === 'g') {
               return disponivel * 1000 < necessario;
             }
             if (unidadeEstoque === 'g' && unidadeReceita === 'kg') {
               return disponivel < necessario * 1000;
             }
-
-            // Conversão entre volume
             if (unidadeEstoque === 'litro' && unidadeReceita === 'ml') {
               return disponivel * 1000 < necessario;
             }
@@ -108,7 +105,6 @@ const Cardapio = () => {
               return disponivel < necessario * 1000;
             }
 
-            // Unidades incompatíveis são consideradas insuficientes por segurança
             return true;
           });
 
@@ -181,10 +177,12 @@ const Cardapio = () => {
 
   const handlePedir = async (idItemCardapio, nomeProduto) => {
     try {
+      console.log("Enviando id_cardapio:", idItemCardapio);
+
       const response = await fetch('http://localhost:3000/saida-venda', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id_cardapio: idItemCardapio }),
+        body: JSON.stringify({ id_cardapio: idItemCardapio })
       });
 
       const data = await response.json();

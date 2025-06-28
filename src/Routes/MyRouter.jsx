@@ -17,6 +17,7 @@ import Alerta from "../pages/Alerta/Alerta"
 import Visualizar_Cardapio from "../pages/Visualizacoes/Visualizar_Cardapio"
 import RecSenha from "../pages/RecSenha/RecSenha"
 import DataVencimento from "../pages/Alerta/DataVencimento.jsx"
+import PrivateRoute from "../components/PrivateRoute/PrivateRoute.jsx"
 
 const MyRouter = createBrowserRouter([
     {
@@ -25,19 +26,35 @@ const MyRouter = createBrowserRouter([
         children: [
             {
                 path: "/",
-                element: <Home />
+                element: (
+                    <PrivateRoute allowedRoles={["ADM", "Gerente", "Funcionario"]}>
+                        <Home />
+                    </PrivateRoute>
+                )
             },
             {
                 path: "/home",
-                element: <Home />
+                element: (
+                    <PrivateRoute allowedRoles={["ADM", "Gerente", "Funcionario"]}>
+                        <Home />
+                    </PrivateRoute>
+                )
             },
             {
                 path: "/estoque",
-                element: <Estoque />
+                element: (
+                    <PrivateRoute allowedRoles={["ADM", "Gerente", "Funcionario"]}>
+                        <Estoque />
+                    </PrivateRoute>
+                )
             },
             {
                 path: "/funcionarios",
-                element: <Funcionarios />
+                element: (
+                    <PrivateRoute allowedRoles={["ADM"]}>
+                        <Funcionarios />
+                    </PrivateRoute>
+                )
             },
             {
                 path: "/login",
@@ -49,31 +66,59 @@ const MyRouter = createBrowserRouter([
             },
             {
                 path: "/cadastro_insumos",
-                element: <Insumos />
+                element: (
+                    <PrivateRoute allowedRoles={["ADM", "Gerente"]}>
+                        <Insumos />
+                    </PrivateRoute>
+                )
             },
             {
                 path: "/cadastro_funcionario",
-                element: <Funcionario />
+                element: (
+                    <PrivateRoute allowedRoles={["ADM"]}>
+                        <Funcionario />
+                    </PrivateRoute>
+                )
             },
             {
                 path: "/cadastro_produto",
-                element: <Produto />
+                element: (
+                    <PrivateRoute allowedRoles={["ADM", "Funcionario", "Gerente"]}>
+                        <Produto />
+                    </PrivateRoute>
+                )
             },
             {
                 path: "/relatorio",
-                element: <Relatorios />
+                element: (
+                    <PrivateRoute allowedRoles={["ADM", "Gerente"]}>
+                        <Relatorios />
+                    </PrivateRoute>
+                )
             },
             {
                 path: "/cardapio",
-                element: <Cardapio />
+                element: (
+                    <PrivateRoute allowedRoles={["ADM", "Gerente", "Funcionario"]}>
+                        <Cardapio />
+                    </PrivateRoute>
+                )
             },
             {
                 path: "/visualizar/:id",
-                element: <Visualizar />
+                element: (
+                    <PrivateRoute allowedRoles={["ADM", "Gerente", "Funcionario"]}>
+                        <Visualizar />
+                    </PrivateRoute>
+                )
             },
             {
                 path: "/visualizar_funcionario/:id",
-                element: <Relatorio_Funcionario />
+                element: (
+                    <PrivateRoute allowedRoles={["ADM", "Gerente"]}>
+                        <Relatorio_Funcionario />
+                    </PrivateRoute>
+                )
             },
             {
                 path: "/agenda",
@@ -81,7 +126,11 @@ const MyRouter = createBrowserRouter([
             },
             {
                 path: "/alertas",
-                element: <Alerta />
+                element: (
+                    <PrivateRoute allowedRoles={["ADM", "Gerente"]}>
+                    <Alerta />
+                    </PrivateRoute>
+                )
             },
             {
                 path: "/Visualizar_Cardapio/:id",

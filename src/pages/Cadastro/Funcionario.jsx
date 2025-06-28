@@ -15,13 +15,14 @@ const Funcionarios = () => {
   const [urlFuncionario, setUrlFuncionario] = useState('');
   const [filtro, setFiltro] = useState('Todos');
   const [error, setError] = useState('');
+  const [palavraChave, setPalavraChave] = useState('');
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!nomeFuncionario || !emailFuncionario || !senhaFuncionario || !confSenhaFuncionario || !urlFuncionario || cargoFuncionario === 'Cargo') {
+    if (!nomeFuncionario || !emailFuncionario || !senhaFuncionario || !confSenhaFuncionario || !urlFuncionario || !palavraChave || cargoFuncionario === 'Cargo') {
       setError('Por favor, preencha todos os campos e selecione um cargo.');
       return;
     }
@@ -38,7 +39,8 @@ const Funcionarios = () => {
       email_funcionario: emailFuncionario,
       senha_funcionario: senhaFuncionario,
       cargo_funcionario: cargoFuncionario,
-      imagem_url: urlFuncionario
+      imagem_url: urlFuncionario,
+      palavra_chave: palavraChave
     };
 
     try {
@@ -74,7 +76,7 @@ const Funcionarios = () => {
         <Form
           onSubmit={handleSubmit}
           className="shadow rounded"
-          style={{ padding: '30px', border: '1px blue solid', textAlign:"center" }}>
+          style={{ padding: '30px', border: '1px blue solid', textAlign: "center" }}>
           <img
             src={logo} width={100} alt="" />
           <h1 style={{ textAlign: 'center' }}>Cadastro</h1>
@@ -139,6 +141,18 @@ const Funcionarios = () => {
               style={{ border: 'none' }}
             />
           </FloatingLabel>
+
+          <FloatingLabel controlId="palavraChave" label="Palavra-chave" className="m-2">
+            <Form.Control
+              type="text"
+              placeholder="Palavra-chave"
+              value={palavraChave}
+              onChange={(e) => setPalavraChave(e.target.value)}
+              className="rounded shadow mt-3"
+              style={{ border: 'none' }}
+            />
+          </FloatingLabel>
+
 
           {/* <Form.Select
             aria-label="Selecione o cargo"

@@ -139,15 +139,15 @@ app.get('/produtos/notificacao', (req, res) => {
 
 // Inserir funcionário
 app.post("/funcionarios/insert", (req, res) => {
-  const { nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario, imagem_url } = req.body;
+  const { nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario, imagem_url, palavra_chave } = req.body;
 
-  if (!nome_funcionario || !cargo_funcionario || !senha_funcionario || !email_funcionario || !imagem_url) {
+  if (!nome_funcionario || !cargo_funcionario || !senha_funcionario || !email_funcionario || !imagem_url || !palavra_chave) {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
   }
 
-  const sql = `INSERT INTO funcionario (nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario, imagem_url) VALUES (?, ?, ?, ?, ?)`;
+  const sql = `INSERT INTO funcionario (nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario, imagem_url, palavra_chave) VALUES (?, ?, ?, ?, ?, ?)`;
 
-  connection.query(sql, [nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario, imagem_url], (error) => {
+  connection.query(sql, [nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario, imagem_url, palavra_chave], (error) => {
     if (error) {
       console.error(error);
       return res.status(500).json({ error: 'Erro ao cadastrar funcionário' });
@@ -155,7 +155,6 @@ app.post("/funcionarios/insert", (req, res) => {
     res.status(201).json({ message: 'Funcionário cadastrado com sucesso' });
   });
 });
-
 
 
 // Editando funcionário
@@ -594,25 +593,73 @@ app.get('/produtos/estoque-baixo', (req, res) => {
 app.post('/login', (req, res) => {
   const { email, senha } = req.body;
 
-  const query = `SELECT * FROM cliente WHERE email_cliente = ? AND senha_cliente = ?`;
+  if (!email || !senha) {
+    return res.status(400).json({ error: 'Email e senha são obrigatórios.' });
+  }
 
-  connection.query(query, [email, senha], (error, results) => {
-    if (error) {
-      console.error("Erro ao fazer login:", error);
+  // Primeiro tenta logar como funcionário
+  const funcionarioQuery = `
+    SELECT 
+      id_funcionario AS id, 
+      nome_funcionario AS nome, 
+      email_funcionario AS email, 
+      cargo_funcionario AS cargo, 
+      'funcionario' AS tipo 
+    FROM funcionario 
+    WHERE email_funcionario = ? AND senha_funcionario = ?
+  `;
+
+  connection.query(funcionarioQuery, [email, senha], (err, results) => {
+    if (err) {
+      console.error("Erro ao buscar funcionário:", err);
       return res.status(500).json({ error: 'Erro no servidor' });
     }
 
-    if (results.length === 0) {
-      return res.status(401).json({ error: 'Email ou senha inválidos' });
+    if (results.length > 0) {
+      return res.status(200).json({
+        message: 'Login bem-sucedido (funcionário)',
+        usuario: results[0]
+      });
     }
 
-    // Se quiser, pode retornar dados do usuário ou token
-    return res.status(200).json({ message: 'Login bem-sucedido', usuario: results[0] });
+    // Se não for funcionário, tenta cliente COM CARGO PERMITIDO
+    const clienteQuery = `
+      SELECT 
+        id_cliente AS id, 
+        nome_cliente AS nome, 
+        email_cliente AS email, 
+        cargo AS cargo, 
+        'cliente' AS tipo
+      FROM cliente 
+      WHERE email_cliente = ? AND senha_cliente = ?
+    `;
+
+    connection.query(clienteQuery, [email, senha], (err2, results2) => {
+      if (err2) {
+        console.error("Erro ao buscar cliente:", err2);
+        return res.status(500).json({ error: 'Erro no servidor' });
+      }
+
+      if (results2.length === 0) {
+        return res.status(401).json({ error: 'Email ou senha inválidos' });
+      }
+
+      const cliente = results2[0];
+      const cargoPermitido = ["ADM", "Gerente"];
+
+      if (!cargoPermitido.includes(cliente.cargo)) {
+        return res.status(403).json({ error: 'Seu perfil não tem permissão para acessar o sistema.' });
+      }
+
+      return res.status(200).json({
+        message: 'Login bem-sucedido (cliente com permissão)',
+        usuario: cliente
+      });
+    });
   });
 });
 
 // --- ROTAS CARDÁPIO ---
-
 // Buscar todos os itens do cardápio 
 app.get('/cardapio', (req, res) => {
   const sql = `
@@ -880,7 +927,6 @@ function getInsumosDoItem(id_cardapio) {
   });
 }
 
-
 function normalizarUnidade(unidade) {
   if (!unidade) return '';
   const u = unidade.toLowerCase().trim();
@@ -893,31 +939,39 @@ function normalizarUnidade(unidade) {
 }
 
 // Função utilitária de conversão
-function convertToStockUnit(valor, unidadeReceita, unidadeEstoque) {
-  const from = normalizarUnidade(unidadeReceita);
-  const to = normalizarUnidade(unidadeEstoque);
-  const val = parseFloat(valor);
+function normalizeUnidade(unidade) {
+  const u = unidade?.toLowerCase().trim();
+  if (['un', 'unidade', 'unidades'].includes(u)) return 'unidade';
+  if (['g', 'grama'].includes(u)) return 'g';
+  if (['kg', 'quilo', 'kilograma'].includes(u)) return 'kg';
+  if (['ml', 'mililitro'].includes(u)) return 'ml';
+  if (['l', 'litro'].includes(u)) return 'l';
+  return u;
+}
 
-  if (!isFinite(val)) return NaN;
+function convertToStockUnit(quantidade, unidadeReceita, unidadeEstoque) {
+  const receita = normalizeUnidade(unidadeReceita);
+  const estoque = normalizeUnidade(unidadeEstoque);
 
-  if (from === to) return val;
+  if (receita === estoque) return quantidade;
 
-  // Massa
-  if (from === 'g' && to === 'kg') return val / 1000;
-  if (from === 'kg' && to === 'g') return val * 1000;
+  // Regras de conversão
+  if (receita === 'g' && estoque === 'kg') return quantidade / 1000;
+  if (receita === 'kg' && estoque === 'g') return quantidade * 1000;
+  if (receita === 'ml' && estoque === 'l') return quantidade / 1000;
+  if (receita === 'l' && estoque === 'ml') return quantidade * 1000;
 
-  // Volume
-  if (from === 'ml' && to === 'litro') return val / 1000;
-  if (from === 'litro' && to === 'ml') return val * 1000;
-
-  // Unidade
-  if (from === 'unidade' && to === 'unidade') return val;
-
-  return NaN;
+  return undefined; // unidades incompatíveis
 }
 
 app.post('/saida-venda', async (req, res) => {
   const { id_cardapio } = req.body;
+
+  console.log("ID recebido na API:", id_cardapio);
+
+  if (!id_cardapio) {
+    return res.status(400).json({ error: "id_cardapio ausente" });
+  }
 
   try {
     let insumos = await getInsumosDoItem(id_cardapio);
@@ -950,7 +1004,12 @@ app.post('/saida-venda', async (req, res) => {
         break;
       }
 
-      const quantidadeParaDeduzir = parseFloat(quantidadeConvertida.toFixed(3));
+      const numeroConvertido = Number(quantidadeConvertida);
+      if (isNaN(numeroConvertido)) {
+        erroEstoque = `Conversão inválida para o insumo: ${insumo.nome_insumos}`;
+        break;
+      }
+      const quantidadeParaDeduzir = parseFloat(numeroConvertido.toFixed(3));
 
       if (insumo.estoque_atual < quantidadeParaDeduzir) {
         erroEstoque = `Estoque insuficiente de ${insumo.nome_insumos}`;
@@ -1292,19 +1351,31 @@ app.post('/checar-email', (req, res) => {
     return res.status(400).json({ error: 'Email obrigatório' });
   }
 
-  const sql = 'SELECT * FROM cliente WHERE email_cliente = ?';
+  const sqlCliente = 'SELECT email_cliente AS email FROM cliente WHERE email_cliente = ?';
+  const sqlFuncionario = 'SELECT email_funcionario AS email FROM funcionario WHERE email_funcionario = ?';
 
-  connection.query(sql, [email], (error, results) => {
-    if (error) {
-      console.error('Erro ao verificar email:', error);
+  connection.query(sqlCliente, [email], (err, resultCliente) => {
+    if (err) {
+      console.error('Erro ao buscar no cliente:', err);
       return res.status(500).json({ error: 'Erro no servidor' });
     }
 
-    if (results.length === 0) {
-      return res.status(404).json({ error: 'Email não encontrado' });
+    if (resultCliente.length > 0) {
+      return res.status(200).json({ email: resultCliente[0].email, tipo: 'cliente' });
     }
 
-    return res.status(200).json({ success: true });
+    connection.query(sqlFuncionario, [email], (errFunc, resultFuncionario) => {
+      if (errFunc) {
+        console.error('Erro ao buscar no funcionario:', errFunc);
+        return res.status(500).json({ error: 'Erro no servidor' });
+      }
+
+      if (resultFuncionario.length > 0) {
+        return res.status(200).json({ email: resultFuncionario[0].email, tipo: 'funcionario' });
+      }
+
+      return res.status(404).json({ error: 'Email não encontrado' });
+    });
   });
 });
 
@@ -1315,20 +1386,34 @@ app.post('/recuperar-senha', (req, res) => {
     return res.status(400).json({ error: 'Email e palavra-chave obrigatórios' });
   }
 
-  const sql = 'SELECT senha_cliente FROM cliente WHERE email_cliente = ? AND palavra_chave = ?';
+  const sqlCliente = 'SELECT senha_cliente AS senha FROM cliente WHERE email_cliente = ? AND palavra_chave = ?';
+  const sqlFuncionario = 'SELECT senha_funcionario AS senha FROM funcionario WHERE email_funcionario = ? AND palavra_chave = ?';
 
-  connection.query(sql, [email, palavraChave], (error, results) => {
-    if (error) {
-      console.error('Erro ao recuperar senha:', error);
+  // Primeiro, tenta encontrar na tabela de clientes
+  connection.query(sqlCliente, [email, palavraChave], (err, clienteResults) => {
+    if (err) {
+      console.error('Erro ao buscar senha do cliente:', err);
       return res.status(500).json({ error: 'Erro no servidor' });
     }
 
-    if (results.length === 0) {
-      return res.status(404).json({ error: 'Combinação incorreta de email e palavra-chave' });
+    if (clienteResults.length > 0) {
+      return res.status(200).json({ success: true, senha: clienteResults[0].senha });
     }
 
-    const senha = results[0].senha_cliente;
-    return res.status(200).json({ success: true, senha });
+    // Se não encontrou no cliente, tenta no funcionário
+    connection.query(sqlFuncionario, [email, palavraChave], (err, funcResults) => {
+      if (err) {
+        console.error('Erro ao buscar senha do funcionário:', err);
+        return res.status(500).json({ error: 'Erro no servidor' });
+      }
+
+      if (funcResults.length > 0) {
+        return res.status(200).json({ success: true, senha: funcResults[0].senha });
+      }
+
+      // Nenhum encontrado
+      return res.status(404).json({ error: 'Combinação de email e palavra-chave incorreta.' });
+    });
   });
 });
 
@@ -1339,37 +1424,61 @@ app.put('/alterar-palavra-chave', (req, res) => {
     return res.status(400).json({ error: 'Email e nova palavra-chave obrigatórios' });
   }
 
-  const selectSql = 'SELECT palavra_chave FROM cliente WHERE email_cliente = ?';
+  // Tenta primeiro na tabela CLIENTE
+  const selectCliente = 'SELECT palavra_chave FROM cliente WHERE email_cliente = ?';
 
-  connection.query(selectSql, [email], (selectError, results) => {
-    if (selectError) {
-      console.error('Erro ao buscar palavra-chave atual:', selectError);
+  connection.query(selectCliente, [email], (errCliente, resultsCliente) => {
+    if (errCliente) {
+      console.error('Erro ao buscar no cliente:', errCliente);
       return res.status(500).json({ error: 'Erro no servidor' });
     }
 
-    if (results.length === 0) {
-      return res.status(404).json({ error: 'Email não encontrado' });
+    if (resultsCliente.length > 0) {
+      const atual = resultsCliente[0].palavra_chave;
+
+      if (novaPalavraChave === atual) {
+        return res.status(400).json({ error: 'A nova palavra-chave deve ser diferente da anterior.' });
+      }
+
+      const updateCliente = 'UPDATE cliente SET palavra_chave = ? WHERE email_cliente = ?';
+      return connection.query(updateCliente, [novaPalavraChave, email], (errUpdate) => {
+        if (errUpdate) {
+          console.error('Erro ao atualizar cliente:', errUpdate);
+          return res.status(500).json({ error: 'Erro no servidor' });
+        }
+        return res.status(200).json({ success: true, message: 'Palavra-chave atualizada com sucesso (cliente).' });
+      });
     }
 
-    const atual = results[0].palavra_chave;
-
-    if (novaPalavraChave === atual) {
-      return res.status(400).json({ error: 'A nova palavra-chave deve ser diferente da anterior.' });
-    }
-
-    const updateSql = 'UPDATE cliente SET palavra_chave = ? WHERE email_cliente = ?';
-
-    connection.query(updateSql, [novaPalavraChave, email], (updateError) => {
-      if (updateError) {
-        console.error('Erro ao alterar palavra-chave:', updateError);
+    // Se não achou no cliente, tenta na tabela FUNCIONARIO
+    const selectFuncionario = 'SELECT palavra_chave FROM funcionario WHERE email_funcionario = ?';
+    connection.query(selectFuncionario, [email], (errFunc, resultsFunc) => {
+      if (errFunc) {
+        console.error('Erro ao buscar no funcionario:', errFunc);
         return res.status(500).json({ error: 'Erro no servidor' });
       }
 
-      return res.status(200).json({ success: true, message: 'Palavra-chave atualizada com sucesso' });
+      if (resultsFunc.length === 0) {
+        return res.status(404).json({ error: 'Email não encontrado em nenhuma conta' });
+      }
+
+      const atual = resultsFunc[0].palavra_chave;
+
+      if (novaPalavraChave === atual) {
+        return res.status(400).json({ error: 'A nova palavra-chave deve ser diferente da anterior.' });
+      }
+
+      const updateFuncionario = 'UPDATE funcionario SET palavra_chave = ? WHERE email_funcionario = ?';
+      return connection.query(updateFuncionario, [novaPalavraChave, email], (errUpdateFunc) => {
+        if (errUpdateFunc) {
+          console.error('Erro ao atualizar funcionario:', errUpdateFunc);
+          return res.status(500).json({ error: 'Erro no servidor' });
+        }
+        return res.status(200).json({ success: true, message: 'Palavra-chave atualizada com sucesso (funcionário).' });
+      });
     });
   });
 });
-
 
 // --- INICIANDO SERVIDOR ---
 const PORT = 3000;
@@ -1452,7 +1561,7 @@ app.listen(PORT, () => {
 //         return res.status(200).json({ message: 'Login bem-sucedido', usuario: results[0] })
 //       }
 
-      // Se quiser, pode retornar dados do usuário ou token
+// Se quiser, pode retornar dados do usuário ou token
 //       return res.status(200).json({ message: 'Login bem-sucedido', usuario: results[0] });
 //     }
 //   );

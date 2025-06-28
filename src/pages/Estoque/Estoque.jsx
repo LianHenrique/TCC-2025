@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router';
 import NavBar from '../../components/NavBar/NavBar';
 import Pesquisa from '../../components/Pesquisa/Pesquisa';
 import { Button, Container } from 'react-bootstrap';
 import CardGeral from '../../components/Cards/CardGeral';
 import { FaEdit, FaRegTrashAlt } from 'react-icons/fa';
+import { AuthContext } from '../../Contexts/UserContext';
 
 const Estoque = () => {
   const [produtos, setProdutos] = useState({});
@@ -14,14 +15,15 @@ const Estoque = () => {
   const [filtroAtivo, setFiltroAtivo] = useState('Todos');
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
+  const { cargoUsuario, isloading } = useContext(AuthContext);
+
+  const isFuncionario = cargoUsuario === 'Funcionario';
+
+  if (isloading) return <p>Espere...</p>;
 
   const normalizeString = (str) => {
     if (!str) return '';
-    return String(str)
-      .normalize('NFD')
-      .replace(/\u0300-\u036f/g, '')
-      .toLowerCase()
-      .trim();
+    return String(str).normalize('NFD').replace(/\u0300-\u036f/g, '').toLowerCase().trim();
   };
 
   const filtrarProdutos = (categoria, texto) => {
@@ -53,17 +55,16 @@ const Estoque = () => {
 
   const handleFiltroChange = (filtroSelecionado) => setFiltroAtivo(filtroSelecionado);
   const handleSearchChange = (texto) => setSearchTerm(texto);
-  const handleCardClick = (id) => navigate(`/visualizar/${id}`);
+
+  const handleCardClick = (id) => {
+    if (!isFuncionario) navigate(`/visualizar/${id}`);
+  };
 
   const handleDelete = async (id) => {
-    const confirmacao = window.confirm('Deseja realmente deletar este item do estoque?');
-    if (!confirmacao) return;
+    if (!window.confirm('Deseja realmente deletar este item do estoque?')) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/insumos/${id}`, {
-        method: 'DELETE'
-      });
-
+      const response = await fetch(`http://localhost:3000/insumos/${id}`, { method: 'DELETE' });
       if (!response.ok) throw new Error('Erro ao deletar item');
 
       const data = await response.json();
@@ -73,9 +74,7 @@ const Estoque = () => {
         const novoEstado = { ...prev };
         for (const categoriaKey in novoEstado) {
           novoEstado[categoriaKey].items = novoEstado[categoriaKey].items.filter(p => p.id !== id);
-          if (novoEstado[categoriaKey].items.length === 0) {
-            delete novoEstado[categoriaKey];
-          }
+          if (novoEstado[categoriaKey].items.length === 0) delete novoEstado[categoriaKey];
         }
         setProdutosFiltrados(novoEstado);
         return novoEstado;
@@ -101,27 +100,35 @@ const Estoque = () => {
         const agrupados = data.reduce((acc, insumo) => {
           const categoria = insumo.categoria || 'Outros';
           const key = normalizeString(categoria);
-
-          if (!acc[key]) {
-            acc[key] = {
-              displayName: categoria,
-              items: []
-            };
-          }
+          if (!acc[key]) acc[key] = { displayName: categoria, items: [] };
 
           const venc = insumo.data_vencimento ? new Date(insumo.data_vencimento) : null;
           const hoje = new Date();
           const diasRestantes = venc ? Math.ceil((venc - hoje) / (1000 * 60 * 60 * 24)) : null;
           const vencProximo = diasRestantes !== null && diasRestantes <= insumo.alertar_dias_antes && diasRestantes >= 0;
           const vencimentoFormatado = venc ? venc.toLocaleDateString('pt-BR') : 'Sem data';
-
           const valor = parseFloat(insumo.valor_insumos) || 0;
           const valorFormatado = isNaN(valor) ? 'Valor inválido' : `R$ ${valor.toFixed(2)}`;
-
           const statusEstoque =
-            insumo.quantidade_insumos <= insumo.alerta_estoque ? 'danger'
-              : insumo.quantidade_insumos <= insumo.alerta_estoque + 5 ? 'warning'
-                : 'success';
+            insumo.quantidade_insumos <= insumo.alerta_estoque ? 'danger' :
+            insumo.quantidade_insumos <= insumo.alerta_estoque + 5 ? 'warning' : 'success';
+
+          const descricao = isFuncionario
+            ? [
+                { texto: `Descrição: ${insumo.descricao_insumos}` }
+              ]
+            : [
+                {
+                  texto: `Quantidade: ${insumo.quantidade_insumos}${insumo.unidade_medida ? ' ' + insumo.unidade_medida : ''}`,
+                  style: insumo.quantidade_insumos <= insumo.alerta_estoque ? { color: 'red', fontWeight: 'bold' } : {}
+                },
+                { texto: `Valor unitário: ${valorFormatado}` },
+                {
+                  texto: `Vencimento: ${vencimentoFormatado}`,
+                  badge: vencProximo ? 'danger' : undefined,
+                  tooltip: vencProximo ? `Este produto vence em até ${insumo.alertar_dias_antes} dias` : undefined
+                }
+              ];
 
           acc[key].items.push({
             id: insumo.id_insumos,
@@ -132,18 +139,7 @@ const Estoque = () => {
             statusEstoque,
             dataVencimento: vencimentoFormatado,
             link: insumo.imagem_url || 'https://cdn.melhoreshospedagem.com.br/wp/wp-content/uploads/2023/07/erro-404.jpg',
-            descricao: [
-              {
-                texto: `Quantidade: ${insumo.quantidade_insumos}${insumo.unidade_medida ? ' ' + insumo.unidade_medida : ''}`,
-                style: insumo.quantidade_insumos <= insumo.alerta_estoque ? { color: 'red', fontWeight: 'bold' } : {}
-              },
-              { texto: `Valor unitário: ${valorFormatado}` },
-              {
-                texto: `Vencimento: ${vencimentoFormatado}`,
-                badge: vencProximo ? 'danger' : undefined,
-                tooltip: vencProximo ? `Este produto vence em até ${insumo.alertar_dias_antes} dias` : undefined
-              }
-            ]
+            descricao
           });
 
           return acc;
@@ -188,12 +184,12 @@ const Estoque = () => {
     <div>
       <NavBar />
       <Container className="my-4">
-        <h1 style={{ marginTop: "100px" }}><b>INSUMOS</b></h1>
+        <h1 style={{ marginTop: '100px' }}><b>INSUMOS</b></h1>
 
         <Pesquisa
           nomeDrop="Filtrar por"
-          navega="/cadastro_insumos"
-          TxtButton="Insumos +"
+          navega={!isFuncionario ? "/cadastro_insumos" : null}
+          TxtButton={!isFuncionario ? "Insumos +" : null}
           lista={[
             { texto: 'Carnes', value: 'Carnes' },
             { texto: 'Perecíveis', value: 'Perecíveis' },
@@ -204,28 +200,22 @@ const Estoque = () => {
           onSearchChange={handleSearchChange}
         />
 
-        {Object.entries(produtosFiltrados)
-          .sort(([keyA], [keyB]) => keyA.localeCompare(keyB, 'pt-BR'))
-          .map(([normalizedCategoryKey, categoryData]) => (
-            <div key={normalizedCategoryKey} id={normalizedCategoryKey} className="mb-5">
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <h2>{categoryData.displayName}</h2>
-              </div>
+        {Object.entries(produtosFiltrados).sort(([a], [b]) => a.localeCompare(b, 'pt-BR')).map(([key, data]) => (
+          <div key={key} className="mb-5">
+            <h2>{data.displayName}</h2>
 
-              <CardGeral
-                card={categoryData.items.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'))}
-                onCardClick={handleCardClick}
-                imgHeight={250}
-                showButtons={false}
-                customButton={(item) => (
+            <CardGeral
+              card={data.items.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'))}
+              onCardClick={handleCardClick}
+              imgHeight={250}
+              showButtons={false}
+              customButton={(item) => (
+                !isFuncionario && (
                   <>
                     <Button
                       variant="warning"
                       className="rounded-circle fs-5 shadow m-1"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleEdit(item.id);
-                      }}
+                      onClick={(e) => { e.stopPropagation(); handleEdit(item.id); }}
                       title="Editar item"
                     >
                       <FaEdit />
@@ -233,19 +223,17 @@ const Estoque = () => {
                     <Button
                       variant="danger"
                       className="rounded-circle fs-5 shadow m-1"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(item.id);
-                      }}
+                      onClick={(e) => { e.stopPropagation(); handleDelete(item.id); }}
                       title="Excluir item"
                     >
                       <FaRegTrashAlt />
                     </Button>
                   </>
-                )}
-              />
-            </div>
-          ))}
+                )
+              )}
+            />
+          </div>
+        ))}
 
         {Object.keys(produtosFiltrados).length === 0 && (
           <div className="text-center py-5">
@@ -253,9 +241,11 @@ const Estoque = () => {
               Nenhum item encontrado
               {filtroAtivo !== 'Todos' ? ` na categoria ${filtroAtivo}` : ' no estoque'}
             </h4>
-            <Button variant="primary" onClick={() => navigate('/cadastro_insumos')} className="mt-3">
-              Adicionar Novo Item
-            </Button>
+            {!isFuncionario && (
+              <Button variant="primary" onClick={() => navigate('/cadastro_insumos')} className="mt-3">
+                Adicionar Novo Item
+              </Button>
+            )}
           </div>
         )}
       </Container>

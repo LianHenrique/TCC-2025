@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Container, Form, FloatingLabel, Dropdown, Button, Badge } from 'react-bootstrap';
 import NavBar from '../../components/NavBar/NavBar';
-import { useParams, useNavigate } from 'react-router';
+import { useParams, useNavigate } from 'react-router'; 
 
 const Visualizar_Cardapio = () => {
   const { id } = useParams();

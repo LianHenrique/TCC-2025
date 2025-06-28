@@ -7,11 +7,10 @@ import { AuthContext } from "../../Contexts/UserContext";
 import { ThemeContext } from "../../Contexts/ThemeContext";
 import { FaSun, FaMoon } from "react-icons/fa";
 import styles from "./NavBar.module.css";
-
 import logo from "../../assets/logo.png";
 
 const NavBar = () => {
-  const { usuarioNome, logout } = useContext(AuthContext);
+  const { usuarioNome, logout, cargoUsuario } = useContext(AuthContext);
   const { darkMode, toggleTheme } = useContext(ThemeContext);
 
   const tit = usuarioNome ? "/estoque" : "/home";
@@ -34,11 +33,19 @@ const NavBar = () => {
           {!!usuarioNome?.trim() ? (
             <>
               <Nav className="ms-4">
-                <Nav.Link href="/relatorio" className={styles.button}>Relatório</Nav.Link>
-                <Nav.Link href="/estoque" className={styles.button}>Insumos</Nav.Link>
-                <Nav.Link href="/funcionarios" className={styles.button}>Funcionários</Nav.Link>
-                <Nav.Link href="/cardapio" className={styles.button}>Produtos</Nav.Link>
-                <Nav.Link href="/alertas" className={styles.button}>Alertas</Nav.Link>
+                {(cargoUsuario === "ADM" || cargoUsuario === "Gerente") && (<Nav.Link href="/relatorio" className={styles.button}>Relatório</Nav.Link>)}
+
+                {(cargoUsuario === "ADM" || cargoUsuario === "Gerente" || cargoUsuario === "Funcionario") &&
+                  (<Nav.Link href="/estoque" className={styles.button}>Insumos</Nav.Link>)}
+
+                {(cargoUsuario === "ADM") &&
+                 (<Nav.Link href="/funcionarios" className={styles.button}>Funcionários</Nav.Link>)}
+
+                {(cargoUsuario === "ADM" || cargoUsuario === "Funcionario" || cargoUsuario === "Gerente") &&
+                (<Nav.Link href="/cardapio" className={styles.button}>Produtos</Nav.Link>)}
+
+                {(cargoUsuario === "ADM" || cargoUsuario === "Gerente") &&
+                (<Nav.Link href="/alertas" className={styles.button}>Alertas</Nav.Link>)}
               </Nav>
 
               <div className="d-flex align-items-center gap-3" style={{ justifyContent: "center" }}>

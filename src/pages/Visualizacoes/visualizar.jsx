@@ -4,11 +4,13 @@ import NavBar from '../../components/NavBar/NavBar';
 import { Button, Container, FloatingLabel, Form, Spinner } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Dropdown } from 'react-bootstrap';
+import { AuthContext } from '../../Contexts/UserContext';
+import { useContext } from 'react';
 
 const Visualizar = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-
+  const { cargoUsuario, isloading } = useContext(AuthContext);
   const [nome, setNome] = useState('');
   const [quantidade, setQuantidade] = useState('');
   const [filtro, setFiltro] = useState('');
@@ -23,8 +25,14 @@ const Visualizar = () => {
   const [fornecedores, setFornecedores] = useState([]);
   const [idFornecedor, setIdFornecedor] = useState(null);
   const [unidade, setUnidade] = useState('');
-
+  const isRestrito = !isloading && cargoUsuario === 'Funcionario';
   const unidadesDisponiveis = ['unidade', 'kg', 'g', 'litro', 'ml'];
+
+  useEffect(() => {
+    if (!isloading && cargoUsuario === 'Funcionario') {
+      console.warn('Acesso limitado para funcionários.');
+    }
+  }, [isloading, cargoUsuario]);
 
   useEffect(() => {
     fetch('http://localhost:3000/fornecedores')
@@ -86,7 +94,7 @@ const Visualizar = () => {
           alerta_estoque: alertaEstoque,
           alerta_vencimento: alertaVencimento,
           id_fornecedor: idFornecedor,
-          unidade_medida: unidade  
+          unidade_medida: unidade
         })
       })
 
