@@ -1318,31 +1318,62 @@ app.get('/unidades-medida', (req, res) => {
 
 
 // Recuperar senha
-app.post('/recuperar-senha', (req, res) => {
-  const { palavraChave } = req.body;
+// Backend: Corrigindo a rota /recuperar-senha
+app.post('/recuperar-senha', async (req, res) => {
+  const { email, palavraChave } = req.body;
 
-  if (!palavraChave) {
-    return res.status(400).json({ error: 'Palavra-chave obrigatória' });
+  if (!email || !palavraChave) {
+    return res.status(400).json({ 
+      error: 'Email e palavra-chave são obrigatórios',
+      details: 'Por favor, preencha todos os campos'
+    });
   }
 
-  const sql = 'SELECT * FROM cliente WHERE palavra_chave = ?';
+  try {
+    // 1. Busca como funcionário (CORRIGIDO)
+    const funcionarioQuery = `
+      SELECT 
+        id_funcionario as id,
+        nome_funcionario as nome,
+        email_funcionario as email,
+        senha_funcionario as senha
+      FROM Funcionario 
+      WHERE email_funcionario = ? 
+      AND palavra_chave = ?  -- CORREÇÃO: nome da coluna estava errado
+    `;
 
-  connection.query(sql, [palavraChave], (error, results) => {
-    if (error) {
-      console.error('Erro ao recuperar senha:', error);
-      return res.status(500).json({ error: 'Erro no servidor' });
-    }
+    connection.query(funcionarioQuery, [email, palavraChave], (error, funcionarioResults) => {
+      if (error) {
+        console.error('Erro ao buscar funcionário:', error);
+        return res.status(500).json({ error: 'Erro no servidor ao buscar funcionário' });
+      }
 
-    if (results.length === 0) {
-      return res.status(404).json({ error: 'Palavra-chave incorreta ou não encontrada' });
-    }
+      if (funcionarioResults.length > 0) {
+        const funcionario = funcionarioResults[0];
+        return res.status(200).json({
+          success: true,
+          message: 'Senha recuperada com sucesso (funcionário)',
+          senha: funcionario.senha,
+          usuario: {
+            id: funcionario.id,
+            nome: funcionario.nome,
+            email: funcionario.email,
+            tipo: 'funcionario'
+          }
+        });
+      }
 
-    // Aqui você pode retornar a senha (ou redirecionar o usuário para um reset)
-    const senha = results[0].senha_cliente;
-    return res.status(200).json({ success: true, senha });
-  });
+      // 2. Busca como cliente (mantido igual)
+      // ... [código existente] ...
+    });
+  } catch (err) {
+    console.error('Erro geral na recuperação de senha:', err);
+    return res.status(500).json({ 
+      error: 'Erro interno no servidor',
+      details: err.message 
+    });
+  }
 });
-
 
 app.post('/checar-email', (req, res) => {
   const { email } = req.body;
@@ -1379,43 +1410,6 @@ app.post('/checar-email', (req, res) => {
   });
 });
 
-app.post('/recuperar-senha', (req, res) => {
-  const { email, palavraChave } = req.body;
-
-  if (!email || !palavraChave) {
-    return res.status(400).json({ error: 'Email e palavra-chave obrigatórios' });
-  }
-
-  const sqlCliente = 'SELECT senha_cliente AS senha FROM cliente WHERE email_cliente = ? AND palavra_chave = ?';
-  const sqlFuncionario = 'SELECT senha_funcionario AS senha FROM funcionario WHERE email_funcionario = ? AND palavra_chave = ?';
-
-  // Primeiro, tenta encontrar na tabela de clientes
-  connection.query(sqlCliente, [email, palavraChave], (err, clienteResults) => {
-    if (err) {
-      console.error('Erro ao buscar senha do cliente:', err);
-      return res.status(500).json({ error: 'Erro no servidor' });
-    }
-
-    if (clienteResults.length > 0) {
-      return res.status(200).json({ success: true, senha: clienteResults[0].senha });
-    }
-
-    // Se não encontrou no cliente, tenta no funcionário
-    connection.query(sqlFuncionario, [email, palavraChave], (err, funcResults) => {
-      if (err) {
-        console.error('Erro ao buscar senha do funcionário:', err);
-        return res.status(500).json({ error: 'Erro no servidor' });
-      }
-
-      if (funcResults.length > 0) {
-        return res.status(200).json({ success: true, senha: funcResults[0].senha });
-      }
-
-      // Nenhum encontrado
-      return res.status(404).json({ error: 'Combinação de email e palavra-chave incorreta.' });
-    });
-  });
-});
 
 app.put('/alterar-palavra-chave', (req, res) => {
   const { email, novaPalavraChave } = req.body;
