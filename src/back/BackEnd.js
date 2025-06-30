@@ -858,18 +858,26 @@ app.put('/AtualizarCardapio/:id', upload.single('imagem'), (req, res) => {
     nome_item,
     descricao_item,
     valor_item,
-    categoria // opcional: se quiser permitir atualizar também
+    categoria // opcional
   } = req.body;
 
+  // Define URL da imagem (nova ou antiga)
   const imagem_url = req.file
-    ? `/uploads/${req.file.filename}` // nova imagem enviada
-    : req.body.imagem_url?.trim();   // mantém imagem atual, se não houve upload
+    ? `/uploads/${req.file.filename}`
+    : (req.body.imagem_url || '').trim();
 
+  // Verifica campos obrigatórios
+  if (!nome_item || !descricao_item || !valor_item) {
+    return res.status(400).json({ error: 'Campos obrigatórios ausentes.' });
+  }
+
+  // Tenta interpretar insumos recebidos
   let insumos = [];
   try {
     insumos = JSON.parse(req.body.insumos || '[]');
   } catch (error) {
-    return res.status(400).json({ error: 'Erro ao processar insumos (formato inválido)' });
+    console.error('Erro ao interpretar insumos:', error);
+    return res.status(400).json({ error: 'Formato inválido de insumos.' });
   }
 
   const updateQuery = `
@@ -881,24 +889,26 @@ app.put('/AtualizarCardapio/:id', upload.single('imagem'), (req, res) => {
   connection.query(updateQuery, [imagem_url, nome_item, descricao_item, valor_item, id], (err) => {
     if (err) {
       console.error('Erro ao atualizar cardápio:', err);
-      return res.status(500).json({ error: 'Erro ao atualizar produto.' });
+      return res.status(500).json({ error: 'Erro ao atualizar o produto.' });
     }
 
-    // Deleta insumos antigos
+    // Remove insumos antigos
     const deleteQuery = 'DELETE FROM ItemCardapioInsumo WHERE id_item_cardapio = ?';
-    connection.query(deleteQuery, [id], (errDelete) => {
-      if (errDelete) {
-        console.error('Erro ao remover insumos antigos:', errDelete);
-        return res.status(500).json({ error: 'Erro ao remover insumos antigos.' });
+    connection.query(deleteQuery, [id], (errDel) => {
+      if (errDel) {
+        console.error('Erro ao remover insumos antigos:', errDel);
+        return res.status(500).json({ error: 'Erro ao remover os insumos antigos.' });
       }
 
+      // Se não houver insumos, finaliza aqui
       if (!Array.isArray(insumos) || insumos.length === 0) {
-        return res.status(200).json({ message: 'Produto atualizado sem insumos.' });
+        return res.status(200).json({ message: 'Produto atualizado (sem insumos).' });
       }
 
-      const normalizarQuantidade = (valor) => {
-        if (typeof valor === 'number') return valor;
-        if (typeof valor === 'string') return parseFloat(valor.replace(/\./g, '').replace(',', '.'));
+      // Função para garantir valor numérico
+      const normalizarQuantidade = (val) => {
+        if (typeof val === 'number') return val;
+        if (typeof val === 'string') return parseFloat(val.replace(/\./g, '').replace(',', '.'));
         return 0;
       };
 
@@ -910,23 +920,22 @@ app.put('/AtualizarCardapio/:id', upload.single('imagem'), (req, res) => {
       ]);
 
       const insertQuery = `
-        INSERT INTO ItemCardapioInsumo 
+        INSERT INTO ItemCardapioInsumo
         (id_item_cardapio, id_insumo, quantidade_necessaria, unidade_medida_receita)
         VALUES ?
       `;
 
       connection.query(insertQuery, [values], (errInsert) => {
         if (errInsert) {
-          console.error('Erro ao associar novos insumos:', errInsert);
+          console.error('Erro ao inserir novos insumos:', errInsert);
           return res.status(500).json({ error: 'Erro ao associar novos insumos.' });
         }
 
-        res.status(200).json({ message: 'Produto e insumos atualizados com sucesso!' });
+        return res.status(200).json({ message: 'Produto e insumos atualizados com sucesso!' });
       });
     });
   });
 });
-
 
 // --- ROTA CLIENTE ---
 app.post('/cliente/insert', (req, res) => {
