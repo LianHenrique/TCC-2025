@@ -4,6 +4,8 @@ import NavBar from '../../components/NavBar/NavBar';
 import { Button, Container, Dropdown, FloatingLabel, Form, Modal } from 'react-bootstrap';
 import { useNavigate } from 'react-router';
 
+import logo from "../../assets/logo.png"
+
 const getFormDataInicial = () => ({
   nome_insumos: '',
   valor_insumos: '',
@@ -149,8 +151,9 @@ const Insumos = () => {
   return (
     <div style={{ marginTop: '100px' }}>
       <NavBar />
-      <Container style={{ maxWidth: "500px" }}>
-        <Form onSubmit={handleSubmit} className="shadow rounded" style={{ padding: '30px', border: '1px blue solid' }}>
+      <Container style={{ maxWidth: "800px" }}>
+        <Form onSubmit={handleSubmit} className="shadow rounded" style={{ padding: '30px', border: '1px blue solid', textAlign:"center" }}>
+          <img src={logo} width={100} alt="logo" className="me-2" />
           <h1 className="text-center">Cadastro de Insumos</h1>
 
           <FloatingLabel controlId="nome_insumos" label="Nome do Insumo" className="m-2">

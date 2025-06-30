@@ -2,153 +2,151 @@
    ESCOPOS E DESCRIÇÕES
 =========================== */
 .EscopoRelatorio {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 5vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 5vh;
+  text-align: center;
 }
 
 .EscopoRelatorio h4 {
-    padding-left: 55vw;
-    font-size: clamp(14px, 1.2vw, 18px);
-    width: 85vw;
-    font-weight: bold;
-    font-family: 'Lucida Sans', Verdana, sans-serif;
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  font-weight: bold;
+  font-family: 'Lucida Sans', Verdana, sans-serif;
+  margin-bottom: 1rem;
+  width: 100%;
 }
 
 .EscopoRelatorio p {
-    font-size: clamp(12px, 1vw, 1.2vw);
-    max-width: 50vw;
-    padding-right: 10vw;
-    margin-left: 55%;
+  font-size: clamp(0.9rem, 1vw, 1.1rem);
+  max-width: 800px;
+  padding: 0 2rem;
+  margin: 0 auto;
+  line-height: 1.5;
 }
 
 .EscopoRelatorio img {
-    position: absolute;
-    margin-left: 15vw;
-    width: 35vw;
-    margin-top: -1vh;
+  max-width: 400px;
+  width: 100%;
+  margin: 2rem 0;
 }
 
 /* ========================
    CARD FUNCIONÁRIO
 =========================== */
 .Card_Funcionario {
-    margin-left: 16.5vw;
-    width: 15vw;
-    margin-bottom: 13vh;
-    box-shadow: 1px 10px 20px rgba(0, 0, 0, 0.2);
+  width: 250px;
+  margin: 2rem auto;
+  box-shadow: 1px 10px 20px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #fff;
 }
 
 /* ========================
    BOTÕES DE AÇÃO
 =========================== */
 .Contatenando_Butoes {
-    display: flex;
-    justify-content: center;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 .p {
-    margin-left: 4vw;
-    font-size: 1vw;
+  font-size: 1rem;
+  margin-top: 1rem;
 }
 
 .BotaoVermelho,
 .BotaoAmarelo {
-    border-radius: 50%;
-    width: 3vw;
-    height: auto;
-    margin-top: -10%;
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  border: none;
 }
 
 .BotaoVermelho {
-    margin-left: 65%;
-    color: #E33F42;
+  background-color: #e33f42;
+  color: #fff;
 }
 
 .BotaoAmarelo {
-    margin-left: 5%;
+  background-color: #ffc107;
+  color: #000;
 }
 
 /* ========================
    OUTROS ELEMENTOS
 =========================== */
 .img2 {
-    margin-top: 80vh;
+  margin-top: 5rem;
+  max-width: 100%;
+  height: auto;
 }
 
 .h4_2 {
-    margin-top: 25vh;
+  margin-top: 5rem;
 }
 
 .Qtd_Saida_Insumo {
-    padding-left: 1vw;
+  padding-left: 1vw;
 }
 
 .Card_Insumos {
-    width: 15vw;
-    margin-bottom: 13vh;
-    box-shadow: 1px 10px 20px rgba(0, 0, 0, 0.2);
+  width: 250px;
+  margin: 2rem auto;
+  box-shadow: 1px 10px 20px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 /* ========================
    MEDIA QUERY MOBILE
 =========================== */
 @media (max-width: 600px) {
-    .EscopoRelatorio p {
-        font-size: 4vw;
-        max-width: 100%;
-        margin-left: 0;
-        padding-right: 0;
-    }
+  .EscopoRelatorio {
+    padding: 0 1rem;
+  }
 
-    .EscopoRelatorio h4 {
-        padding: 0 10vw;
-        font-size: 4vw;
-        width: 100%;
-        margin: -5vh 0 15px;
-    }
+  .EscopoRelatorio h4 {
+    font-size: 5vw;
+  }
 
-    .EscopoRelatorio img {
-        position: relative;
-        width: 55vh;
-        margin: 0 1vw -7vh;
-        height: auto;
-    }
+  .EscopoRelatorio p {
+    font-size: 4vw;
+    padding: 0;
+  }
 
-    .img2 {
-        margin-bottom: -50vh;
-        width: 55vh;
-    }
+  .EscopoRelatorio img,
+  .img2 {
+    width: 100%;
+    height: auto;
+    margin: 1rem 0;
+  }
 
-    .Card_Funcionario {
-        margin-top: 45%;
-        margin-left: 25%;
-        width: 48vw;
-        height: 28vh;
-        position: relative;
-        top: -18vh;
-    }
+  .Card_Funcionario {
+    width: 90%;
+    margin: 2rem auto;
+  }
 
-    .BotaoVermelho,
-    .BotaoAmarelo {
-        width: 20% !important;
-        height: 3vh;
-        margin-top: 2%;
-    }
+  .BotaoVermelho,
+  .BotaoAmarelo {
+    width: 40px !important;
+    height: 40px;
+    font-size: 1rem;
+  }
 
-    .BotaoVermelho {
-        margin-left: 53%;
-    }
+  .p {
+    font-size: 1.2rem !important;
+  }
 
-    .BotaoVermelho img,
-    .BotaoAmarelo img {
-        top: -1vh;
-        left: -1vw;
-        position: relative;
-    }
-
-    .p {
-        font-size: 25px !important;
-    }
+  .Card_Insumos {
+    width: 90%;
+  }
 }
