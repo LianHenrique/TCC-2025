@@ -23,7 +23,9 @@ const Alerta = () => {
               tipoEstoque: insumo.tipo_alerta_estoque,
               tipoValidade: insumo.tipo_alerta_validade,
               unidade: insumo.unidade_medida || '',
-              imagem: insumo.imagem_url || 'https://via.placeholder.com/150'
+              imagem: insumo.imagem_url?.trim()
+                ? `http://localhost:3000${insumo.imagem_url.trim()}`
+                : 'https://via.placeholder.com/150'
             }))
             .filter(insumo => insumo.tipoEstoque);
 

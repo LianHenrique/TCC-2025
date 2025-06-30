@@ -64,17 +64,17 @@ const DataVencimento = () => {
                                 >
                                     <div className="d-flex align-items-center">
                                         <img
-                                            src={insumo.imagem_url || 'https://via.placeholder.com/100'}
-                                            alt={insumo.nome_insumos}
-                                            style={{
-                                                width: '90px',
-                                                height: '90px',
-                                                objectFit: 'contain',
-                                                borderRadius: '8px',
-                                                marginRight: '20px',
-                                                backgroundColor: '#fff',
-                                                padding: '5px',
-                                            }}
+                                            src={insumo.imagem_url ? `http://localhost:3000${insumo.imagem_url.trim()}` : 'https://via.placeholder.com/100'}
+                                        alt={insumo.nome_insumos}
+                                        style={{
+                                            width: '90px',
+                                            height: '90px',
+                                            objectFit: 'contain',
+                                            borderRadius: '8px',
+                                            marginRight: '20px',
+                                            backgroundColor: '#fff',
+                                            padding: '5px',
+                                        }}
                                         />
                                         <div style={{ flex: 1 }}>
                                             <h5 className="mb-1">{insumo.nome_insumos}</h5>

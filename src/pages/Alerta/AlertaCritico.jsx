@@ -40,7 +40,9 @@ const AlertaCriticoGlobal = () => {
                 nome,
                 quantidade,
                 tipo,
-                imagem: imagem_url?.trim() ? imagem_url : 'https://via.placeholder.com/150'
+                imagem: imagem_url?.trim()
+                  ? `http://localhost:3000${imagem_url.trim()}`
+                  : 'https://via.placeholder.com/150'
               });
 
               exibidos[id] = tipo;

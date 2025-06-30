@@ -123,12 +123,11 @@ const Visualizar_Cardapio = () => {
       }))
     ));
 
-  try {
-    const res = await fetch(`http://localhost:3000/AtualizarCardapio/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(produtoAtualizado),
-    });
+    try {
+      const res = await fetch(`http://localhost:3000/AtualizarCardapio/${id}`, {
+        method: 'PUT',
+        body: formData 
+      });
 
     if (res.ok) {
       alert('Produto atualizado com sucesso!');
@@ -140,6 +139,7 @@ const Visualizar_Cardapio = () => {
     alert('Erro de conexão com o servidor.');
   }
 };
+
 
 
 const handleDelete = async () => {
