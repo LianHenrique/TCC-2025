@@ -28,6 +28,17 @@ const Cardapio = () => {
         const cardapioFormatado = data.map(item => {
           let insumosArray = [];
 
+          let imageUrl = 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg';
+
+          if (item.imagem_url) {
+            // Remove barras iniciais se existirem
+            const cleanPath = item.imagem_url.replace(/^\/+/, '');
+            imageUrl = `http://localhost:3000/${cleanPath}`;
+
+            // DEBUG: Mostra a URL final no console
+            console.log(`URL construída para ${item.nome_item}: ${imageUrl}`);
+          }
+
           try {
             if (Array.isArray(item.insumos)) {
               insumosArray = item.insumos;
@@ -65,7 +76,7 @@ const Cardapio = () => {
               if (u === 'ml' || u === 'mililitro') return 'ml';
               if (u === 'kg') return 'kg';
               if (u === 'g' || u === 'grama') return 'g';
-              if (u === 'unidade' || u === 'unidades' || u === 'un') return 'unidade'; // 👈 aqui
+              if (u === 'unidade' || u === 'unidades' || u === 'un') return 'unidade';
               return u;
             };
 
@@ -116,7 +127,7 @@ const Cardapio = () => {
             id: item.id_cardapio,
             nome: item.nome_item || 'Produto sem nome',
             link: item.imagem_url
-              ? `http://localhost:3000${item.imagem_url}` // <-- Concatena com o servidor local
+              ? `http://localhost:3000/uploads/${item.imagem_url.split('/').pop()}`
               : 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
             descricao: [
               { texto: `Descrição: ${item.descricao_item || 'Sem descrição'}` },
