@@ -140,7 +140,7 @@ const Produto = () => {
       <NavBar />
       <Container
         style={{
-          maxWidth: "500px"
+          maxWidth: "800px"
         }}>
         <Form
           onSubmit={handleSubmit}

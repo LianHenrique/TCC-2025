@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import NavBar from '../../components/NavBar/NavBar';
+import { useState, useEffect, useContext } from 'react';
 import { Container, Card, Button, Badge, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 
+import styles from "./Alerta.module.css";
+import { ThemeContext } from '../../Contexts/ThemeContext';
+import NavBar from '../../components/NavBar/NavBar';
+
 const Alerta = () => {
   const [insumos, setInsumos] = useState([]);
+  const { darkMode, toggleTheme } = useContext(ThemeContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,10 +48,18 @@ const Alerta = () => {
   }, []);
 
   const getCorDeFundo = (tipoEstoque) => {
-    switch (tipoEstoque) {
-      case 'critico': return '#ffe6e6';
-      case 'antecipado': return '#fff9e6';
-      default: return '#ffffff';
+    if (darkMode) {
+      switch (tipoEstoque) {
+        case 'critico': return '#3b1a1a';
+        case 'antecipado': return '#4a471a';
+        default: return '#1e1e1e';
+      }
+    } else {
+      switch (tipoEstoque) {
+        case 'critico': return '#ffe6e6';
+        case 'antecipado': return '#fff9e6';
+        default: return '#ffffff';
+      }
     }
   };
 
@@ -64,7 +76,10 @@ const Alerta = () => {
   return (
     <div>
       <NavBar />
-      <Container style={{ marginTop: '100px' }}>
+
+      <Container style={{
+        marginTop: "150px"
+      }}>
         <h1 className="mb-4 text-center">📦 Insumos em Alerta de Estoque</h1>
 
         <div className="d-flex justify-content-center mb-4">
@@ -85,7 +100,9 @@ const Alerta = () => {
             {insumos.map(insumo => (
               <Col key={insumo.id} xs={12} md={6} lg={5}>
                 <Card
-                  className="h-100 shadow-sm"
+                  className={`h-100 shadow-sm ${
+                    darkMode ? styles.cardDark : styles.cardLight
+                  } ${styles.card}`}
                   style={{
                     backgroundColor: getCorDeFundo(insumo.tipoEstoque),
                     transition: 'all 0.3s ease'
@@ -100,7 +117,7 @@ const Alerta = () => {
                         width: '100px',
                         height: '100px',
                         objectFit: 'contain',
-                        backgroundColor: '#f8f9fa'
+                        backgroundColor: "#fff"
                       }}
                     />
                     <div style={{ flex: 1 }}>

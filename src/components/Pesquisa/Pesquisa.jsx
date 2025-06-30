@@ -20,11 +20,12 @@ const Pesquisa = ({ nomeDrop, lista = [], onFilterChange, onSearchChange, navega
         type="text"
         placeholder="Pesquisar..."
         onChange={handleInputChange}
+        className='shadow'
         style={{ maxWidth: '300px', marginRight: '10px' }}
       />
 
       {lista.length > 0 && (
-        <Dropdown onSelect={handleSelect} className="me-3">
+        <Dropdown onSelect={handleSelect} className="me-3 shadow">
           <Dropdown.Toggle variant="secondary" id="dropdown-filtro">
             {filtroSelecionado ? filtroSelecionado : nomeDrop}
           </Dropdown.Toggle>
@@ -40,7 +41,7 @@ const Pesquisa = ({ nomeDrop, lista = [], onFilterChange, onSearchChange, navega
       )}
 
       {navega && TxtButton && (
-        <Button variant="success" onClick={() => window.location.href = navega}>
+        <Button variant="success" className='shadow' onClick={() => window.location.href = navega}>
           {TxtButton}
         </Button>
       )}

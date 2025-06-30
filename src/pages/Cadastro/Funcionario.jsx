@@ -72,13 +72,13 @@ const Funcionarios = () => {
     <div style={{ marginTop: '100px' }}>
       <NavBar />
 
-      <Container style={{ maxWidth: "500px" }}>
+      <Container style={{ maxWidth: "800px" }}>
         <Form
           onSubmit={handleSubmit}
           className="shadow rounded"
           style={{ padding: '30px', border: '1px blue solid', textAlign: "center" }}>
           <img
-            src={logo} width={100} alt="" />
+            src={logo} width={100} alt="logo" />
           <h1 style={{ textAlign: 'center' }}>Cadastro</h1>
 
           {error && (
