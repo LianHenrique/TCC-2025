@@ -51,20 +51,18 @@ const CardGeral = ({
       return 'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg';
     }
 
-    // Se já é URL completa
-    if (item.imagem_url.startsWith('http')) {
+    // Se já é uma URL completa (http/https)
+    if (/^https?:\/\//i.test(item.imagem_url)) {
       return item.imagem_url;
     }
 
-    // Extrair apenas o nome do arquivo independente do caminho
-    const extractFilename = (path) => {
-      return path
-        .replace(/^.*[\\\/]/, '') // Remove tudo até a última barra
-        .replace(/\?.*$/, ''); // Remove parâmetros de query se houver
-    };
+    // Se é um caminho local
+    if (item.imagem_url.startsWith('/uploads/')) {
+      return `http://localhost:3000${item.imagem_url}`;
+    }
 
-    const filename = extractFilename(item.imagem_url);
-    return `http://localhost:3000/uploads/${filename}`;
+    // Padrão final - considera como caminho relativo
+    return `http://localhost:3000/uploads/${item.imagem_url}`;
   };
 
   return (

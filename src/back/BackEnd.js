@@ -45,7 +45,7 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ 
+const upload = multer({
   storage,
   fileFilter: (req, file, cb) => {
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
@@ -599,7 +599,6 @@ app.post('/insumos/insert', upload.single('imagem'), (req, res) => {
 // Buscar itens do cardapio por ID
 app.get('/cardapio/:id_cardapio', (req, res) => {
   const { id_cardapio } = req.params;
-
   const sql = `
     SELECT 
       c.id_cardapio,
@@ -745,64 +744,87 @@ app.post('/login', (req, res) => {
 // --- ROTAS CARDÁPIO ---
 // Buscar todos os itens do cardápio 
 app.get('/cardapio', (req, res) => {
+  // Query SQL otimizada e segura
   const sql = `
-      SELECT 
-    c.id_cardapio,
-    c.nome_item,
-    c.descricao_item,
-    c.valor_item,
-    c.imagem_url,
-    c.ativo,
-    c.data_cadastro,
-    c.categoria,
-    GROUP_CONCAT(
-      CONCAT(
-        '{"nome_insumo":"', IFNULL(i.nome_insumos, ''), '",',
-        '"quantidade_necessaria":"', IFNULL(ici.quantidade_necessaria, ''), '",',
-        '"unidade_medida_receita":"', IFNULL(ici.unidade_medida_receita, ''), '",',
-        '"quantidade_insumos":"', IFNULL(i.quantidade_insumos, ''), '",',
-        '"unidade_medida":"', IFNULL(i.unidade_medida, ''), '"}'
-      )
-    ) AS insumos
-  FROM Cardapio c
-  LEFT JOIN ItemCardapioInsumo ici ON ici.id_item_cardapio = c.id_cardapio
-  LEFT JOIN Insumos i ON i.id_insumos = ici.id_insumo
-  GROUP BY c.id_cardapio
+    SELECT 
+      c.id_cardapio,
+      c.nome_item,
+      c.descricao_item,
+      c.valor_item,
+      c.imagem_url,
+      c.ativo,
+      c.data_cadastro,
+      c.categoria,
+      COALESCE(
+        JSON_ARRAYAGG(
+          JSON_OBJECT(
+            'id_insumo', i.id_insumos,
+            'nome_insumo', i.nome_insumos,
+            'quantidade_necessaria', ici.quantidade_necessaria,
+            'unidade_medida_receita', ici.unidade_medida_receita,
+            'quantidade_insumos', i.quantidade_insumos,
+            'unidade_medida', i.unidade_medida
+          )
+        ),
+        JSON_ARRAY()
+      ) AS insumos
+    FROM Cardapio c
+    LEFT JOIN ItemCardapioInsumo ici ON ici.id_item_cardapio = c.id_cardapio
+    LEFT JOIN Insumos i ON i.id_insumos = ici.id_insumo
+    GROUP BY c.id_cardapio
   `;
 
   connection.query(sql, (error, results) => {
     if (error) {
       console.error('Erro ao buscar cardápio:', error);
-      return res.status(500).json({ error: 'Erro ao buscar cardápio' });
+      return res.status(500).json({ 
+        error: 'Erro ao buscar cardápio',
+        details: error.message,
+        sql: error.sql  // Apenas para debug em desenvolvimento
+      });
     }
 
-    // LOG DE DIAGNÓSTICO
-    console.log('--------------------------------');
-    console.log('Dados do cardápio retornados:');
-    results.forEach(item => {
-      console.log(`Item: ${item.nome_item}`);
-      console.log(`URL no banco: ${item.imagem_url}`);
-      console.log(`Caminho absoluto: ${path.join(__dirname, 'public', item.imagem_url)}`);
-    });
-    console.log('--------------------------------');
-
-    // Corrige o parse do campo insumos para array de objetos
-    const formattedResults = results.map(item => ({
-      ...item,
-      insumos: (() => {
-        if (!item.insumos) return [];
-        try {
-          return JSON.parse(`[${item.insumos}]`);
-        } catch {
-          return [];
+    try {
+      // Processamento seguro dos resultados
+      const formattedResults = results.map(item => {
+        // Log de diagnóstico para imagens
+        console.log(`Item: ${item.nome_item}`);
+        console.log(`URL no banco: ${item.imagem_url}`);
+        
+        if (item.imagem_url) {
+          const filePath = path.join(__dirname, 'public', item.imagem_url);
+          const exists = fs.existsSync(filePath);
+          console.log(`Arquivo existe? ${exists} - ${filePath}`);
         }
-      })()
-    }));
 
-    res.json(formattedResults);
+        // Processamento seguro de insumos
+        let insumosArray = [];
+        try {
+          insumosArray = Array.isArray(item.insumos) ? 
+            item.insumos : 
+            JSON.parse(item.insumos || '[]');
+        } catch (parseError) {
+          console.error('Erro ao parsear insumos:', parseError);
+          insumosArray = [];
+        }
+
+        return {
+          ...item,
+          insumos: insumosArray
+        };
+      });
+
+      console.log('--------------------------------');
+      res.json(formattedResults);
+    } catch (processError) {
+      console.error('Erro no processamento dos resultados:', processError);
+      res.status(500).json({ 
+        error: 'Erro no processamento dos dados',
+        details: processError.message
+      });
+    }
   });
 });
-
 
 
 // Inserir item no cardápio com insumos relacionados

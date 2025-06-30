@@ -31,9 +31,7 @@ const Cardapio = () => {
           let insumosArray = [];
 
           // Construir URL da imagem com cache-busting
-          const imageUrl = item.imagem_url
-            ? `http://localhost:3000${item.imagem_url}?t=${new Date().getTime()}`
-            : 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg';
+          const imageUrl = item.imagem_url || 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg';
 
           console.log('URL construída:', imageUrl);
 
