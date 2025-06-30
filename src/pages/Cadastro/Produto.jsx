@@ -16,6 +16,7 @@ const Produto = () => {
   const [insumos, setInsumos] = useState([]);
   const [unidade, setUnidade] = useState([]);
   const [quantidade, setQuantidade] = useState('');
+  const [imagemArquivo, setImagemArquivo] = useState(null);
   const [insumoSelecionado, setInsumoSelecionado] = useState({
     id: null,
     nome: '',
@@ -48,7 +49,12 @@ const Produto = () => {
     if (!id || !quantidade_necessaria || !unidade_medida_receita) return alert('Preencha todos os campos do insumo.');
     const jaExiste = insumosSelecionados.find((i) => i.id === id);
     if (jaExiste) return alert('Insumo já adicionado!');
-    setInsumosSelecionados([...insumosSelecionados, { id, nome, quantidade_necessaria, unidade_medida_receita }]);
+    setInsumosSelecionados([...insumosSelecionados, {
+      id_insumo: id, 
+      nome,
+      quantidade_necessaria,
+      unidade_medida_receita
+    }]);
     setInsumoSelecionado({ id: null, nome: '', quantidade_necessaria: '', unidade_medida_receita: '' });
   };
 
@@ -56,29 +62,23 @@ const Produto = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!nome || !descricao || !filtro || insumosSelecionados.length === 0 || !valor) {
+    if (!nome || !descricao || !filtro || insumosSelecionados.length === 0 || !valor || !imagemArquivo) {
       alert('Preencha todos os campos e adicione pelo menos um insumo.');
       return;
     }
 
-    const produto = {
-      nome_produto: nome,
-      descricao_produto: descricao,
-      filtro,
-      imagem_url: imagemUrl,
-      valor_produto: parseFloat(valor),
-      insumos: insumosSelecionados.map((i) => ({
-        id_insumo: i.id,
-        quantidade_necessaria: parseFloat(i.quantidade_necessaria),
-        unidade_medida_receita: i.unidade_medida_receita
-      }))
-    };
+    const formData = new FormData();
+    formData.append('nome_produto', nome);
+    formData.append('descricao_produto', descricao);
+    formData.append('valor_produto', valor);
+    formData.append('filtro', filtro);
+    formData.append('imagem', imagemArquivo); // <- imagem real
+    formData.append('insumos', JSON.stringify(insumosSelecionados));
 
     try {
       const res = await fetch('http://localhost:3000/cardapio/insert', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(produto),
+        body: formData
       });
 
       if (res.ok) {
@@ -89,7 +89,7 @@ const Produto = () => {
         alert('Erro: ' + (data.error || 'Não foi possível cadastrar o produto.'));
       }
     } catch (error) {
-      alert('Erro ao conectar ao servidor.');
+      alert('Erro ao conectar ao servidor: ' + error.message);
     }
   };
 
@@ -198,7 +198,7 @@ const Produto = () => {
               value={insumoSelecionado.quantidade_necessaria}
               onChange={(e) => {
                 let valorDigitado = e.target.value;
- 
+
                 valorDigitado = valorDigitado.replace(/[^\d,]/g, '').replace('.', '');
 
                 const valor = parseFloat(valorDigitado.replace(',', '.'));
@@ -256,18 +256,15 @@ const Produto = () => {
             )}
           </div>
 
-          <FloatingLabel
-            controlId="floatingImagem"
-            label="URL da Imagem"
-            className="m-2">
+          <Form.Group className="m-2" controlId="formImagem">
+            <Form.Label>Imagem do Produto</Form.Label>
             <Form.Control
-              type="text"
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImagemArquivo(e.target.files[0])}
               className="rounded-5 shadow mt-3"
-              placeholder="URL da imagem"
-              value={imagemUrl}
-              onChange={(e) =>
-                setImagemUrl(e.target.value)} />
-          </FloatingLabel>
+            />
+          </Form.Group>
 
           <FloatingLabel
             controlId="floatingValor"

@@ -25,6 +25,7 @@ const Visualizar = () => {
   const [fornecedores, setFornecedores] = useState([]);
   const [idFornecedor, setIdFornecedor] = useState(null);
   const [unidade, setUnidade] = useState('');
+  const [fileImagem, setFileImagem] = useState(null);
   const isRestrito = !isloading && cargoUsuario === 'Funcionario';
   const unidadesDisponiveis = ['unidade', 'kg', 'g', 'litro', 'ml'];
 
@@ -79,24 +80,27 @@ const Visualizar = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const formData = new FormData();
+      formData.append('nome_insumos', nome);
+      formData.append('quantidade_insumos', quantidade);
+      formData.append('categoria', filtro);
+      formData.append('valor_insumos', preco);
+      formData.append('data_vencimento', validade);
+      formData.append('alerta_estoque', alertaEstoque);
+      formData.append('alertar_dias_antes', alertaVencimento);
+      formData.append('unidade_medida', unidade);
+      formData.append('id_fornecedor', idFornecedor || '');
+
+      if (fileImagem) {
+        formData.append('imagem', fileImagem);
+      } else {
+        formData.append('imagem_atual', imagemAtual); 
+      }
+
       const response = await fetch(`http://localhost:3000/insumos_tudo_POST/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          nome_insumos: nome,
-          quantidade_insumos: quantidade,
-          categoria: filtro,
-          imagem_url: url,
-          valor_insumos: preco,
-          data_vencimento: validade,
-          alerta_estoque: alertaEstoque,
-          alerta_vencimento: alertaVencimento,
-          id_fornecedor: idFornecedor,
-          unidade_medida: unidade
-        })
-      })
+        body: formData
+      });
 
       if (!response.ok) {
         const data = await response.json();
@@ -240,13 +244,18 @@ const Visualizar = () => {
             </Form.Select>
           </FloatingLabel>
 
-          <FloatingLabel controlId="url" label="URL da Imagem" className="mb-3">
+          <FloatingLabel controlId="imagem" label="Nova Imagem" className="mb-3">
             <Form.Control
-              type="text"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
+              type="file"
+              accept="image/*"
               className="rounded-5 shadow"
-              required
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (file) {
+                  setUrl(URL.createObjectURL(file)); // Visualização temporária
+                  setFileImagem(file);               // Para enviar ao backend
+                }
+              }}
             />
           </FloatingLabel>
 

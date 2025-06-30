@@ -12,8 +12,8 @@ const getFormDataInicial = () => ({
   quantidade_insumos: 0,
   data_vencimento: '',
   descricao_insumos: '',
-  imagem_url: '',
-  alerta_vencimento: 10,
+  imagem: null,
+  alertar_dias_antes: 10,
   alerta_estoque: 1,
   fornecedor_id: null
 });
@@ -27,6 +27,7 @@ const Insumos = () => {
   const [fornecedor, setFornecedor] = useState({ nome: '', telefone: '', email: '' });
   const [fornecedores, setFornecedores] = useState([]);
   const navigate = useNavigate();
+  const [imagemFile, setImagemFile] = useState(null);
   const today = new Date().toISOString().split('T')[0];
 
   useEffect(() => {
@@ -45,11 +46,11 @@ const Insumos = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    const camposNumericos = ['quantidade_insumos', 'valor_insumos', 'alertar_dias_antes', 'alerta_estoque'];
+
     setFormData((prev) => ({
       ...prev,
-      [name]: ['quantidade_insumos', 'valor_insumos', 'alerta_vencimento', 'alerta_estoque'].includes(name)
-        ? Number(value)
-        : value
+      [name]: camposNumericos.includes(name) ? Number(value) : value
     }));
   };
 
@@ -66,7 +67,7 @@ const Insumos = () => {
     if (formData.quantidade_insumos < 0) return alert('A quantidade em estoque não pode ser negativa.');
     if (!formData.data_vencimento || new Date(formData.data_vencimento) < new Date(today))
       return alert('A data de validade deve ser hoje ou uma data futura.');
-    if (!formData.imagem_url) return alert('A URL da imagem é obrigatória.');
+    if (!imagemFile) return alert('A imagem do insumo é obrigatória.');
     if (formData.alertar_dias_antes < 0) return alert('O número de dias para alerta deve ser igual ou maior que 0.');
     if (formData.alerta_estoque < 1) return alert('O alerta de estoque deve ser maior que 0.');
     return true;
@@ -75,13 +76,24 @@ const Insumos = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validarInsumos()) return;
-    console.log("Enviando dados para o backend:", formData);
 
     try {
+      const formDataEnvio = new FormData();
+      formDataEnvio.append('nome_insumos', formData.nome_insumos);
+      formDataEnvio.append('valor_insumos', formData.valor_insumos);
+      formDataEnvio.append('categoria', formData.categoria);
+      formDataEnvio.append('unidade_medida', formData.unidade_medida);
+      formDataEnvio.append('quantidade_insumos', formData.quantidade_insumos);
+      formDataEnvio.append('data_vencimento', formData.data_vencimento);
+      formDataEnvio.append('descricao_insumos', formData.descricao_insumos);
+      formDataEnvio.append('alerta_estoque', formData.alerta_estoque);
+      formDataEnvio.append('alertar_dias_antes', formData.alertar_dias_antes);
+      formDataEnvio.append('fornecedor_id', formData.fornecedor_id ?? null);
+      formDataEnvio.append('imagem', imagemFile);
+
       const res = await fetch("http://localhost:3000/insumos/insert", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
+        body: formDataEnvio
       });
 
       if (res.ok) {
@@ -192,14 +204,25 @@ const Insumos = () => {
           <FloatingLabel controlId="alertar_dias_antes" label="Alertar quantos dias antes do vencimento?" className="m-2">
             <Form.Control
               type="number"
-              name="alertar_dias_antes" 
+              name="alertar_dias_antes"
               min="0"
-              value={formData.alertar_dias_antes}  
+              value={formData.alertar_dias_antes}
               onChange={handleChange}
               className="rounded-3 shadow mt-3"
               required
             />
           </FloatingLabel>
+
+          <Form.Group className="m-2">
+            <Form.Label>Imagem do Insumo</Form.Label>
+            <Form.Control
+              type="file"
+              accept="image/*"
+              onChange={(e) => setImagemFile(e.target.files[0])}
+              className="rounded-3 shadow"
+              required
+            />
+          </Form.Group>
 
           <Form.Group className="m-2">
             <Dropdown className="shadow rounded-3">
@@ -242,17 +265,6 @@ const Insumos = () => {
               name="alerta_estoque"
               min="1"
               value={formData.alerta_estoque}
-              onChange={handleChange}
-              className="rounded-3 shadow mt-3"
-              required
-            />
-          </FloatingLabel>
-
-          <FloatingLabel controlId="imagem_url" label="URL da Imagem" className="m-2">
-            <Form.Control
-              type="text"
-              name="imagem_url"
-              value={formData.imagem_url}
               onChange={handleChange}
               className="rounded-3 shadow mt-3"
               required

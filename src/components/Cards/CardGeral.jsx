@@ -62,7 +62,13 @@ const CardGeral = ({
                     flexShrink: 0,
                   }}
                   variant="top"
-                  src={item.link}
+                  src={
+                    item.link || item.imagem_url
+                      ? (item.link || item.imagem_url).startsWith('http')
+                        ? (item.link || item.imagem_url)
+                        : `http://localhost:3000${item.link || item.imagem_url}`
+                      : 'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg'
+                  }
                   alt={item.nome}
                   onError={(e) => {
                     e.target.onerror = null;

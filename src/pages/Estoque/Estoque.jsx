@@ -95,7 +95,7 @@ const Estoque = () => {
         if (!res.ok) throw new Error(`Erro HTTP: ${res.status}`);
 
         const data = await res.json();
-        if (!Array.isArray(data)) throw new Error('Formato de dados inválido da API');
+        if (!Array.isArray(data)) throw new Error('Formato de dados inv\u00e1lido da API');
 
         const agrupados = data.reduce((acc, insumo) => {
           const categoria = insumo.categoria || 'Outros';
@@ -108,27 +108,27 @@ const Estoque = () => {
           const vencProximo = diasRestantes !== null && diasRestantes <= insumo.alertar_dias_antes && diasRestantes >= 0;
           const vencimentoFormatado = venc ? venc.toLocaleDateString('pt-BR') : 'Sem data';
           const valor = parseFloat(insumo.valor_insumos) || 0;
-          const valorFormatado = isNaN(valor) ? 'Valor inválido' : `R$ ${valor.toFixed(2)}`;
+          const valorFormatado = isNaN(valor) ? 'Valor inv\u00e1lido' : `R$ ${valor.toFixed(2)}`;
           const statusEstoque =
             insumo.quantidade_insumos <= insumo.alerta_estoque ? 'danger' :
-            insumo.quantidade_insumos <= insumo.alerta_estoque + 5 ? 'warning' : 'success';
+              insumo.quantidade_insumos <= insumo.alerta_estoque + 5 ? 'warning' : 'success';
 
           const descricao = isFuncionario
             ? [
-                { texto: `Descrição: ${insumo.descricao_insumos}` }
-              ]
+              { texto: `Descri\u00e7\u00e3o: ${insumo.descricao_insumos}` }
+            ]
             : [
-                {
-                  texto: `Quantidade: ${insumo.quantidade_insumos}${insumo.unidade_medida ? ' ' + insumo.unidade_medida : ''}`,
-                  style: insumo.quantidade_insumos <= insumo.alerta_estoque ? { color: 'red', fontWeight: 'bold' } : {}
-                },
-                { texto: `Valor unitário: ${valorFormatado}` },
-                {
-                  texto: `Vencimento: ${vencimentoFormatado}`,
-                  badge: vencProximo ? 'danger' : undefined,
-                  tooltip: vencProximo ? `Este produto vence em até ${insumo.alertar_dias_antes} dias` : undefined
-                }
-              ];
+              {
+                texto: `Quantidade: ${insumo.quantidade_insumos}${insumo.unidade_medida ? ' ' + insumo.unidade_medida : ''}`,
+                style: insumo.quantidade_insumos <= insumo.alerta_estoque ? { color: 'red', fontWeight: 'bold' } : {}
+              },
+              { texto: `Valor unit\u00e1rio: ${valorFormatado}` },
+              {
+                texto: `Vencimento: ${vencimentoFormatado}`,
+                badge: vencProximo ? 'danger' : undefined,
+                tooltip: vencProximo ? `Este produto vence em at\u00e9 ${insumo.alertar_dias_antes} dias` : undefined
+              }
+            ];
 
           acc[key].items.push({
             id: insumo.id_insumos,
@@ -138,7 +138,11 @@ const Estoque = () => {
             valor,
             statusEstoque,
             dataVencimento: vencimentoFormatado,
-            link: insumo.imagem_url || 'https://cdn.melhoreshospedagem.com.br/wp/wp-content/uploads/2023/07/erro-404.jpg',
+            link: insumo.imagem_url
+              ? (insumo.imagem_url.startsWith('http')
+                ? insumo.imagem_url
+                : `http://localhost:3000${insumo.imagem_url}`)
+              : 'https://cdn.melhoreshospedagem.com.br/wp/wp-content/uploads/2023/07/erro-404.jpg',
             descricao
           });
 
@@ -192,7 +196,7 @@ const Estoque = () => {
           TxtButton={!isFuncionario ? "Insumos +" : null}
           lista={[
             { texto: 'Carnes', value: 'Carnes' },
-            { texto: 'Perecíveis', value: 'Perecíveis' },
+            { texto: 'Perec\u00edveis', value: 'Perec\u00edveis' },
             { texto: 'Molhos', value: 'Molhos' },
             { texto: 'Congelados', value: 'Congelados' }
           ]}

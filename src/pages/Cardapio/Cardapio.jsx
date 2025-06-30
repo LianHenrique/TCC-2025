@@ -115,9 +115,9 @@ const Cardapio = () => {
           return {
             id: item.id_cardapio,
             nome: item.nome_item || 'Produto sem nome',
-            link:
-              item.imagem_url ||
-              'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
+            link: item.imagem_url
+              ? `http://localhost:3000${item.imagem_url}` // <-- Concatena com o servidor local
+              : 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
             descricao: [
               { texto: `Descrição: ${item.descricao_item || 'Sem descrição'}` },
               { texto: ingredientesTexto },
