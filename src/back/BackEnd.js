@@ -2,20 +2,24 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import cors from 'cors';
-import connection from './db.js'
+import connection from './db.js';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-app.use(cors()); // ok
-app.use('/uploads', express.static(path.join(__dirname, 'public', 'uploads'))); // serve as imagens
-// NÃO use express.json() nem express.urlencoded() para uploads com arquivos
 
+// Configurações essenciais
+app.use(cors());
+app.use(express.json()); // Para parsear application/json
+app.use(express.urlencoded({ extended: true })); // Para parsear application/x-www-form-urlencoded
+// Adicione isso logo após as configurações do multer
+app.use(express.static(path.join(__dirname, 'public'))); // Servir arquivos estáticos
+ 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'public/uploads');
+    cb(null, path.join(__dirname, 'public', 'uploads'));
   },
   filename: (req, file, cb) => {
     const uniqueName = Date.now() + '-' + file.originalname;
@@ -23,7 +27,21 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage });
+const upload = multer({ 
+  storage,
+  fileFilter: (req, file, cb) => {
+    // Aceitar apenas imagens
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Tipo de arquivo não suportado. Apenas imagens são permitidas.'), false);
+    }
+  },
+  limits: {
+    fileSize: 5 * 1024 * 1024 // Limite de 5MB
+  }
+});
 
 app.post('/api/insumos', upload.single('imagem'), (req, res) => {
   const { nome, categoria, preco } = req.body;
@@ -128,7 +146,16 @@ app.get('/produtos/:id_produto', (requisicao, resposta) => {
 
 app.get('/produtos', (req, res) => {
   connection.query(
-    'SELECT id_insumos, nome_insumos, imagem_url, categoria, quantidade_insumos, unidade_medida, valor_insumos, data_vencimento FROM insumos',
+    `SELECT 
+      id_insumos, 
+      nome_insumos, 
+      CONCAT('http://localhost:3000', imagem_url) AS imagem_url,
+      categoria, 
+      quantidade_insumos, 
+      unidade_medida, 
+      valor_insumos, 
+      data_vencimento 
+    FROM insumos`,
     (error, resultados) => {
       if (error) {
         return res.status(500).json({ error: 'Erro ao buscar produtos' });
@@ -137,9 +164,6 @@ app.get('/produtos', (req, res) => {
     }
   );
 });
-
-
-
 
 // Notificação de quantidade do estoque
 app.get('/produtos/notificacao', (req, res) => {
@@ -990,15 +1014,16 @@ app.get('/estoque', (req, res) => {
 function getInsumosDoItem(id_cardapio) {
   return new Promise((resolve, reject) => {
     const sql = `
-      SELECT 
+      SELECT
         i.id_insumos,
         i.nome_insumos,
-        i.quantidade_insumos AS estoque_atual,
-        i.unidade_medida AS unidade_estoque,
+        i.quantidade_insumos AS estoque_atual,            
+        i.unidade_medida AS unidade_estoque,             
         ici.quantidade_necessaria,
-        ici.unidade_medida_receita AS unidade_receita
-      FROM itemcardapioinsumo ici
-      JOIN insumos i ON ici.id_insumo = i.id_insumos
+        ici.unidade_medida_receita AS unidade_receita     
+      FROM
+        ItemCardapioInsumo AS ici
+      JOIN Insumos AS i ON ici.id_insumo = i.id_insumos
       WHERE ici.id_item_cardapio = ?
     `;
 
@@ -1008,6 +1033,7 @@ function getInsumosDoItem(id_cardapio) {
     });
   });
 }
+
 
 function normalizarUnidade(unidade) {
   if (!unidade) return '';

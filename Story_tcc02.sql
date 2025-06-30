@@ -168,6 +168,67 @@ MODIFY quantidade_insumos DECIMAL(10,3);
 
 ALTER TABLE Cliente ADD palavra_chave VARCHAR(255) AFTER senha_cliente;
 
+
+
+-- Atualiza funcionários para usar imagens locais
+UPDATE funcionario SET imagem_url = '/uploads/1751293043184-funcionaria-feliz-e-sorridente-com-os-colegas-em-uma-sombra-turva-atras_114579-2810.avif' WHERE id_funcionario = 1;
+UPDATE funcionario SET imagem_url = '/uploads/1751293099756-a676c-felicidade-no-trabalho-1-e1661260494799.webp' WHERE id_funcionario = 2;
+UPDATE funcionario SET imagem_url = '/uploads/1751293148253-mulher-de-tiro-medio-trabalhando-no-laptop_23-2149300643.avif' WHERE id_funcionario = 3;
+UPDATE funcionario SET imagem_url = '/uploads/1751292560995-homem-no-armazem-trabalhando-no-laptop-easy-resize.com.jpg' WHERE id_funcionario = 4;
+UPDATE funcionario SET imagem_url = '/uploads/1751290051024-80930134-download-sign-illustration-vector-white-icon-with-soft-shadow-on-transparent-background.jpg' WHERE id_funcionario = 5;
+
+-- Atualiza insumos para usar imagens locais
+UPDATE insumos SET imagem_url = '/uploads/1751291180292-img-site-1-lanches-burger-came.jpg' WHERE id_insumos = 1;
+UPDATE insumos SET imagem_url = '/uploads/1751291124130-1-93e341ab8b244fc0a87bb7005166494a.jpeg' WHERE id_insumos = 2;
+UPDATE insumos SET imagem_url = '/uploads/1751292467862-570ee096e3.webp' WHERE id_insumos = 3;
+UPDATE insumos SET imagem_url = '/uploads/1751290950825-Bacon-Fatiad0.jpg' WHERE id_insumos = 4;
+UPDATE insumos SET imagem_url = '/uploads/1751292255625-barbecue-heinz.webp' WHERE id_insumos = 5;
+UPDATE insumos SET imagem_url = '/uploads/1751291755824-990415-06-09-2022-13-33-40-769.jpg' WHERE id_insumos = 6;
+UPDATE insumos SET imagem_url = '/uploads/1751292195387-alface-crespa-organica.jpg' WHERE id_insumos = 7;
+UPDATE insumos SET imagem_url = '/uploads/1751292395417-tomatetialiano_paramolhos_47507_zoom.jpg.webp' WHERE id_insumos = 8;
+
+-- Desative o modo seguro temporariamente
+SET SQL_SAFE_UPDATES = 0;
+
+-- Atualize as URLs removendo qualquer prefixo incorreto
+UPDATE insumos SET 
+  imagem_url = CONCAT('/uploads/', SUBSTRING_INDEX(imagem_url, '/', -1))
+WHERE imagem_url IS NOT NULL AND imagem_url != '';
+
+UPDATE funcionario SET 
+  imagem_url = CONCAT('/uploads/', SUBSTRING_INDEX(imagem_url, '/', -1))
+WHERE imagem_url IS NOT NULL AND imagem_url != '';
+
+UPDATE cardapio SET 
+  imagem_url = CONCAT('/uploads/', SUBSTRING_INDEX(imagem_url, '/', -1))
+WHERE imagem_url IS NOT NULL AND imagem_url != '';
+
+-- Reative o modo seguro
+SET SQL_SAFE_UPDATES = 1;
+
+-- Atualiza cardápio para usar imagens locais
+UPDATE cardapio SET imagem_url = '/uploads/1751293247239-hamburguer-duplo.jpg' WHERE id_cardapio = 1;
+UPDATE cardapio SET imagem_url = '/uploads/1751296679495-hamburguer-duplo.jpg' WHERE id_cardapio = 2;
+UPDATE cardapio SET imagem_url = '/uploads/1751293323641-x-bacon.webp' WHERE id_cardapio = 3;
+
+-- Corrigir imagem do Hamburguer de carne (ID 1)
+UPDATE insumos SET 
+  imagem_url = '/uploads/1751291180292-img-site-1-lanches-burger-carne.jpg'
+WHERE id_insumos = 1;
+
+UPDATE insumos SET 
+  imagem_url = '1751303857649-Pao-de-Hamburguer-Monaco-G-CT-BIMBO-QSR.jpg'
+WHERE id_insumos = 2;
+
+-- Atualizar imagem do Tomate Italiano (ID 8)
+UPDATE insumos SET 
+  imagem_url = '1751303744469-Tomate-italiano-2.jpg'
+WHERE id_insumos = 8;
+
+UPDATE insumos SET 
+  imagem_url = '1751290950825-Bacon-Fatiado.jpg'
+WHERE id_insumos = 4;  -- ID do Bacon Fatiado
+
 -- Adicionando Índices para Otimização (Exemplos)
 CREATE INDEX idx_insumos_nome ON Insumos(nome_insumos);
 CREATE INDEX idx_cardapio_nome ON Cardapio(nome_item);

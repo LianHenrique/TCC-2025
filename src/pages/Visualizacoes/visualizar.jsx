@@ -42,6 +42,26 @@ const Visualizar = () => {
       .catch((err) => console.error('Erro ao buscar fornecedores:', err));
   }, []);
 
+  // Função para obter a URL completa da imagem
+  const getImagemUrl = (path) => {
+    if (!path) return '';
+
+    // Se já é URL completa
+    if (path.startsWith('http')) {
+      return path;
+    }
+
+    // Extrair apenas o nome do arquivo
+    const extractFilename = (p) => {
+      return p
+        .replace(/^.*[\\\/]/, '') // Remove tudo até a última barra
+        .replace(/\?.*$/, ''); // Remove parâmetros de query se houver
+    };
+
+    const filename = extractFilename(path);
+    return `http://localhost:3000/uploads/${filename}`;
+  };
+
   useEffect(() => {
     if (!id) return;
 
@@ -268,8 +288,8 @@ const Visualizar = () => {
                 fileImagem
                   ? URL.createObjectURL(fileImagem)
                   : imagemAtual
-                    ? `http://localhost:3000${imagemAtual}`
-                    : ''
+                    ? getImagemUrl(imagemAtual) // Usar a função corrigida aqui
+                    : 'https://www.valuehost.com.br/blog/wp-content/uploads/2022/01/post_thumbnail-77d8f2a95f2f41b5863f3fba5a261d7e.jpeg.webp'
               }
               alt="Imagem do insumo"
               style={{

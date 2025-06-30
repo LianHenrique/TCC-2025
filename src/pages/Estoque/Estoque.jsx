@@ -138,11 +138,7 @@ const Estoque = () => {
             valor,
             statusEstoque,
             dataVencimento: vencimentoFormatado,
-            link: insumo.imagem_url
-              ? (insumo.imagem_url.startsWith('http')
-                ? insumo.imagem_url
-                : `http://localhost:3000${insumo.imagem_url}`)
-              : 'https://cdn.melhoreshospedagem.com.br/wp/wp-content/uploads/2023/07/erro-404.jpg',
+            imagem_url: insumo.imagem_url || null,
             descricao
           });
 
