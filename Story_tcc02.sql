@@ -21,8 +21,7 @@ VALUES
 ('Ana Souza',       'Gerente',     'ana.souza@empresa.com',     '123321', '2025-06-15', 'https://opiniaorh.files.wordpress.com/2021/04/pexels-'),
 ('Carlos Lima',     'ADM',         'carlos.lima@empresa.com',   '123456', '2025-06-15', 'https://www.ispblog.com.br/wp-content/uploads/2015/06/'),
 ('Juliana Rocha',   'Funcionario', 'juliana.rocha@empresa.com', '654321', '2025-06-15', 'https://blog.spvale.com.br/wp-content/uploads/2022/06/'),
-('Marcos Silva',    'Funcionario', 'marcos.silva@empresa.com',  '12345',  '2025-06-15', 'https://arraesecenteno.com.br/wp-content/uploads/2024/'),
-('Marcos',          'Gerente',     'eumemo@gmail.com',          '123',    '2025-06-15', 'https://blog.fecap.br/wp-content/uploads/FECAP-como-ser-um-bom-profissional.jpg');
+('Marcos Silva',    'Funcionario', 'marcos.silva@empresa.com',  '12345',  '2025-06-15', 'https://arraesecenteno.com.br/wp-content/uploads/2024/');
 
 -- Tabela de Fornecedores
 CREATE TABLE Fornecedor (
@@ -137,22 +136,27 @@ VALUES
 (2, 2, '2025-06-10', 'Venda', 2),
 (3, 3, '2025-06-10', 'Venda', 3),
 (4, 4, '2025-06-10', 'Venda', 4),
-(5, 5, '2025-06-11', 'Venda', 5),
+(5, 5, '2025-06-11', 'Venda', NULL),  -- Alterado para NULL
 (6, 1, '2025-06-11', 'Venda', 1),
 (7, 2, '2025-06-11', 'Venda', 2),
 (8, 3, '2025-06-11', 'Venda', 3),
 (1, 4, '2025-06-12', 'Venda', 4),
-(2, 5, '2025-06-12', 'Venda', 5),
+(2, 5, '2025-06-12', 'Venda', NULL),  -- Alterado para NULL
 (3, 1, '2025-06-12', 'Venda', 1),
 (4, 2, '2025-06-12', 'Venda', 2),
 (5, 3, '2025-06-13', 'Venda', 3),
 (6, 4, '2025-06-13', 'Venda', 4),
-(7, 5, '2025-06-13', 'Venda', 5),
+(7, 5, '2025-06-13', 'Venda', NULL),  -- Alterado para NULL
 (8, 1, '2025-06-13', 'Venda', 1),
 (1, 2, '2025-06-14', 'Venda', 2),
 (2, 3, '2025-06-14', 'Venda', 3),
 (3, 4, '2025-06-14', 'Venda', 4),
-(4, 5, '2025-06-14', 'Venda', 5);
+(4, 5, '2025-06-14', 'Venda', NULL);  -- Alterado para NULL
+
+-- Atualização segura da unidade_medida
+UPDATE Insumos 
+SET unidade_medida = 'unidade' 
+WHERE unidade_medida = 'unidades' AND id_insumos > 0;
 
 -- Atualização segura da unidade_medida
 UPDATE Insumos SET unidade_medida = 'unidade' WHERE unidade_medida = 'unidades' AND id_insumos > 0;

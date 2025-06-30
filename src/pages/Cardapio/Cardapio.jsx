@@ -20,24 +20,22 @@ const Cardapio = () => {
     fetch(`http://localhost:3000/cardapio`)
       .then(res => res.json())
       .then(data => {
+        console.log('Dados brutos da API:', data);
         if (!Array.isArray(data)) {
           console.error('Dados retornados não são um array:', data);
           return;
         }
 
         const cardapioFormatado = data.map(item => {
+          console.log('Item original:', item);
           let insumosArray = [];
 
-          let imageUrl = 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg';
+          // Construir URL da imagem com cache-busting
+          const imageUrl = item.imagem_url
+            ? `http://localhost:3000${item.imagem_url}?t=${new Date().getTime()}`
+            : 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg';
 
-          if (item.imagem_url) {
-            // Remove barras iniciais se existirem
-            const cleanPath = item.imagem_url.replace(/^\/+/, '');
-            imageUrl = `http://localhost:3000/${cleanPath}`;
-
-            // DEBUG: Mostra a URL final no console
-            console.log(`URL construída para ${item.nome_item}: ${imageUrl}`);
-          }
+          console.log('URL construída:', imageUrl);
 
           try {
             if (Array.isArray(item.insumos)) {
@@ -126,9 +124,7 @@ const Cardapio = () => {
           return {
             id: item.id_cardapio,
             nome: item.nome_item || 'Produto sem nome',
-            link: item.imagem_url
-              ? `http://localhost:3000${item.imagem_url}?t=${new Date().getTime()}`
-              : 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
+            link: imageUrl,
             descricao: [
               { texto: `Descrição: ${item.descricao_item || 'Sem descrição'}` },
               { texto: ingredientesTexto },
