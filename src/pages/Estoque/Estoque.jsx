@@ -86,7 +86,7 @@ const Estoque = () => {
     }
   };
 
-  const handleEdit = (id) => navigate(`/editar/${id}`);
+  const handleEdit = (id) => navigate(`/visualizar/${id}`);
 
   useEffect(() => {
     const fetchProdutos = async () => {

@@ -50,14 +50,14 @@ const Alerta = () => {
   const getCorDeFundo = (tipoEstoque) => {
     if (darkMode) {
       switch (tipoEstoque) {
-        case 'critico': return '#3b1a1a';
-        case 'antecipado': return '#4a471a';
+        case 'critico': return '#880100';
+        case 'antecipado': return '#a78911';
         default: return '#1e1e1e';
       }
     } else {
       switch (tipoEstoque) {
         case 'critico': return '#ffe6e6';
-        case 'antecipado': return '#fff9e6';
+        case 'antecipado': return '#ffffd9';
         default: return '#ffffff';
       }
     }
@@ -98,7 +98,7 @@ const Alerta = () => {
         ) : (
           <Row className="g-4 justify-content-center">
             {insumos.map(insumo => (
-              <Col key={insumo.id} xs={12} md={6} lg={5}>
+              <Col key={insumo.id} xs={12} md={7} lg={5}>
                 <Card
                   className={`h-100 shadow-sm ${
                     darkMode ? styles.cardDark : styles.cardLight
@@ -129,7 +129,7 @@ const Alerta = () => {
                         Quantidade: {Number(insumo.quantidade).toLocaleString('pt-BR')} {insumo.unidade}
                       </Card.Text>
                       <Button
-                        variant="outline-danger"
+                        variant="danger"
                         size="sm"
                         onClick={() => handleNavigate(insumo.id)}
                       >

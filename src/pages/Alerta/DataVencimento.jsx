@@ -3,7 +3,6 @@ import NavBar from '../../components/NavBar/NavBar';
 import { Container, Card, Dropdown, Button, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import { ThemeContext } from '../../Contexts/ThemeContext'; // Importa o contexto de tema
-import styles from './DataVencimento.module.css'; // Arquivo de estilos
 
 const DataVencimento = () => {
   const [insumos, setInsumos] = useState([]);
