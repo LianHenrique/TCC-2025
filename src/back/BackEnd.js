@@ -204,9 +204,10 @@ app.post("/funcionarios/insert", upload.single('imagem'), (req, res) => {
 // Editando funcionário
 app.put('/AtualizarFuncionario/:id', upload.single('imagem'), (req, res) => {
   const { id } = req.params;
-  const { nome_funcionario, email_funcionario, cargo_funcionario } = req.body;
+  const { nome_funcionario, email_funcionario, cargo_funcionario, imagem_atual } = req.body;
 
-  const imagem_url = req.file ? `/uploads/${req.file.filename}` : null;
+  // Usa a nova imagem se enviada, senão usa a antiga
+  const imagem_url = req.file ? `/uploads/${req.file.filename}` : imagem_atual;
 
   if (!nome_funcionario || !email_funcionario || !cargo_funcionario || !imagem_url) {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
@@ -341,7 +342,7 @@ app.put('/insumos_tudo_POST/:id_insumos', upload.single('imagem'), (req, res) =>
     categoria,
     data_vencimento,
     alerta_estoque,
-    alerta_vencimento,
+    alertar_dias_antes,
     id_fornecedor,
     unidade_medida,
     imagem_atual // ← se enviado no formData
@@ -381,7 +382,7 @@ app.put('/insumos_tudo_POST/:id_insumos', upload.single('imagem'), (req, res) =>
     categoria,
     data_vencimento,
     alerta_estoque,
-    alerta_vencimento,
+    alertar_dias_antes,
     unidade_medida,
     id_insumos
   ];
@@ -1560,88 +1561,4 @@ const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
-
-/////////////////////////////////////////////////////////////
-
-
-// versionamento gerente , inicio 
-// app.get('/login', (req, res) => {
-//   const { email, senha } = req.body;
-
-//   connection.query(
-//     `SELECT nome_funcionario, email_funcionario FROM funcionario WHERE cargo_funcionario = Gerente `,
-//     [email, senha],
-//     (error, results) => {
-//       if (error) {
-//         console.error("Erro ao fazer login:", error);
-//         return res.status(500).json({ error: 'Erro no servidor' });
-//       }
-
-//       if (results.length === 0) {
-//         return res.status(401).json({ error: 'Email ou senha inválidos, essa pessoa não é um gerente' });
-//       }
-//       else {
-//         return res.status(200).json({ message: 'Login bem-sucedido', usuario: results[0] })
-//       }
-
-//       // Se quiser, pode retornar dados do usuário ou token
-//       return res.status(200).json({ message: 'Login bem-sucedido', usuario: results[0] });
-//     }
-//   );
-// })
-
-// versionamento funcionario, inicio 
-// app.get('/login', (req, res) => {
-//   const { email, senha } = req.body;
-
-//   connection.query(
-//     `SELECT nome_funcionario, email_funcionario FROM funcionario WHERE cargo_funcionario = Funcionario `,
-//     [email, senha],
-//     (error, results) => {
-//       if (error) {
-//         console.error("Erro ao fazer login:", error);
-//         return res.status(500).json({ error: 'Erro no servidor' });
-//       }
-
-//       if (results.length === 0) {
-//         return res.status(401).json({ error: 'Email ou senha inválidos, essa pessoa não é um funcionario' });
-//       }
-//       else {
-//         return res.status(200).json({ message: 'Login bem-sucedido', usuario: results[0] })
-//       }
-
-//       // Se quiser, pode retornar dados do usuário ou token
-//       return res.status(200).json({ message: 'Login bem-sucedido', usuario: results[0] });
-//     }
-//   );
-// })
-
-// versionamento ADM inicio 
-// app.get('/login', (req, res) => {
-//   const { email, senha } = req.body;
-
-//   connection.query(
-//     `SELECT nome_funcionario, email_funcionario FROM funcionario WHERE cargo_funcionario = ADM `,
-//     [email, senha],
-//     (error, results) => {
-//       if (error) {
-//         console.error("Erro ao fazer login:", error);
-//         return res.status(500).json({ error: 'Erro no servidor' });
-//       }
-
-//       if (results.length === 0) {
-//         return res.status(401).json({ error: 'Email ou senha inválidos, essa pessoa não é um ADM' });
-//       }
-//       else {
-//         return res.status(200).json({ message: 'Login bem-sucedido', usuario: results[0] })
-//       }
-
-// Se quiser, pode retornar dados do usuário ou token
-//       return res.status(200).json({ message: 'Login bem-sucedido', usuario: results[0] });
-//     }
-//   );
-// })
-
-
-
 export default app;

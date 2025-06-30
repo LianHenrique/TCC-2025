@@ -58,7 +58,6 @@ const Relatorio_Funcionario = () => {
     if (
       !nome_funcionario.trim() ||
       !email_funcionario.trim() ||
-      !fileImagem || // imagem nova obrigatória
       cargo_funcionario === 'Cargo'
     ) {
       setFeedback({ tipo: 'danger', mensagem: 'Preencha todos os campos obrigatórios.' });
@@ -70,8 +69,11 @@ const Relatorio_Funcionario = () => {
       formData.append('nome_funcionario', nome_funcionario);
       formData.append('email_funcionario', email_funcionario);
       formData.append('cargo_funcionario', cargo_funcionario);
+
       if (fileImagem) {
         formData.append('imagem', fileImagem);
+      } else {
+        formData.append('imagem_atual', form.imagem_url);
       }
 
       const res = await fetch(`http://localhost:3000/AtualizarFuncionario/${id}`, {

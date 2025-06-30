@@ -60,7 +60,7 @@ const Visualizar = () => {
         setImagemAtual(insumo.imagem_url);
         setFiltro(insumo.categoria);
         setAlertaEstoque(insumo.alerta_estoque || '');
-        setAlertaVencimento(insumo.alertar_dias_antes || '');
+        setAlertaVencimento(insumo.alertar_dias_antes ?? '');
         setIdFornecedor(insumo.id_fornecedor || null);
         setUnidade(insumo.unidade_medida || 'unidade');
 
@@ -87,14 +87,17 @@ const Visualizar = () => {
       formData.append('valor_insumos', preco);
       formData.append('data_vencimento', validade);
       formData.append('alerta_estoque', alertaEstoque);
-      formData.append('alertar_dias_antes', alertaVencimento);
+      formData.append(
+        'alertar_dias_antes',
+        alertaVencimento !== '' ? parseInt(alertaVencimento, 10) : ''
+      );
       formData.append('unidade_medida', unidade);
       formData.append('id_fornecedor', idFornecedor || '');
 
       if (fileImagem) {
         formData.append('imagem', fileImagem);
       } else {
-        formData.append('imagem_atual', imagemAtual); 
+        formData.append('imagem_atual', imagemAtual);
       }
 
       const response = await fetch(`http://localhost:3000/insumos_tudo_POST/${id}`, {
@@ -259,25 +262,30 @@ const Visualizar = () => {
             />
           </FloatingLabel>
 
-          {url && (
-            <div className="text-center mb-4">
-              <img
-                src={imagemAtual}
-                alt="Imagem do insumo"
-                style={{
-                  maxWidth: '300px',
-                  width: '100%',
-                  height: 'auto',
-                  borderRadius: '10px',
-                  boxShadow: '0 0 10px rgba(0,0,0,0.2)'
-                }}
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = 'https://www.valuehost.com.br/blog/wp-content/uploads/2022/01/post_thumbnail-77d8f2a95f2f41b5863f3fba5a261d7e.jpeg.webp';
-                }}
-              />
-            </div>
-          )}
+          <div className="text-center mb-4">
+            <img
+              src={
+                fileImagem
+                  ? URL.createObjectURL(fileImagem)
+                  : imagemAtual
+                    ? `http://localhost:3000${imagemAtual}`
+                    : ''
+              }
+              alt="Imagem do insumo"
+              style={{
+                maxWidth: '300px',
+                width: '100%',
+                height: 'auto',
+                borderRadius: '10px',
+                boxShadow: '0 0 10px rgba(0,0,0,0.2)'
+              }}
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src =
+                  'https://www.valuehost.com.br/blog/wp-content/uploads/2022/01/post_thumbnail-77d8f2a95f2f41b5863f3fba5a261d7e.jpeg.webp';
+              }}
+            />
+          </div>
 
           <Button
             type="submit"
