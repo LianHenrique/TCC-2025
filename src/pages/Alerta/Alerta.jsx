@@ -15,6 +15,7 @@ const Alerta = () => {
         .then(data => {
           if (!Array.isArray(data)) return;
 
+          // Formata e filtra os insumos com alertas
           const formatados = data
             .map(insumo => ({
               id: insumo.id_insumos,
@@ -25,40 +26,54 @@ const Alerta = () => {
               unidade: insumo.unidade_medida || '',
               imagem: insumo.imagem_url?.trim()
                 ? `http://localhost:3000${insumo.imagem_url.trim()}`
-                : 'https://via.placeholder.com/150'
+                : 'https://via.placeholder.com/150',
+              dataVencimento: insumo.data_vencimento
             }))
-            .filter(insumo => insumo.tipoEstoque);
+            .filter(insumo => insumo.tipoEstoque || insumo.tipoValidade); // Filtra por qualquer alerta
 
-          const ordenados = formatados.sort((a, b) => {
-            if (a.tipoEstoque === 'critico' && b.tipoEstoque !== 'critico') return -1;
-            if (a.tipoEstoque !== 'critico' && b.tipoEstoque === 'critico') return 1;
-            return a.quantidade - b.quantidade;
-          });
-
-          setInsumos(ordenados);
+          setInsumos(formatados);
         })
         .catch(error => console.error('Erro ao buscar insumos:', error));
     };
 
     buscarInsumos();
-    const intervalo = setInterval(buscarInsumos, 10000);
+    const intervalo = setInterval(buscarInsumos, 30000); // Atualiza a cada 30 segundos
     return () => clearInterval(intervalo);
   }, []);
 
-  const getCorDeFundo = (tipoEstoque) => {
-    switch (tipoEstoque) {
-      case 'critico': return '#ffe6e6';
-      case 'antecipado': return '#fff9e6';
-      default: return '#ffffff';
-    }
+  const getCorDeFundo = (insumo) => {
+    if (insumo.tipoEstoque === 'critico') return '#ffe6e6';
+    if (insumo.tipoValidade === 'vencido') return '#ffebee';
+    if (insumo.tipoEstoque === 'antecipado') return '#fff9e6';
+    if (insumo.tipoValidade === 'vencendo') return '#fff3e0';
+    return '#ffffff';
   };
 
-  const getBadge = (tipoEstoque) => {
-    switch (tipoEstoque) {
-      case 'critico': return <Badge bg="danger">Crítico</Badge>;
-      case 'antecipado': return <Badge bg="warning" text="dark">Antecipado</Badge>;
-      default: return null;
-    }
+  const getBadge = (insumo) => {
+    if (insumo.tipoEstoque === 'critico') 
+      return <Badge bg="danger">Estoque Crítico</Badge>;
+    
+    if (insumo.tipoValidade === 'vencido') 
+      return <Badge bg="dark">Vencido</Badge>;
+    
+    if (insumo.tipoEstoque === 'antecipado') 
+      return <Badge bg="warning" text="dark">Estoque Baixo</Badge>;
+    
+    if (insumo.tipoValidade === 'vencendo') 
+      return <Badge bg="warning" text="dark">Vencendo</Badge>;
+    
+    return null;
+  };
+
+  const calcularDiasVencimento = (dataVencimento) => {
+    if (!dataVencimento) return null;
+    
+    const hoje = new Date();
+    const vencimento = new Date(dataVencimento);
+    const diffTime = vencimento - hoje;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays;
   };
 
   const handleNavigate = id => navigate(`/visualizar/${id}`);
@@ -67,65 +82,86 @@ const Alerta = () => {
     <div>
       <NavBar />
       <Container style={{ marginTop: '100px' }}>
-        <h1 className="mb-4 text-center">📦 Insumos em Alerta de Estoque</h1>
+        <h1 className="mb-4 text-center">⚠️ Alertas de Insumos</h1>
 
-        <div className="d-flex justify-content-center mb-4">
+        <div className="d-flex justify-content-center mb-4 gap-2">
           <Button
             variant="outline-primary"
             className="text-nowrap"
             onClick={() => navigate('/data/vencimento')}
           >
             <i className="bi bi-calendar-event me-2" />
-            Alertas de Vencimento
+            Todos os Vencimentos
           </Button>
         </div>
 
         {insumos.length === 0 ? (
-          <p className="text-center">✅ Nenhum insumo em alerta.</p>
+          <div className="text-center p-5 border rounded bg-light">
+            <i className="bi bi-check-circle-fill text-success fs-1 mb-3"></i>
+            <p className="fs-4">Nenhum alerta no momento!</p>
+            <p className="text-muted">Todos os insumos estão com estoque adequado e dentro do prazo de validade.</p>
+          </div>
         ) : (
           <Row className="g-4 justify-content-center">
-            {insumos.map(insumo => (
-              <Col key={insumo.id} xs={12} md={6} lg={5}>
-                <Card
-                  className="h-100 shadow-sm"
-                  style={{
-                    backgroundColor: getCorDeFundo(insumo.tipoEstoque),
-                    transition: 'all 0.3s ease'
-                  }}
-                >
-                  <Card.Body className="d-flex gap-3 align-items-center">
-                    <img
-                      src={insumo.imagem}
-                      alt={insumo.nome}
-                      className="rounded-4"
-                      style={{
-                        width: '100px',
-                        height: '100px',
-                        objectFit: 'contain',
-                        backgroundColor: '#f8f9fa'
-                      }}
-                    />
-                    <div style={{ flex: 1 }}>
-                      <Card.Title className="mb-1 d-flex justify-content-between align-items-center">
-                        <span>{insumo.nome}</span>
-                        {getBadge(insumo.tipoEstoque)}
-                      </Card.Title>
-                      <Card.Text>
-                        Quantidade: {Number(insumo.quantidade).toLocaleString('pt-BR')} {insumo.unidade}
-                      </Card.Text>
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
-                        onClick={() => handleNavigate(insumo.id)}
-                      >
-                        <i className="bi bi-arrow-repeat me-1" />
-                        Repor Estoque
-                      </Button>
-                    </div>
-                  </Card.Body>
-                </Card>
-              </Col>
-            ))}
+            {insumos.map(insumo => {
+              const diasVencimento = calcularDiasVencimento(insumo.dataVencimento);
+              
+              return (
+                <Col key={insumo.id} xs={12} md={6} lg={5}>
+                  <Card
+                    className="h-100 shadow-sm"
+                    style={{
+                      backgroundColor: getCorDeFundo(insumo),
+                      transition: 'all 0.3s ease',
+                      borderLeft: insumo.tipoValidade === 'vencido' ? '4px solid #dc3545' : 'none'
+                    }}
+                  >
+                    <Card.Body className="d-flex gap-3 align-items-center">
+                      <img
+                        src={insumo.imagem}
+                        alt={insumo.nome}
+                        className="rounded-4"
+                        style={{
+                          width: '100px',
+                          height: '100px',
+                          objectFit: 'contain',
+                          backgroundColor: '#f8f9fa'
+                        }}
+                      />
+                      <div style={{ flex: 1 }}>
+                        <Card.Title className="mb-1 d-flex justify-content-between align-items-center">
+                          <span>{insumo.nome}</span>
+                          {getBadge(insumo)}
+                        </Card.Title>
+                        
+                        <Card.Text className="mb-1">
+                          Quantidade: {Number(insumo.quantidade).toLocaleString('pt-BR')} {insumo.unidade}
+                        </Card.Text>
+                        
+                        {diasVencimento !== null && (
+                          <Card.Text className={diasVencimento < 0 ? 'text-danger' : 'text-warning'}>
+                            <i className="bi bi-calendar-exclamation me-1"></i>
+                            {diasVencimento < 0 
+                              ? `Vencido há ${Math.abs(diasVencimento)} dias` 
+                              : `Vence em ${diasVencimento} dias`}
+                          </Card.Text>
+                        )}
+                        
+                        <Button
+                          variant="outline-primary"
+                          size="sm"
+                          onClick={() => handleNavigate(insumo.id)}
+                          className="mt-2"
+                        >
+                          <i className="bi bi-pencil-square me-1"></i>
+                          Gerenciar Insumo
+                        </Button>
+                      </div>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              );
+            })}
           </Row>
         )}
       </Container>

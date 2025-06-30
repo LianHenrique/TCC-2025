@@ -127,7 +127,7 @@ const Cardapio = () => {
             id: item.id_cardapio,
             nome: item.nome_item || 'Produto sem nome',
             link: item.imagem_url
-              ? `http://localhost:3000/uploads/${item.imagem_url.split('/').pop()}`
+              ? `http://localhost:3000${item.imagem_url}?t=${new Date().getTime()}`
               : 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
             descricao: [
               { texto: `Descrição: ${item.descricao_item || 'Sem descrição'}` },

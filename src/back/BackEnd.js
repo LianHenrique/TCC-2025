@@ -10,13 +10,36 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-// Configurações essenciais
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
+
+// 1. Configurações essenciais
 app.use(cors());
-app.use(express.json()); // Para parsear application/json
-app.use(express.urlencoded({ extended: true })); // Para parsear application/x-www-form-urlencoded
-// Adicione isso logo após as configurações do multer
-app.use(express.static(path.join(__dirname, 'public'))); // Servir arquivos estáticos
- 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// 2. Configuração de arquivos estáticos - ORDEM CORRETA E SEM DUPLICAÇÕES
+app.use('/uploads', (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+}, express.static(path.join(__dirname, 'public', 'uploads'), {
+  setHeaders: (res, path) => {
+    // Corrige MIME types para extensões comuns
+    if (path.endsWith('.webp')) {
+      res.setHeader('Content-Type', 'image/webp');
+    }
+    if (path.endsWith('.avif')) {
+      res.setHeader('Content-Type', 'image/avif');
+    }
+  }
+}));
+app.use(express.static(path.join(__dirname, 'public')));
+
+// 3. Configuração do Multer
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, path.join(__dirname, 'public', 'uploads'));
@@ -30,32 +53,16 @@ const storage = multer.diskStorage({
 const upload = multer({ 
   storage,
   fileFilter: (req, file, cb) => {
-    // Aceitar apenas imagens
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
     if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error('Tipo de arquivo não suportado. Apenas imagens são permitidas.'), false);
+      cb(new Error('Tipo de arquivo não suportado'), false);
     }
   },
   limits: {
-    fileSize: 5 * 1024 * 1024 // Limite de 5MB
+    fileSize: 5 * 1024 * 1024
   }
-});
-
-app.post('/api/insumos', upload.single('imagem'), (req, res) => {
-  const { nome, categoria, preco } = req.body;
-  const imagem = req.file ? `/uploads/${req.file.filename}` : null;
-
-  res.status(201).json({
-    message: 'Insumo salvo com sucesso!',
-    dados: {
-      nome,
-      categoria,
-      preco,
-      imagem
-    }
-  });
 });
 
 // --- ROTAS FUNCIONÁRIOS ---
@@ -456,30 +463,33 @@ app.put('/insumos_tudo_POST/:id_insumos', upload.single('imagem'), (req, res) =>
 app.get('/insumos/alerta', (req, res) => {
   const sql = `
   SELECT 
-  id_insumos,
-  nome_insumos,
-  imagem_url,
-  quantidade_insumos,
-  unidade_medida,  -- <-- adicionado aqui
-  valor_insumos,
-  categoria,
-  data_vencimento,
-  alerta_estoque,
-  alertar_dias_antes,
-  CASE
-    WHEN quantidade_insumos <= alerta_estoque THEN 'critico'
-    WHEN quantidade_insumos <= alerta_estoque + 10 THEN 'antecipado'
-    ELSE NULL
-  END AS tipo_alerta_estoque,
-  CASE
-    WHEN data_vencimento IS NOT NULL 
-         AND DATEDIFF(data_vencimento, CURDATE()) <= alertar_dias_antes THEN 'vencendo'
-    ELSE NULL
-  END AS tipo_alerta_validade
-FROM insumos
-WHERE 
-  quantidade_insumos <= alerta_estoque + 10
-  OR (data_vencimento IS NOT NULL AND DATEDIFF(data_vencimento, CURDATE()) <= alertar_dias_antes)
+    id_insumos,
+    nome_insumos,
+    imagem_url,
+    quantidade_insumos,
+    unidade_medida,
+    valor_insumos,
+    categoria,
+    data_vencimento,
+    alerta_estoque,
+    alertar_dias_antes,
+    CASE
+      WHEN quantidade_insumos <= alerta_estoque THEN 'critico'
+      WHEN quantidade_insumos <= alerta_estoque + 10 THEN 'antecipado'
+      ELSE NULL
+    END AS tipo_alerta_estoque,
+    CASE
+      WHEN data_vencimento IS NOT NULL 
+           AND DATEDIFF(data_vencimento, CURDATE()) <= alertar_dias_antes 
+           AND DATEDIFF(data_vencimento, CURDATE()) >= 0 THEN 'vencendo'
+      WHEN data_vencimento IS NOT NULL 
+           AND DATEDIFF(data_vencimento, CURDATE()) < 0 THEN 'vencido'
+      ELSE NULL
+    END AS tipo_alerta_validade
+  FROM insumos
+  WHERE 
+    quantidade_insumos <= alerta_estoque + 10
+    OR (data_vencimento IS NOT NULL AND DATEDIFF(data_vencimento, CURDATE()) <= alertar_dias_antes)
   `;
 
   connection.query(sql, (err, results) => {
@@ -490,7 +500,6 @@ WHERE
     res.status(200).json(results);
   });
 });
-
 
 
 // Buscar insumo por id
@@ -773,6 +782,16 @@ app.get('/cardapio', (req, res) => {
       console.error('Erro ao buscar cardápio:', error);
       return res.status(500).json({ error: 'Erro ao buscar cardápio' });
     }
+
+    // LOG DE DIAGNÓSTICO
+    console.log('--------------------------------');
+    console.log('Dados do cardápio retornados:');
+    results.forEach(item => {
+      console.log(`Item: ${item.nome_item}`);
+      console.log(`URL no banco: ${item.imagem_url}`);
+      console.log(`Caminho absoluto: ${path.join(__dirname, 'public', item.imagem_url)}`);
+    });
+    console.log('--------------------------------');
 
     // Corrige o parse do campo insumos para array de objetos
     const formattedResults = results.map(item => ({

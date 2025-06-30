@@ -229,6 +229,29 @@ UPDATE insumos SET
   imagem_url = '1751290950825-Bacon-Fatiado.jpg'
 WHERE id_insumos = 4;  -- ID do Bacon Fatiado
 
+
+SET SQL_SAFE_UPDATES = 0;
+
+-- Corrigir todos os caminhos de imagem
+UPDATE cardapio SET
+    imagem_url = CONCAT('/uploads/', SUBSTRING_INDEX(imagem_url, '/', -1))
+WHERE imagem_url LIKE 'Juploads/%';
+
+-- Corrigir nomes específicos de arquivos
+UPDATE cardapio SET
+    imagem_url = '/uploads/1751306512935-HAMBURGUER-VEGETARIANO-780x439.webp'
+WHERE id_cardapio = 1;
+
+UPDATE cardapio SET
+    imagem_url = '/uploads/1751306045400-hamburguer-duplo.jpg'
+WHERE id_cardapio = 2;
+
+UPDATE cardapio SET
+    imagem_url = '/uploads/1751293323641-x-bacon.webp'
+WHERE id_cardapio = 3;
+
+SET SQL_SAFE_UPDATES = 1;
+
 -- Adicionando Índices para Otimização (Exemplos)
 CREATE INDEX idx_insumos_nome ON Insumos(nome_insumos);
 CREATE INDEX idx_cardapio_nome ON Cardapio(nome_item);
