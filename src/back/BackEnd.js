@@ -10,11 +10,6 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  next();
-});
 
 // 1. Configurações essenciais
 app.use(cors());
@@ -463,33 +458,30 @@ app.put('/insumos_tudo_POST/:id_insumos', upload.single('imagem'), (req, res) =>
 app.get('/insumos/alerta', (req, res) => {
   const sql = `
   SELECT 
-    id_insumos,
-    nome_insumos,
-    imagem_url,
-    quantidade_insumos,
-    unidade_medida,
-    valor_insumos,
-    categoria,
-    data_vencimento,
-    alerta_estoque,
-    alertar_dias_antes,
-    CASE
-      WHEN quantidade_insumos <= alerta_estoque THEN 'critico'
-      WHEN quantidade_insumos <= alerta_estoque + 10 THEN 'antecipado'
-      ELSE NULL
-    END AS tipo_alerta_estoque,
-    CASE
-      WHEN data_vencimento IS NOT NULL 
-           AND DATEDIFF(data_vencimento, CURDATE()) <= alertar_dias_antes 
-           AND DATEDIFF(data_vencimento, CURDATE()) >= 0 THEN 'vencendo'
-      WHEN data_vencimento IS NOT NULL 
-           AND DATEDIFF(data_vencimento, CURDATE()) < 0 THEN 'vencido'
-      ELSE NULL
-    END AS tipo_alerta_validade
-  FROM insumos
-  WHERE 
-    quantidade_insumos <= alerta_estoque + 10
-    OR (data_vencimento IS NOT NULL AND DATEDIFF(data_vencimento, CURDATE()) <= alertar_dias_antes)
+  id_insumos,
+  nome_insumos,
+  imagem_url,
+  quantidade_insumos,
+  unidade_medida,  -- <-- adicionado aqui
+  valor_insumos,
+  categoria,
+  data_vencimento,
+  alerta_estoque,
+  alertar_dias_antes,
+  CASE
+    WHEN quantidade_insumos <= alerta_estoque THEN 'critico'
+    WHEN quantidade_insumos <= alerta_estoque + 10 THEN 'antecipado'
+    ELSE NULL
+  END AS tipo_alerta_estoque,
+  CASE
+    WHEN data_vencimento IS NOT NULL 
+         AND DATEDIFF(data_vencimento, CURDATE()) <= alertar_dias_antes THEN 'vencendo'
+    ELSE NULL
+  END AS tipo_alerta_validade
+FROM insumos
+WHERE 
+  quantidade_insumos <= alerta_estoque + 10
+  OR (data_vencimento IS NOT NULL AND DATEDIFF(data_vencimento, CURDATE()) <= alertar_dias_antes)
   `;
 
   connection.query(sql, (err, results) => {
@@ -500,6 +492,7 @@ app.get('/insumos/alerta', (req, res) => {
     res.status(200).json(results);
   });
 });
+
 
 
 // Buscar insumo por id
