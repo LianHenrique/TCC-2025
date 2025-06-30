@@ -628,7 +628,7 @@ app.post('/login', (req, res) => {
         id_cliente AS id, 
         nome_cliente AS nome, 
         email_cliente AS email, 
-        cargo AS cargo, 
+        cargo,
         'cliente' AS tipo
       FROM cliente 
       WHERE email_cliente = ? AND senha_cliente = ?
@@ -645,10 +645,13 @@ app.post('/login', (req, res) => {
       }
 
       const cliente = results2[0];
-      const cargoPermitido = ["ADM", "Gerente"];
+      const cargoPermitido = ["ADM", "Gerente"]; // Cargos que têm acesso
 
+      // VERIFICAÇÃO DE CARGO ADICIONADA AQUI
       if (!cargoPermitido.includes(cliente.cargo)) {
-        return res.status(403).json({ error: 'Seu perfil não tem permissão para acessar o sistema.' });
+        return res.status(403).json({
+          error: 'Seu perfil não tem permissão para acessar o sistema.'
+        });
       }
 
       return res.status(200).json({
@@ -1323,7 +1326,7 @@ app.post('/recuperar-senha', async (req, res) => {
   const { email, palavraChave } = req.body;
 
   if (!email || !palavraChave) {
-    return res.status(400).json({ 
+    return res.status(400).json({
       error: 'Email e palavra-chave são obrigatórios',
       details: 'Por favor, preencha todos os campos'
     });
@@ -1368,9 +1371,9 @@ app.post('/recuperar-senha', async (req, res) => {
     });
   } catch (err) {
     console.error('Erro geral na recuperação de senha:', err);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Erro interno no servidor',
-      details: err.message 
+      details: err.message
     });
   }
 });

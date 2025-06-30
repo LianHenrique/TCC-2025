@@ -168,6 +168,9 @@ MODIFY quantidade_insumos DECIMAL(10,3);
 
 ALTER TABLE Cliente ADD palavra_chave VARCHAR(255) AFTER senha_cliente;
 
+ALTER TABLE Cliente 
+ADD COLUMN cargo ENUM('ADM', 'Gerente', 'Funcionario') NOT NULL DEFAULT 'ADM';
+
 -- Adicionando Índices para Otimização (Exemplos)
 CREATE INDEX idx_insumos_nome ON Insumos(nome_insumos);
 CREATE INDEX idx_cardapio_nome ON Cardapio(nome_item);
