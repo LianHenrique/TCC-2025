@@ -6,6 +6,8 @@ import { useParams, useNavigate } from 'react-router';
 const Relatorio_Funcionario = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [novaPalavraChave, setNovaPalavraChave] = useState('');
+  const [confirmarPalavraChave, setConfirmarPalavraChave] = useState('');
 
   const [fileImagem, setFileImagem] = useState(null);
 
@@ -55,11 +57,12 @@ const Relatorio_Funcionario = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (
-      !nome_funcionario.trim() ||
-      !email_funcionario.trim() ||
-      cargo_funcionario === 'Cargo'
-    ) {
+    if (novaPalavraChave && novaPalavraChave !== confirmarPalavraChave) {
+      setFeedback({ tipo: 'danger', mensagem: 'As palavras-chave não coincidem.' });
+      return;
+    }
+
+    if (!nome_funcionario.trim() || !email_funcionario.trim() || cargo_funcionario === 'Cargo') {
       setFeedback({ tipo: 'danger', mensagem: 'Preencha todos os campos obrigatórios.' });
       return;
     }
@@ -70,22 +73,23 @@ const Relatorio_Funcionario = () => {
       formData.append('email_funcionario', email_funcionario);
       formData.append('cargo_funcionario', cargo_funcionario);
 
-      if (fileImagem) {
-        formData.append('imagem', fileImagem);
-      } else {
-        formData.append('imagem_atual', form.imagem_url);
-      }
+      if (novaPalavraChave) formData.append('novaPalavraChave', novaPalavraChave);
+      if (fileImagem) formData.append('imagem', fileImagem);
+      else formData.append('imagem_atual', form.imagem_url);
 
       const res = await fetch(`http://localhost:3000/AtualizarFuncionario/${id}`, {
         method: 'PUT',
         body: formData
       });
 
-      if (!res.ok) throw new Error('Erro ao atualizar funcionário.');
-
-      setFeedback({ tipo: 'success', mensagem: 'Funcionário atualizado com sucesso!' });
-
-      setTimeout(() => navigate('/funcionarios'), 1500);
+      if (res.ok) {
+        // Mostra alerta com a mensagem fixa
+        window.alert('Funcionário atualizado com sucesso!');
+        navigate('/funcionarios'); // Navega imediatamente após o alerta
+      } else {
+        const errorData = await res.json();
+        throw new Error(errorData.error || 'Erro ao atualizar');
+      }
     } catch (err) {
       setFeedback({ tipo: 'danger', mensagem: err.message });
     }
@@ -134,6 +138,24 @@ const Relatorio_Funcionario = () => {
               value={form.email_funcionario}
               onChange={handleChange}
               required
+            />
+          </FloatingLabel>
+
+          <FloatingLabel label="Nova palavra chave" className="mb-3">
+            <Form.Control
+              type="password"
+              value={novaPalavraChave}
+              onChange={(e) => setNovaPalavraChave(e.target.value)}
+              placeholder="Deixe em branco para manter a atual"
+            />
+          </FloatingLabel>
+
+          <FloatingLabel label="Confirmar Nova Palavra-Chave" className="mb-3">
+            <Form.Control
+              type="password"
+              value={confirmarPalavraChave}
+              onChange={(e) => setConfirmarPalavraChave(e.target.value)}
+              placeholder="Repita a nova palavra-chave"
             />
           </FloatingLabel>
 

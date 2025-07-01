@@ -248,24 +248,55 @@ app.post("/funcionarios/insert", upload.single('imagem'), (req, res) => {
 // Editando funcionário
 app.put('/AtualizarFuncionario/:id', upload.single('imagem'), (req, res) => {
   const { id } = req.params;
-  const { nome_funcionario, email_funcionario, cargo_funcionario, imagem_atual } = req.body;
+  const {
+    nome_funcionario,
+    email_funcionario,
+    cargo_funcionario,
+    imagem_atual,
+    novaPalavraChave // Novo campo
+  } = req.body;
 
-  // Usa a nova imagem se enviada, senão usa a antiga
   const imagem_url = req.file ? `/uploads/${req.file.filename}` : imagem_atual;
 
   if (!nome_funcionario || !email_funcionario || !cargo_funcionario || !imagem_url) {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
   }
 
+  // Prepara os campos para atualização
+  const updateFields = {
+    nome_funcionario,
+    email_funcionario,
+    cargo_funcionario,
+    imagem_url
+  };
+
+  // Se uma nova palavra-chave foi fornecida, adiciona ao update
+  if (novaPalavraChave && novaPalavraChave.trim() !== '') {
+    updateFields.palavra_chave = novaPalavraChave;
+  }
+
+  // Monta a query dinamicamente
+  const setClause = Object.keys(updateFields)
+    .map(key => `${key} = ?`)
+    .join(', ');
+
+  const values = [...Object.values(updateFields), id];
+
   const sql = `
     UPDATE funcionario 
-    SET nome_funcionario = ?, email_funcionario = ?, cargo_funcionario = ?, imagem_url = ?
+    SET ${setClause}
     WHERE id_funcionario = ?
   `;
 
-  connection.query(sql, [nome_funcionario, email_funcionario, cargo_funcionario, imagem_url, id], (error, results) => {
+  connection.query(sql, values, (error, results) => {
     if (error) {
       console.error('Erro ao atualizar funcionário:', error);
+
+      // Trata erro de email duplicado
+      if (error.code === 'ER_DUP_ENTRY') {
+        return res.status(400).json({ error: 'Este email já está em uso por outro funcionário.' });
+      }
+
       return res.status(500).json({ error: 'Erro no backend ao atualizar funcionário' });
     }
 
@@ -273,7 +304,11 @@ app.put('/AtualizarFuncionario/:id', upload.single('imagem'), (req, res) => {
       return res.status(404).json({ error: 'Funcionário não encontrado' });
     }
 
-    res.status(200).json({ message: 'Funcionário atualizado com sucesso' });
+    const mensagem = novaPalavraChave
+      ? 'Funcionário e palavra-chave atualizados com sucesso'
+      : 'Funcionário atualizado com sucesso';
+
+    res.status(200).json({ message: mensagem });
   });
 });
 
@@ -1403,7 +1438,8 @@ app.get('/alertas/vencimentos', (req, res) => {
       i.imagem_url,
       f.id_fornecedor,
       f.nome_fornecedor,
-      f.telefone_fornecedor
+      f.telefone_fornecedor, -- VÍRGULA ADICIONADA AQUI
+      f.email_fornecedor 
     FROM insumos i
     LEFT JOIN FornecedorInsumo fi ON i.id_insumos = fi.id_insumo
     LEFT JOIN Fornecedor f ON fi.id_fornecedor = f.id_fornecedor
@@ -1434,7 +1470,8 @@ app.get('/alertas/vencimentos', (req, res) => {
       if (row.nome_fornecedor) {
         insumosMap[row.id_insumos].fornecedores.push({
           nome: row.nome_fornecedor,
-          telefone: row.telefone_fornecedor
+          telefone: row.telefone_fornecedor,
+          email: row.email_fornecedor // EMAIL ADICIONADO AQUI
         });
       }
     });
