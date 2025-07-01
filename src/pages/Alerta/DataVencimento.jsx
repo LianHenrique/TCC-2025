@@ -31,6 +31,30 @@ const DataVencimento = () => {
         return { bg: '#d4edda', border: '#c3e6cb', text: '#155724' }; // verde claro
     };
 
+    // Função para construir corretamente a URL da imagem
+    const getImagemUrl = (imagemUrl) => {
+        if (!imagemUrl) return 'https://via.placeholder.com/100';
+        
+        imagemUrl = imagemUrl.trim();
+        
+        // Se já for uma URL completa
+        if (imagemUrl.startsWith('http://') || imagemUrl.startsWith('https://')) {
+            return imagemUrl;
+        }
+        
+        // Se começar com '/uploads'
+        if (imagemUrl.startsWith('/uploads/')) {
+            return `http://localhost:3000${imagemUrl}`;
+        }
+        
+        // Se for apenas um nome de arquivo
+        if (imagemUrl) {
+            return `http://localhost:3000/uploads/${imagemUrl}`;
+        }
+        
+        return 'https://via.placeholder.com/100';
+    };
+
     return (
         <div>
             <NavBar />
@@ -48,6 +72,9 @@ const DataVencimento = () => {
                     {insumos.map((insumo) => {
                         const dias = calcularDiasRestantes(insumo.data_vencimento);
                         const { bg, border, text } = getCor(dias);
+                        
+                        // Corrigir a URL da imagem
+                        const imagemUrl = getImagemUrl(insumo.imagem_url);
 
                         return (
                             <Col key={insumo.id_insumos} xs={12} md={6}>
@@ -64,17 +91,20 @@ const DataVencimento = () => {
                                 >
                                     <div className="d-flex align-items-center">
                                         <img
-                                            src={insumo.imagem_url ? `http://localhost:3000${insumo.imagem_url.trim()}` : 'https://via.placeholder.com/100'}
-                                        alt={insumo.nome_insumos}
-                                        style={{
-                                            width: '90px',
-                                            height: '90px',
-                                            objectFit: 'contain',
-                                            borderRadius: '8px',
-                                            marginRight: '20px',
-                                            backgroundColor: '#fff',
-                                            padding: '5px',
-                                        }}
+                                            src={imagemUrl}
+                                            alt={insumo.nome_insumos}
+                                            style={{
+                                                width: '90px',
+                                                height: '90px',
+                                                objectFit: 'contain',
+                                                borderRadius: '8px',
+                                                marginRight: '20px',
+                                                backgroundColor: '#fff',
+                                                padding: '5px',
+                                            }}
+                                            onError={(e) => {
+                                                e.target.src = 'https://via.placeholder.com/100';
+                                            }}
                                         />
                                         <div style={{ flex: 1 }}>
                                             <h5 className="mb-1">{insumo.nome_insumos}</h5>
