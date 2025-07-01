@@ -21,8 +21,7 @@ VALUES
 ('Ana Souza',       'Gerente',     'ana.souza@empresa.com',     '123321', '2025-06-15', 'https://opiniaorh.files.wordpress.com/2021/04/pexels-'),
 ('Carlos Lima',     'ADM',         'carlos.lima@empresa.com',   '123456', '2025-06-15', 'https://www.ispblog.com.br/wp-content/uploads/2015/06/'),
 ('Juliana Rocha',   'Funcionario', 'juliana.rocha@empresa.com', '654321', '2025-06-15', 'https://blog.spvale.com.br/wp-content/uploads/2022/06/'),
-('Marcos Silva',    'Funcionario', 'marcos.silva@empresa.com',  '12345',  '2025-06-15', 'https://arraesecenteno.com.br/wp-content/uploads/2024/'),
-('Marcos',          'Gerente',     'eumemo@gmail.com',          '123',    '2025-06-15', 'https://blog.fecap.br/wp-content/uploads/FECAP-como-ser-um-bom-profissional.jpg');
+('Marcos Silva',    'Funcionario', 'marcos.silva@empresa.com',  '12345',  '2025-06-15', 'https://arraesecenteno.com.br/wp-content/uploads/2024/');
 
 -- Tabela de Fornecedores
 CREATE TABLE Fornecedor (
@@ -137,22 +136,27 @@ VALUES
 (2, 2, '2025-06-10', 'Venda', 2),
 (3, 3, '2025-06-10', 'Venda', 3),
 (4, 4, '2025-06-10', 'Venda', 4),
-(5, 5, '2025-06-11', 'Venda', 5),
+(5, 5, '2025-06-11', 'Venda', NULL),  -- Alterado para NULL
 (6, 1, '2025-06-11', 'Venda', 1),
 (7, 2, '2025-06-11', 'Venda', 2),
 (8, 3, '2025-06-11', 'Venda', 3),
 (1, 4, '2025-06-12', 'Venda', 4),
-(2, 5, '2025-06-12', 'Venda', 5),
+(2, 5, '2025-06-12', 'Venda', NULL),  -- Alterado para NULL
 (3, 1, '2025-06-12', 'Venda', 1),
 (4, 2, '2025-06-12', 'Venda', 2),
 (5, 3, '2025-06-13', 'Venda', 3),
 (6, 4, '2025-06-13', 'Venda', 4),
-(7, 5, '2025-06-13', 'Venda', 5),
+(7, 5, '2025-06-13', 'Venda', NULL),  -- Alterado para NULL
 (8, 1, '2025-06-13', 'Venda', 1),
 (1, 2, '2025-06-14', 'Venda', 2),
 (2, 3, '2025-06-14', 'Venda', 3),
 (3, 4, '2025-06-14', 'Venda', 4),
-(4, 5, '2025-06-14', 'Venda', 5);
+(4, 5, '2025-06-14', 'Venda', NULL);  -- Alterado para NULL
+
+-- Atualização segura da unidade_medida
+UPDATE Insumos 
+SET unidade_medida = 'unidade' 
+WHERE unidade_medida = 'unidades' AND id_insumos > 0;
 
 -- Atualização segura da unidade_medida
 UPDATE Insumos SET unidade_medida = 'unidade' WHERE unidade_medida = 'unidades' AND id_insumos > 0;
@@ -168,8 +172,120 @@ MODIFY quantidade_insumos DECIMAL(10,3);
 
 ALTER TABLE Cliente ADD palavra_chave VARCHAR(255) AFTER senha_cliente;
 
+<<<<<<< HEAD
 ALTER TABLE Cliente 
 ADD COLUMN cargo ENUM('ADM', 'Gerente', 'Funcionario') NOT NULL DEFAULT 'ADM';
+=======
+
+
+-- Atualiza funcionários para usar imagens locais
+UPDATE funcionario SET imagem_url = '/uploads/1751293043184-funcionaria-feliz-e-sorridente-com-os-colegas-em-uma-sombra-turva-atras_114579-2810.avif' WHERE id_funcionario = 1;
+UPDATE funcionario SET imagem_url = '/uploads/1751293099756-a676c-felicidade-no-trabalho-1-e1661260494799.webp' WHERE id_funcionario = 2;
+UPDATE funcionario SET imagem_url = '/uploads/1751293148253-mulher-de-tiro-medio-trabalhando-no-laptop_23-2149300643.avif' WHERE id_funcionario = 3;
+UPDATE funcionario SET imagem_url = '/uploads/1751292560995-homem-no-armazem-trabalhando-no-laptop-easy-resize.com.jpg' WHERE id_funcionario = 4;
+UPDATE funcionario SET imagem_url = '/uploads/1751290051024-80930134-download-sign-illustration-vector-white-icon-with-soft-shadow-on-transparent-background.jpg' WHERE id_funcionario = 5;
+
+-- Atualiza insumos para usar imagens locais
+UPDATE insumos SET imagem_url = '/uploads/1751291180292-img-site-1-lanches-burger-came.jpg' WHERE id_insumos = 1;
+UPDATE insumos SET imagem_url = '/uploads/1751291124130-1-93e341ab8b244fc0a87bb7005166494a.jpeg' WHERE id_insumos = 2;
+UPDATE insumos SET imagem_url = '/uploads/1751292467862-570ee096e3.webp' WHERE id_insumos = 3;
+UPDATE insumos SET imagem_url = '/uploads/1751290950825-Bacon-Fatiad0.jpg' WHERE id_insumos = 4;
+UPDATE insumos SET imagem_url = '/uploads/1751292255625-barbecue-heinz.webp' WHERE id_insumos = 5;
+UPDATE insumos SET imagem_url = '/uploads/1751291755824-990415-06-09-2022-13-33-40-769.jpg' WHERE id_insumos = 6;
+UPDATE insumos SET imagem_url = '/uploads/1751292195387-alface-crespa-organica.jpg' WHERE id_insumos = 7;
+UPDATE insumos SET imagem_url = '/uploads/1751292395417-tomatetialiano_paramolhos_47507_zoom.jpg.webp' WHERE id_insumos = 8;
+
+-- Desative o modo seguro temporariamente
+SET SQL_SAFE_UPDATES = 0;
+
+-- Atualize as URLs removendo qualquer prefixo incorreto
+UPDATE insumos SET 
+  imagem_url = CONCAT('/uploads/', SUBSTRING_INDEX(imagem_url, '/', -1))
+WHERE imagem_url IS NOT NULL AND imagem_url != '';
+
+UPDATE funcionario SET 
+  imagem_url = CONCAT('/uploads/', SUBSTRING_INDEX(imagem_url, '/', -1))
+WHERE imagem_url IS NOT NULL AND imagem_url != '';
+
+UPDATE cardapio SET 
+  imagem_url = CONCAT('/uploads/', SUBSTRING_INDEX(imagem_url, '/', -1))
+WHERE imagem_url IS NOT NULL AND imagem_url != '';
+
+-- Reative o modo seguro
+SET SQL_SAFE_UPDATES = 1;
+
+-- Atualiza cardápio para usar imagens locais
+UPDATE cardapio SET imagem_url = '/uploads/1751293247239-hamburguer-duplo.jpg' WHERE id_cardapio = 1;
+UPDATE cardapio SET imagem_url = '/uploads/1751296679495-hamburguer-duplo.jpg' WHERE id_cardapio = 2;
+UPDATE cardapio SET imagem_url = '/uploads/1751293323641-x-bacon.webp' WHERE id_cardapio = 3;
+
+-- Corrigir imagem do Hamburguer de carne (ID 1)
+UPDATE insumos SET 
+  imagem_url = '/uploads/1751291180292-img-site-1-lanches-burger-carne.jpg'
+WHERE id_insumos = 1;
+
+UPDATE insumos SET 
+  imagem_url = '1751303857649-Pao-de-Hamburguer-Monaco-G-CT-BIMBO-QSR.jpg'
+WHERE id_insumos = 2;
+
+-- Atualizar imagem do Tomate Italiano (ID 8)
+UPDATE insumos SET 
+  imagem_url = '1751303744469-Tomate-italiano-2.jpg'
+WHERE id_insumos = 8;
+
+UPDATE insumos SET 
+  imagem_url = '1751290950825-Bacon-Fatiado.jpg'
+WHERE id_insumos = 4;  -- ID do Bacon Fatiado
+
+
+SET SQL_SAFE_UPDATES = 0;
+
+-- Corrigir todos os caminhos de imagem
+UPDATE cardapio SET
+    imagem_url = CONCAT('/uploads/', SUBSTRING_INDEX(imagem_url, '/', -1))
+WHERE imagem_url LIKE 'Juploads/%';
+
+-- Corrigir nomes específicos de arquivos
+UPDATE cardapio SET
+    imagem_url = '/uploads/1751306512935-HAMBURGUER-VEGETARIANO-780x439.webp'
+WHERE id_cardapio = 1;
+
+UPDATE cardapio SET
+    imagem_url = '/uploads/1751306045400-hamburguer-duplo.jpg'
+WHERE id_cardapio = 2;
+
+UPDATE cardapio SET
+    imagem_url = '/uploads/1751293323641-x-bacon.webp'
+WHERE id_cardapio = 3;
+
+SET SQL_SAFE_UPDATES = 1;
+
+ALTER TABLE cliente ADD COLUMN cargo ENUM('ADM') DEFAULT 'ADM';
+
+UPDATE cardapio SET
+  nome_item = 'Hamburguer Simples',
+  descricao_item = 'Po, carne, queijo, alface',
+  valor_item = 20.00,
+  imagem_url = 'uploads/1751331731712-hamburguer.jpeg',  
+  data_cadastro = '2025-06-30 17:49:42'
+WHERE id_cardapio = 1;
+
+UPDATE cardapio SET
+  nome_item = 'X-Duplo Hambirguer',
+  descricao_item = 'P30, 2 carnes, 2 queijos alface',
+  valor_item = 40.00,
+  imagem_url = 'uploads/1751330730301-x-duplo.jpeg',
+  data_cadastro = '2025-06-30 17:49:42'
+WHERE id_cardapio = 2;
+
+UPDATE cardapio SET
+  nome_item = 'X-Bacon',
+  descricao_item = 'Po, carne, queijo, alface, bacon',
+  valor_item = 35.00,
+  imagem_url = 'uploads/1751330858718-5098e75e57e36807c173cb7490b1b0d2_XL.jpg',
+  data_cadastro = '2025-06-30 17:49:42'
+WHERE id_cardapio = 3;
+>>>>>>> Wesley
 
 -- Adicionando Índices para Otimização (Exemplos)
 CREATE INDEX idx_insumos_nome ON Insumos(nome_insumos);

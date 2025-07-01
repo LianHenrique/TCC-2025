@@ -11,113 +11,92 @@ const Cardapio = () => {
   const [filtroSelecionado, setFiltroSelecionado] = useState('Todos');
   const [textoBusca, setTextoBusca] = useState('');
   const [cardapioFiltrado, setCardapioFiltrado] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+  function normalizeUnidade(unidade) {
+    const u = unidade?.toLowerCase().trim();
+
+    if (['un', 'unidade', 'unidades'].includes(u)) return 'unidade';
+    if (['g', 'grama', 'gramas'].includes(u)) return 'g';
+    if (['kg', 'quilo', 'kilograma', 'quilos'].includes(u)) return 'kg';
+    if (['ml', 'mililitro', 'mililitros'].includes(u)) return 'ml';
+    if (['l', 'litro', 'litros'].includes(u)) return 'l';
+
+    return u;
+  }
+
+  function convertToStockUnit(quantidade, unidadeReceita, unidadeEstoque) {
+    const receita = normalizeUnidade(unidadeReceita);
+    const estoque = normalizeUnidade(unidadeEstoque);
+
+    if (receita === estoque) return quantidade;
+
+    // Regras de conversão
+    if (receita === 'g' && estoque === 'kg') return quantidade / 1000;
+    if (receita === 'kg' && estoque === 'g') return quantidade * 1000;
+    if (receita === 'ml' && estoque === 'l') return quantidade / 1000;
+    if (receita === 'l' && estoque === 'ml') return quantidade * 1000;
+
+    return undefined; // unidades incompatíveis
+  }
+
 
   const normalizeString = (str) =>
     str ? String(str).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim() : '';
 
   useEffect(() => {
-    fetch(`http://localhost:3000/cardapio`)
-      .then(res => res.json())
-      .then(data => {
+    const fetchCardapio = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(`http://localhost:3000/cardapio`);
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Erro ao buscar cardápio');
+        }
+
+        const data = await response.json();
+
         if (!Array.isArray(data)) {
-          console.error('Dados retornados não são um array:', data);
-          return;
+          throw new Error('Dados retornados não são um array');
         }
 
         const cardapioFormatado = data.map(item => {
-          let insumosArray = [];
+          const imageUrl = item.imagem_url || 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg';
 
-          try {
-            if (Array.isArray(item.insumos)) {
-              insumosArray = item.insumos;
-            } else if (typeof item.insumos === 'string') {
-              const parsed = JSON.parse(item.insumos);
-              insumosArray = Array.isArray(parsed) ? parsed : [parsed];
-            }
-          } catch {
-            insumosArray = [];
-          }
+          // Verificação de estoque simplificada para demonstração
+          // (Você pode manter sua lógica original se preferir)
+          const estoqueInsuficiente = item.insumos.some(insumo => {
+            const quantidadeEstoque = Number(insumo.quantidade_insumos) || 0;
+            const quantidadeReceita = Number(insumo.quantidade_necessaria) || 0;
+            const unidadeEstoque = insumo.unidade_medida;
+            const unidadeReceita = insumo.unidade_medida_receita;
 
-          const parseNumero = (valor) => {
-            if (typeof valor === 'number') return valor;
-            if (typeof valor === 'string') {
-              const limpo = valor.replace(/[^\d,.-]/g, '').replace(/\./g, '').replace(',', '.');
-              const num = Number(limpo);
-              return isNaN(num) ? 0 : num;
-            }
-            return 0;
-          };
+            const convertido = convertToStockUnit(quantidadeReceita, unidadeReceita, unidadeEstoque);
 
-          const estoqueInsuficiente = insumosArray.some(insumo => {
-            const disponivel = parseNumero(insumo.quantidade_insumos);
-            const necessario = parseNumero(insumo.quantidade_necessaria);
-
-            if (!isFinite(disponivel) || !isFinite(necessario)) {
-              console.warn(`[VALOR INVÁLIDO] ${insumo.nome_insumo} → disponível: ${disponivel}, necessário: ${necessario}`);
-              return true; // previne falhas
-            }
-
-            const normalizarUnidade = (str) => {
-              if (!str) return '';
-              const u = str.toLowerCase().trim();
-              if (u === 'l') return 'litro';
-              if (u === 'ml' || u === 'mililitro') return 'ml';
-              if (u === 'kg') return 'kg';
-              if (u === 'g' || u === 'grama') return 'g';
-              if (u === 'unidade' || u === 'unidades' || u === 'un') return 'unidade'; // 👈 aqui
-              return u;
-            };
-
-            const unidadeEstoque = normalizarUnidade(insumo.unidade_medida);
-            const unidadeReceita = normalizarUnidade(insumo.unidade_medida_receita);
 
             console.log({
-              nomeInsumo: insumo.nome_insumo,
-              disponivel,
-              necessario,
-              unidadeEstoque,
-              unidadeReceita,
-              resultado: (() => {
-                if (unidadeEstoque === unidadeReceita) return disponivel < necessario;
-                if (unidadeEstoque === 'kg' && unidadeReceita === 'g') return disponivel * 1000 < necessario;
-                if (unidadeEstoque === 'g' && unidadeReceita === 'kg') return disponivel < necessario * 1000;
-                if (unidadeEstoque === 'litro' && unidadeReceita === 'ml') return disponivel * 1000 < necessario;
-                if (unidadeEstoque === 'ml' && unidadeReceita === 'litro') return disponivel < necessario * 1000;
-                return 'incompatível';
-              })()
+              nome: insumo.nome_insumos,
+              necessario: quantidadeReceita,
+              unidade_receita: unidadeReceita,
+              estoque: quantidadeEstoque,
+              unidade_estoque: unidadeEstoque,
+              convertido
             });
 
-            if (unidadeEstoque === unidadeReceita) {
-              return disponivel < necessario;
-            }
-
-            if (unidadeEstoque === 'kg' && unidadeReceita === 'g') {
-              return disponivel * 1000 < necessario;
-            }
-            if (unidadeEstoque === 'g' && unidadeReceita === 'kg') {
-              return disponivel < necessario * 1000;
-            }
-            if (unidadeEstoque === 'litro' && unidadeReceita === 'ml') {
-              return disponivel * 1000 < necessario;
-            }
-            if (unidadeEstoque === 'ml' && unidadeReceita === 'litro') {
-              return disponivel < necessario * 1000;
-            }
-
-            return true;
+            return convertido === undefined || quantidadeEstoque < convertido;
           });
 
-          const ingredientesTexto = insumosArray.length
-            ? `Ingredientes: ${insumosArray.map(i => i?.nome_insumo || 'Desconhecido').join(', ')}`
+          const ingredientesTexto = item.insumos.length
+            ? `Ingredientes: ${item.insumos.map(i => i?.nome_insumo || i?.nome_insumos || 'Desconhecido').join(', ')}`
             : 'Ingredientes: Não informado';
 
           return {
             id: item.id_cardapio,
             nome: item.nome_item || 'Produto sem nome',
-            link:
-              item.imagem_url ||
-              'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg',
+            imagem_url: imageUrl,
             descricao: [
               { texto: `Descrição: ${item.descricao_item || 'Sem descrição'}` },
               { texto: ingredientesTexto },
@@ -140,8 +119,16 @@ const Cardapio = () => {
         });
 
         setCardapio(cardapioFormatado);
-      })
-      .catch(error => console.error('Erro ao buscar cardápio:', error));
+        setError(null);
+      } catch (error) {
+        console.error('Erro ao buscar cardápio:', error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCardapio();
   }, []);
 
   useEffect(() => {
@@ -217,39 +204,56 @@ const Cardapio = () => {
       <Container style={{ marginTop: '100px' }}>
         <h1 className="fw-bold mb-2">PRODUTOS</h1>
 
-        <Pesquisa
-          nomeDrop="Filtro"
-          navega="/cadastro_produto"
-          TxtButton="Produtos +"
-          lista={[
-            { value: 'Lanche', texto: 'Lanche' },
-            { value: 'Bebida', texto: 'Bebida' },
-            { value: 'Sobremesa', texto: 'Sobremesa' }
-          ]}
-          onFilterChange={setFiltroSelecionado}
-          onSearchChange={setTextoBusca}
-        />
-        <CardGeral
-          filtro="Produtos"
-          card={cardapioFiltrado}
-          showButtons={false}
-          onCardClick={(id) => navigate(`/Visualizar_Cardapio/${id}`)}
-          customButton={(item) =>
-            !item.estoqueInsuficiente && (
-              <Button
-                variant="success"
-                className="rounded-pill shadow-sm text-white px-4 py-2 mt-2"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handlePedir(item.id, item.nome);
-                }}
-              >
-                Pedir
-              </Button>
-            )
-          }
-        />
+        {loading && <p>Carregando cardápio...</p>}
+        {error && (
+          <div className="alert alert-danger">
+            <strong>Erro:</strong> {error}
+            <button
+              className="btn btn-sm btn-outline-secondary ms-2"
+              onClick={() => window.location.reload()}
+            >
+              Tentar novamente
+            </button>
+          </div>
+        )}
+
+        {!loading && !error && (
+          <>
+            <Pesquisa
+              nomeDrop="Filtro"
+              navega="/cadastro_produto"
+              TxtButton="Produtos +"
+              lista={[
+                { value: 'Lanche', texto: 'Lanche' },
+                { value: 'Bebida', texto: 'Bebida' },
+                { value: 'Sobremesa', texto: 'Sobremesa' }
+              ]}
+              onFilterChange={setFiltroSelecionado}
+              onSearchChange={setTextoBusca}
+            />
+            <CardGeral
+              filtro="Produtos"
+              card={cardapioFiltrado}
+              showButtons={false}
+              onCardClick={(id) => navigate(`/Visualizar_Cardapio/${id}`)}
+              customButton={(item) =>
+                !item.estoqueInsuficiente && (
+                  <Button
+                    variant="success"
+                    className="rounded-pill shadow-sm text-white px-4 py-2 mt-2"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      handlePedir(item.id, item.nome);
+                    }}
+                  >
+                    Pedir
+                  </Button>
+                )
+              }
+            />
+          </>
+        )}
       </Container>
     </div>
   );

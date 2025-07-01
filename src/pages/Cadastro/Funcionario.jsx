@@ -34,20 +34,18 @@ const Funcionarios = () => {
 
     setError('');
 
-    const dados = {
-      nome_funcionario: nomeFuncionario,
-      email_funcionario: emailFuncionario,
-      senha_funcionario: senhaFuncionario,
-      cargo_funcionario: cargoFuncionario,
-      imagem_url: urlFuncionario,
-      palavra_chave: palavraChave
-    };
-
     try {
+      const formData = new FormData();
+      formData.append("nome_funcionario", nomeFuncionario);
+      formData.append("email_funcionario", emailFuncionario);
+      formData.append("senha_funcionario", senhaFuncionario);
+      formData.append("cargo_funcionario", cargoFuncionario);
+      formData.append("palavra_chave", palavraChave);
+      formData.append("imagem", urlFuncionario);
+
       const res = await fetch("http://localhost:3000/funcionarios/insert", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(dados),
+        body: formData,
       });
 
       if (res.ok) {
@@ -77,8 +75,16 @@ const Funcionarios = () => {
           onSubmit={handleSubmit}
           className="shadow rounded"
           style={{ padding: '30px', border: '1px blue solid', textAlign: "center" }}>
-          <img
-            src={logo} width={100} alt="logo" />
+          {urlFuncionario && (
+            <img
+              src={URL.createObjectURL(urlFuncionario)}
+              alt="Prévia da imagem"
+              width={100}
+              height={100}
+              style={{ objectFit: 'cover', borderRadius: '50%' }}
+            />
+          )}
+
           <h1 style={{ textAlign: 'center' }}>Cadastro</h1>
 
           {error && (
@@ -120,16 +126,16 @@ const Funcionarios = () => {
             />
           </FloatingLabel>
 
-          <FloatingLabel controlId="URl_funcionario" label="URl do funcionário" className="m-2">
+          <FloatingLabel controlId="imagemFuncionario" label="Foto do funcionário" className="m-2">
             <Form.Control
-              type="text"
-              placeholder="URL:"
-              value={urlFuncionario}
-              onChange={(e) => setUrlFuncionario(e.target.value)}
+              type="file"
+              accept="image/*"
+              onChange={(e) => setUrlFuncionario(e.target.files[0])}
               className="rounded shadow mt-3"
               style={{ border: 'none' }}
             />
           </FloatingLabel>
+
 
           <FloatingLabel controlId="confSenhaFuncionario" label="Confirmar senha" className="m-2">
             <Form.Control

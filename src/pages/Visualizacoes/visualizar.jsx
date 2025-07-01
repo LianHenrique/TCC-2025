@@ -25,6 +25,7 @@ const Visualizar = () => {
   const [fornecedores, setFornecedores] = useState([]);
   const [idFornecedor, setIdFornecedor] = useState(null);
   const [unidade, setUnidade] = useState('');
+  const [fileImagem, setFileImagem] = useState(null);
   const isRestrito = !isloading && cargoUsuario === 'Funcionario';
   const unidadesDisponiveis = ['unidade', 'kg', 'g', 'litro', 'ml'];
 
@@ -40,6 +41,26 @@ const Visualizar = () => {
       .then((data) => setFornecedores(data))
       .catch((err) => console.error('Erro ao buscar fornecedores:', err));
   }, []);
+
+  // Função para obter a URL completa da imagem
+  const getImagemUrl = (path) => {
+    if (!path) return '';
+
+    // Se já é URL completa
+    if (path.startsWith('http')) {
+      return path;
+    }
+
+    // Extrair apenas o nome do arquivo
+    const extractFilename = (p) => {
+      return p
+        .replace(/^.*[\\\/]/, '') // Remove tudo até a última barra
+        .replace(/\?.*$/, ''); // Remove parâmetros de query se houver
+    };
+
+    const filename = extractFilename(path);
+    return `http://localhost:3000/uploads/${filename}`;
+  };
 
   useEffect(() => {
     if (!id) return;
@@ -59,7 +80,7 @@ const Visualizar = () => {
         setImagemAtual(insumo.imagem_url);
         setFiltro(insumo.categoria);
         setAlertaEstoque(insumo.alerta_estoque || '');
-        setAlertaVencimento(insumo.alertar_dias_antes || '');
+        setAlertaVencimento(insumo.alertar_dias_antes ?? '');
         setIdFornecedor(insumo.id_fornecedor || null);
         setUnidade(insumo.unidade_medida || 'unidade');
 
@@ -79,24 +100,30 @@ const Visualizar = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      const formData = new FormData();
+      formData.append('nome_insumos', nome);
+      formData.append('quantidade_insumos', quantidade);
+      formData.append('categoria', filtro);
+      formData.append('valor_insumos', preco);
+      formData.append('data_vencimento', validade);
+      formData.append('alerta_estoque', alertaEstoque);
+      formData.append(
+        'alertar_dias_antes',
+        alertaVencimento !== '' ? parseInt(alertaVencimento, 10) : ''
+      );
+      formData.append('unidade_medida', unidade);
+      formData.append('id_fornecedor', idFornecedor || '');
+
+      if (fileImagem) {
+        formData.append('imagem', fileImagem);
+      } else {
+        formData.append('imagem_atual', imagemAtual);
+      }
+
       const response = await fetch(`http://localhost:3000/insumos_tudo_POST/${id}`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          nome_insumos: nome,
-          quantidade_insumos: quantidade,
-          categoria: filtro,
-          imagem_url: url,
-          valor_insumos: preco,
-          data_vencimento: validade,
-          alerta_estoque: alertaEstoque,
-          alerta_vencimento: alertaVencimento,
-          id_fornecedor: idFornecedor,
-          unidade_medida: unidade
-        })
-      })
+        body: formData
+      });
 
       if (!response.ok) {
         const data = await response.json();
@@ -240,35 +267,45 @@ const Visualizar = () => {
             </Form.Select>
           </FloatingLabel>
 
-          <FloatingLabel controlId="url" label="URL da Imagem" className="mb-3">
+          <FloatingLabel controlId="imagem" label="Nova Imagem" className="mb-3">
             <Form.Control
-              type="text"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
+              type="file"
+              accept="image/*"
               className="rounded-5 shadow"
-              required
+              onChange={(e) => {
+                const file = e.target.files[0];
+                if (file) {
+                  setUrl(URL.createObjectURL(file)); // Visualização temporária
+                  setFileImagem(file);               // Para enviar ao backend
+                }
+              }}
             />
           </FloatingLabel>
 
-          {url && (
-            <div className="text-center mb-4">
-              <img
-                src={imagemAtual}
-                alt="Imagem do insumo"
-                style={{
-                  maxWidth: '300px',
-                  width: '100%',
-                  height: 'auto',
-                  borderRadius: '10px',
-                  boxShadow: '0 0 10px rgba(0,0,0,0.2)'
-                }}
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = 'https://www.valuehost.com.br/blog/wp-content/uploads/2022/01/post_thumbnail-77d8f2a95f2f41b5863f3fba5a261d7e.jpeg.webp';
-                }}
-              />
-            </div>
-          )}
+          <div className="text-center mb-4">
+            <img
+              src={
+                fileImagem
+                  ? URL.createObjectURL(fileImagem)
+                  : imagemAtual
+                    ? getImagemUrl(imagemAtual) // Usar a função corrigida aqui
+                    : 'https://www.valuehost.com.br/blog/wp-content/uploads/2022/01/post_thumbnail-77d8f2a95f2f41b5863f3fba5a261d7e.jpeg.webp'
+              }
+              alt="Imagem do insumo"
+              style={{
+                maxWidth: '300px',
+                width: '100%',
+                height: 'auto',
+                borderRadius: '10px',
+                boxShadow: '0 0 10px rgba(0,0,0,0.2)'
+              }}
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src =
+                  'https://www.valuehost.com.br/blog/wp-content/uploads/2022/01/post_thumbnail-77d8f2a95f2f41b5863f3fba5a261d7e.jpeg.webp';
+              }}
+            />
+          </div>
 
           <Button
             type="submit"

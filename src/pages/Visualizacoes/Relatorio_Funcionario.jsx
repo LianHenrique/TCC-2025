@@ -7,12 +7,16 @@ const Relatorio_Funcionario = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
+  const [fileImagem, setFileImagem] = useState(null);
+
   const [form, setForm] = useState({
     nome_funcionario: '',
     email_funcionario: '',
     imagem_url: '',
     cargo_funcionario: 'Cargo',
   });
+
+  const { nome_funcionario, email_funcionario, cargo_funcionario } = form;
 
   const [loading, setLoading] = useState(true);
   const [feedback, setFeedback] = useState({ tipo: '', mensagem: '' });
@@ -51,12 +55,9 @@ const Relatorio_Funcionario = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const { nome_funcionario, email_funcionario, imagem_url, cargo_funcionario } = form;
-
     if (
       !nome_funcionario.trim() ||
       !email_funcionario.trim() ||
-      !imagem_url.trim() ||
       cargo_funcionario === 'Cargo'
     ) {
       setFeedback({ tipo: 'danger', mensagem: 'Preencha todos os campos obrigatórios.' });
@@ -64,10 +65,20 @@ const Relatorio_Funcionario = () => {
     }
 
     try {
+      const formData = new FormData();
+      formData.append('nome_funcionario', nome_funcionario);
+      formData.append('email_funcionario', email_funcionario);
+      formData.append('cargo_funcionario', cargo_funcionario);
+
+      if (fileImagem) {
+        formData.append('imagem', fileImagem);
+      } else {
+        formData.append('imagem_atual', form.imagem_url);
+      }
+
       const res = await fetch(`http://localhost:3000/AtualizarFuncionario/${id}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: formData
       });
 
       if (!res.ok) throw new Error('Erro ao atualizar funcionário.');
@@ -81,7 +92,7 @@ const Relatorio_Funcionario = () => {
   };
 
   const imagemLink = form.imagem_url?.trim()
-    ? `${form.imagem_url}?t=${Date.now()}`
+    ? `http://localhost:3000${form.imagem_url}?t=${Date.now()}`
     : 'https://www.freeiconspng.com/thumbs/no-image-icon/no-image-icon-6.png';
 
   if (loading) {
@@ -126,13 +137,11 @@ const Relatorio_Funcionario = () => {
             />
           </FloatingLabel>
 
-          <FloatingLabel label="URL da Imagem" className="mb-3">
+          <FloatingLabel label="Nova Imagem" className="mb-3">
             <Form.Control
-              name="imagem_url"
-              type="text"
-              value={form.imagem_url}
-              onChange={handleChange}
-              required
+              type="file"
+              accept="image/*"
+              onChange={(e) => setFileImagem(e.target.files[0])}
             />
           </FloatingLabel>
 

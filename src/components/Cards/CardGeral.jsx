@@ -27,6 +27,69 @@ const CardGeral = ({
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // Função para formatar valores em reais
+  const formatarValor = (valor) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(valor);
+  };
+
+  // Função para corrigir textos comuns
+  const corrigirTexto = (texto) => {
+    if (!texto) return '';
+
+    return texto
+      .replace(/unitéis/g, 'unidades')
+      .replace(/Velor/g, 'Valor')
+      .replace(/Palitro/g, 'Palito');
+  };
+
+  // SOLUÇÃO FINAL PARA AS IMAGENS - Versão simplificada e robusta
+  const getImagemSrc = (item) => {
+    // Se não houver URL de imagem, retornar fallback
+    if (!item?.imagem_url && !item?.link) {
+      return 'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg';
+    }
+
+    const rawUrl = item.imagem_url || item.link || '';
+
+    // Caso 1: URL completa (http/https)
+    if (/^https?:\/\//i.test(rawUrl)) {
+      return rawUrl;
+    }
+
+    // Caso 2: Caminho que já começa com 'uploads/'
+    if (rawUrl.startsWith('uploads/')) {
+      return `http://localhost:3000/${rawUrl}`;
+    }
+
+    // Caso 3: Caminho que começa com '/uploads'
+    if (rawUrl.startsWith('/uploads/')) {
+      return `http://localhost:3000${rawUrl}`;
+    }
+
+    // Caso 4: Nome simples de arquivo
+    if (/\.(jpe?g|png|webp|gif|avif)$/i.test(rawUrl)) {
+      return `http://localhost:3000/uploads/${rawUrl}`;
+    }
+
+    // Caso padrão: retornar fallback
+    return 'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg';
+  };
+
+  const normalizeImageUrl = (url) => {
+    if (!url) return url;
+
+    // Remover barras duplas e protocolo local
+    return url
+      .replace(/(http:\/\/localhost:3000)?\/?uploads\/?/i, '')
+      .replace(/^\/+/, '')
+      .replace(/\/{2,}/g, '/');
+  };
+
+
+
   return (
     <div className={ClassNameCard} style={{ width: '100%' }}>
       {filtro && <h2>{filtro}</h2>}
@@ -34,6 +97,8 @@ const CardGeral = ({
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: '1rem', padding: '10px' }}>
         {card.map((item, index) => {
           const isDisabled = item.estoqueInsuficiente;
+          const imgSrc = getImagemSrc(item);
+          console.log(`URL da imagem para ${item.nome}:`, imgSrc);
 
           return (
             <div
@@ -53,6 +118,11 @@ const CardGeral = ({
                 onClick={() => onCardClick?.(item.id)}
               >
                 <Card.Img
+                  src={imgSrc}
+                  onError={(e) => {
+                    console.error('Erro ao carregar imagem:', e.target.src);
+                    e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg';
+                  }}
                   className="rounded"
                   style={{
                     width: layout === 'mobile' ? '100%' : '200px',
@@ -62,12 +132,7 @@ const CardGeral = ({
                     flexShrink: 0,
                   }}
                   variant="top"
-                  src={item.link}
-                  alt={item.nome}
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = 'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg';
-                  }}
+                  alt={item.nome || 'Imagem do produto'}
                 />
 
                 <Card.Body style={{ flex: 1, position: 'relative' }}>
@@ -75,10 +140,23 @@ const CardGeral = ({
 
                   {Array.isArray(item.descricao) &&
                     item.descricao.map((desc, i) => {
-                      const isVencimento = desc.texto?.toLowerCase().includes('vencimento');
-                      const isQuantidade = desc.texto?.toLowerCase().includes('quantidade');
+                      const textoCorrigido = corrigirTexto(desc.texto);
+                      const isVencimento = textoCorrigido?.toLowerCase().includes('vencimento');
+                      const isQuantidade = textoCorrigido?.toLowerCase().includes('quantidade');
+                      const isValor = textoCorrigido?.toLowerCase().includes('valor');
                       const isDanger = desc.badge === 'danger';
                       const aplicarFundo = isDanger && (isVencimento || isQuantidade);
+
+                      // SOLUÇÃO: Usar o valor real do item em vez de extrair do texto
+                      let conteudoFormatado = textoCorrigido;
+
+                      if (isValor && item.valor_insumos) {
+                        // Converter o valor para número e formatar corretamente
+                        const valorNumerico = parseFloat(item.valor_insumos);
+                        if (!isNaN(valorNumerico)) {
+                          conteudoFormatado = `Valor unitário: ${formatarValor(valorNumerico)}`;
+                        }
+                      }
 
                       return (
                         <Card.Text
@@ -97,9 +175,9 @@ const CardGeral = ({
                           title={desc.tooltip || ''}
                         >
                           <span>
-                            {desc.texto?.toLowerCase().includes('quantidade')
+                            {isQuantidade
                               ? (() => {
-                                const match = desc.texto.match(/quantidade:\s*([\d.,]+)\s*(\w+)?/i);
+                                const match = textoCorrigido.match(/quantidade:\s*([\d.,]+)\s*(\w+)?/i);
                                 const valor = match?.[1] ? parseFloat(match[1].replace(',', '.')) : null;
                                 const unidade = match?.[2] || '';
                                 return valor !== null
@@ -107,9 +185,9 @@ const CardGeral = ({
                                     minimumFractionDigits: valor % 1 === 0 ? 0 : 2,
                                     maximumFractionDigits: 3,
                                   })} ${unidade}`
-                                  : desc.texto;
+                                  : textoCorrigido;
                               })()
-                              : desc.texto}
+                              : conteudoFormatado}
                           </span>
                           {desc.badge && (
                             <span

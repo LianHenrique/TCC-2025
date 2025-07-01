@@ -62,11 +62,15 @@ const Funcionarios = () => {
     const formatados = filtrado.map(func => ({
       id: func.id_funcionario,
       nome: func.nome_funcionario,
-      link: func.imagem_url || 'https://via.placeholder.com/150',
+      imagem_url: func.imagem_url || 'https://via.placeholder.com/150',
       descricao: [
         { texto: `Email: ${func.email_funcionario}` },
         { texto: `Cargo: ${func.cargo_funcionario}` }
       ],
+      acoes: [
+        { onClick: () => navigate(`/visualizar_funcionario/${func.id_funcionario}`) },
+        { onClick: () => handleDelete(func.id_funcionario) },
+      ]
     }));
 
     setFuncionarios(formatados);

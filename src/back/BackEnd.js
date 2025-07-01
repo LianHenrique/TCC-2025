@@ -1,10 +1,82 @@
 import express from 'express';
-import connection from './db.js';
+import multer from 'multer';
+import path from 'path';
 import cors from 'cors';
+import connection from './db.js';
+import { fileURLToPath } from 'url';
+import fs from 'fs';
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const uploadsPath = path.join(__dirname, 'public', 'uploads');
+
+if (!fs.existsSync(uploadsPath)) {
+  fs.mkdirSync(uploadsPath, { recursive: true });
+}
 
 const app = express();
+
+app.use('/uploads', express.static(uploadsPath, {
+  setHeaders: (res, filePath) => {
+    const ext = path.extname(filePath);
+    if (ext === '.webp') res.setHeader('Content-Type', 'image/webp');
+    else if (ext === '.avif') res.setHeader('Content-Type', 'image/avif');
+    else if (ext === '.jpg' || ext === '.jpeg') res.setHeader('Content-Type', 'image/jpeg');
+    else if (ext === '.png') res.setHeader('Content-Type', 'image/png');
+  }
+}));
+
+
+// 1. Configurações essenciais
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// 2. Configuração de arquivos estáticos - ORDEM CORRETA E SEM DUPLICAÇÕES
+app.use('/uploads', (req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+}, express.static(path.join(__dirname, 'public', 'uploads'), {
+  setHeaders: (res, path) => {
+    // Corrige MIME types para extensões comuns
+    if (path.endsWith('.webp')) {
+      res.setHeader('Content-Type', 'image/webp');
+    }
+    if (path.endsWith('.avif')) {
+      res.setHeader('Content-Type', 'image/avif');
+    }
+  }
+}));
+app.use(express.static(path.join(__dirname, 'public')));
+
+// 3. Configuração do Multer
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, 'public', 'uploads'));
+  },
+  filename: (req, file, cb) => {
+    const uniqueName = Date.now() + '-' + file.originalname;
+    cb(null, uniqueName);
+  }
+});
+
+const upload = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/avif'];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Tipo de arquivo não suportado'), false);
+    }
+  },
+  limits: {
+    fileSize: 5 * 1024 * 1024
+  }
+
+});
 
 // --- ROTAS FUNCIONÁRIOS ---
 // Buscar funcionário por nome via query param
@@ -27,41 +99,47 @@ app.get('/funcionarios', (req, res) => {
       'SELECT * FROM funcionario',
       (error, results) => {
         if (error) return res.status(500).json({ error: 'Erro ao buscar funcionários' });
-        res.json(results);
+
+        const funcionariosComImagens = results.map(func => ({
+          ...func,
+          imagem_url: func.imagem_url
+            ? func.imagem_url.replace(/^public/, '') // remove "public" se existir
+            : null
+        }));
+
+        res.json(funcionariosComImagens);
       }
     );
   }
 });
 
-
-
 // buscando todos os funcionários por id
 app.get('/funcionarios/:id_funcionario', (req, res) => {
-  const { id_funcionario } = req.params; //coloco com req.params por que estou passando como parametro
+  const { id_funcionario } = req.params;
 
   connection.query(
-    'SELECT * FROM funcionario where id_funcionario = ?',
-    // Agora passo o parametro falando o que é o ?
+    'SELECT * FROM funcionario WHERE id_funcionario = ?',
     [id_funcionario],
-
-    // se der erro, retornar o erro
     (error, resultados) => {
       if (error) {
-        // Retorno o status no console
-        return res.status(500).json({ erro: 'Erro ao buscar funcionário' })
+        return res.status(500).json({ erro: 'Erro ao buscar funcionário' });
       }
 
       if (resultados.length === 0) {
-        // Se não tiver nada:
-        return res.status(404).json({ erro: 'Funcionário não encontrado' })
+        return res.status(404).json({ erro: 'Funcionário não encontrado' });
       }
 
-      // Se chegou aqui, deu tudo certo
-      res.json(resultados[0]);
+      const funcionario = resultados[0];
 
+      // Corrige o caminho da imagem removendo "public"
+      if (funcionario.imagem_url) {
+        funcionario.imagem_url = funcionario.imagem_url.replace(/^public/, '');
+      }
+
+      res.json(funcionario);
     }
-  )
-})
+  );
+});
 
 //  buscando produto por ID
 app.get('/produtos/:id_produto', (requisicao, resposta) => {
@@ -88,7 +166,16 @@ app.get('/produtos/:id_produto', (requisicao, resposta) => {
 
 app.get('/produtos', (req, res) => {
   connection.query(
-    'SELECT id_insumos, nome_insumos, imagem_url, categoria, quantidade_insumos, unidade_medida, valor_insumos, data_vencimento FROM insumos',
+    `SELECT 
+      id_insumos, 
+      nome_insumos, 
+      CONCAT('http://localhost:3000', imagem_url) AS imagem_url,
+      categoria, 
+      quantidade_insumos, 
+      unidade_medida, 
+      valor_insumos, 
+      data_vencimento 
+    FROM insumos`,
     (error, resultados) => {
       if (error) {
         return res.status(500).json({ error: 'Erro ao buscar produtos' });
@@ -97,9 +184,6 @@ app.get('/produtos', (req, res) => {
     }
   );
 });
-
-
-
 
 // Notificação de quantidade do estoque
 app.get('/produtos/notificacao', (req, res) => {
@@ -138,12 +222,16 @@ app.get('/produtos/notificacao', (req, res) => {
 
 
 // Inserir funcionário
-app.post("/funcionarios/insert", (req, res) => {
-  const { nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario, imagem_url, palavra_chave } = req.body;
+app.post("/funcionarios/insert", upload.single('imagem'), (req, res) => {
+  console.log("BODY:", req.body);
+  console.log("FILE:", req.file);
+  const { nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario, palavra_chave } = req.body;
 
-  if (!nome_funcionario || !cargo_funcionario || !senha_funcionario || !email_funcionario || !imagem_url || !palavra_chave) {
-    return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+  if (!req.file || !nome_funcionario || !cargo_funcionario || !senha_funcionario || !email_funcionario || !palavra_chave) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios, incluindo a imagem.' });
   }
+
+  const imagem_url = `/uploads/${req.file.filename}`; // caminho público para acessar depois
 
   const sql = `INSERT INTO funcionario (nome_funcionario, cargo_funcionario, senha_funcionario, email_funcionario, imagem_url, palavra_chave) VALUES (?, ?, ?, ?, ?, ?)`;
 
@@ -158,9 +246,12 @@ app.post("/funcionarios/insert", (req, res) => {
 
 
 // Editando funcionário
-app.put('/AtualizarFuncionario/:id', (req, res) => {
+app.put('/AtualizarFuncionario/:id', upload.single('imagem'), (req, res) => {
   const { id } = req.params;
-  const { nome_funcionario, email_funcionario, cargo_funcionario, imagem_url } = req.body;
+  const { nome_funcionario, email_funcionario, cargo_funcionario, imagem_atual } = req.body;
+
+  // Usa a nova imagem se enviada, senão usa a antiga
+  const imagem_url = req.file ? `/uploads/${req.file.filename}` : imagem_atual;
 
   if (!nome_funcionario || !email_funcionario || !cargo_funcionario || !imagem_url) {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
@@ -168,7 +259,7 @@ app.put('/AtualizarFuncionario/:id', (req, res) => {
 
   const sql = `
     UPDATE funcionario 
-    SET nome_funcionario = ?, email_funcionario = ?, cargo_funcionario = ?, imagem_url = ? 
+    SET nome_funcionario = ?, email_funcionario = ?, cargo_funcionario = ?, imagem_url = ?
     WHERE id_funcionario = ?
   `;
 
@@ -185,7 +276,6 @@ app.put('/AtualizarFuncionario/:id', (req, res) => {
     res.status(200).json({ message: 'Funcionário atualizado com sucesso' });
   });
 });
-
 
 
 // Deletar funcionário
@@ -287,36 +377,45 @@ app.get('/insumos_tudo/:id_insumos', (req, res) => {
 
 
 // Adicionando coisas a insumos por id 
-app.put('/insumos_tudo_POST/:id_insumos', (req, res) => {
+app.put('/insumos_tudo_POST/:id_insumos', upload.single('imagem'), (req, res) => {
   const { id_insumos } = req.params;
   const {
     nome_insumos,
     quantidade_insumos,
     valor_insumos,
-    imagem_url,
     categoria,
     data_vencimento,
     alerta_estoque,
-    alerta_vencimento,
+    alertar_dias_antes,
     id_fornecedor,
-    unidade_medida
+    unidade_medida,
+    imagem_atual // ← se enviado no formData
   } = req.body;
 
+  if (
+    !nome_insumos ||
+    !quantidade_insumos ||
+    !valor_insumos ||
+    !categoria
+  ) {
+    return res.status(400).json({ error: 'Todos os campos são obrigatórios' });
+  }
 
-  // Atualiza os dados do insumo
+  const imagem_url = req.file ? `/uploads/${req.file.filename}` : imagem_atual;
+
   const updateInsumoQuery = `
-  UPDATE insumos
-  SET 
-  nome_insumos = ?,
-  quantidade_insumos = ?,
-  valor_insumos = ?,
-  imagem_url = ?,
-  categoria = ?,
-  data_vencimento = ?,
-  alerta_estoque = ?,
-  alertar_dias_antes = ?,
-  unidade_medida = ?
-WHERE id_insumos = ?
+    UPDATE insumos
+    SET 
+      nome_insumos = ?, 
+      quantidade_insumos = ?, 
+      valor_insumos = ?, 
+      imagem_url = ?,
+      categoria = ?, 
+      data_vencimento = ?, 
+      alerta_estoque = ?, 
+      alertar_dias_antes = ?, 
+      unidade_medida = ?
+    WHERE id_insumos = ?
   `;
 
   const insumoValores = [
@@ -327,11 +426,10 @@ WHERE id_insumos = ?
     categoria,
     data_vencimento,
     alerta_estoque,
-    alerta_vencimento,
+    alertar_dias_antes,
     unidade_medida,
     id_insumos
   ];
-
 
   connection.query(updateInsumoQuery, insumoValores, (err, resultado) => {
     if (err) {
@@ -343,12 +441,12 @@ WHERE id_insumos = ?
       return res.status(404).json({ error: 'Insumo não encontrado' });
     }
 
-    // Atualiza ou insere o relacionamento com o fornecedor
+    // Atualiza relação fornecedor-insumo
     const deleteQuery = 'DELETE FROM FornecedorInsumo WHERE id_insumo = ?';
     connection.query(deleteQuery, [id_insumos], (err) => {
       if (err) {
-        console.error('Erro ao remover relacionamento anterior com fornecedor:', err);
-        return res.status(500).json({ error: 'Erro ao atualizar o fornecedor relacionado' });
+        console.error('Erro ao remover fornecedor anterior:', err);
+        return res.status(500).json({ error: 'Erro ao atualizar o fornecedor' });
       }
 
       if (!id_fornecedor) {
@@ -432,21 +530,24 @@ app.get('/insumos/:id_insumos', (req, res) => {
 
 
 // Inserir insumo
-app.post('/insumos/insert', (req, res) => {
+app.post('/insumos/insert', upload.single('imagem'), (req, res) => {
   console.log('Recebido no backend:', req.body);
+  console.log('Arquivo recebido:', req.file);
 
   const {
     nome_insumos,
-    imagem_url,
     valor_insumos,
     categoria,
+    unidade_medida,
     quantidade_insumos,
     data_vencimento,
     descricao_insumos,
-    alertar_dias_antes,
     alerta_estoque,
-    unidade_medida
+    alertar_dias_antes,
+    fornecedor_id
   } = req.body;
+
+  const imagem_url = req.file ? `/uploads/${req.file.filename}`.replace(/\\/g, '/') : null;
 
   const data_entrada_insumos = new Date().toISOString().split('T')[0];
 
@@ -516,7 +617,6 @@ app.post('/insumos/insert', (req, res) => {
 // Buscar itens do cardapio por ID
 app.get('/cardapio/:id_cardapio', (req, res) => {
   const { id_cardapio } = req.params;
-
   const sql = `
     SELECT 
       c.id_cardapio,
@@ -666,71 +766,103 @@ app.post('/login', (req, res) => {
 // Buscar todos os itens do cardápio 
 app.get('/cardapio', (req, res) => {
   const sql = `
-      SELECT 
-    c.id_cardapio,
-    c.nome_item,
-    c.descricao_item,
-    c.valor_item,
-    c.imagem_url,
-    c.ativo,
-    c.data_cadastro,
-    c.categoria,
-    GROUP_CONCAT(
-      CONCAT(
-        '{"nome_insumo":"', IFNULL(i.nome_insumos, ''), '",',
-        '"quantidade_necessaria":"', IFNULL(ici.quantidade_necessaria, ''), '",',
-        '"unidade_medida_receita":"', IFNULL(ici.unidade_medida_receita, ''), '",',
-        '"quantidade_insumos":"', IFNULL(i.quantidade_insumos, ''), '",',
-        '"unidade_medida":"', IFNULL(i.unidade_medida, ''), '"}'
-      )
-    ) AS insumos
-  FROM Cardapio c
-  LEFT JOIN ItemCardapioInsumo ici ON ici.id_item_cardapio = c.id_cardapio
-  LEFT JOIN Insumos i ON i.id_insumos = ici.id_insumo
-  GROUP BY c.id_cardapio
+    SELECT 
+      c.id_cardapio,
+      c.nome_item,
+      c.descricao_item,
+      c.valor_item,
+      c.imagem_url,
+      c.ativo,
+      c.data_cadastro,
+      c.categoria
+    FROM Cardapio c
   `;
 
-  connection.query(sql, (error, results) => {
+  connection.query(sql, (error, cardapioResults) => {
     if (error) {
       console.error('Erro ao buscar cardápio:', error);
-      return res.status(500).json({ error: 'Erro ao buscar cardápio' });
+      return res.status(500).json({
+        error: 'Erro ao buscar cardápio',
+        details: error.message
+      });
     }
 
-    // Corrige o parse do campo insumos para array de objetos
-    const formattedResults = results.map(item => ({
-      ...item,
-      insumos: (() => {
-        if (!item.insumos) return [];
-        try {
-          return JSON.parse(`[${item.insumos}]`);
-        } catch {
-          return [];
-        }
-      })()
-    }));
+    // Se não houver itens, retornar array vazio
+    if (cardapioResults.length === 0) {
+      return res.json([]);
+    }
 
-    res.json(formattedResults);
+    // Buscar insumos para todos os itens de uma vez
+    const cardapioIds = cardapioResults.map(item => item.id_cardapio);
+    const insumosQuery = `
+      SELECT 
+        ici.id_item_cardapio,
+        i.id_insumos,
+        i.nome_insumos,
+        ici.quantidade_necessaria,
+        ici.unidade_medida_receita,
+        i.quantidade_insumos,
+        i.unidade_medida
+      FROM ItemCardapioInsumo ici
+      JOIN Insumos i ON i.id_insumos = ici.id_insumo
+      WHERE ici.id_item_cardapio IN (?)
+    `;
+
+    connection.query(insumosQuery, [cardapioIds], (insumosError, insumosResults) => {
+      if (insumosError) {
+        console.error('Erro ao buscar insumos:', insumosError);
+        // Retornar cardápio mesmo sem insumos
+        return res.json(cardapioResults.map(item => ({
+          ...item,
+          insumos: []
+        })));
+      }
+
+      // Agrupar insumos por item do cardápio
+      const insumosPorItem = {};
+      insumosResults.forEach(insumo => {
+        if (!insumosPorItem[insumo.id_item_cardapio]) {
+          insumosPorItem[insumo.id_item_cardapio] = [];
+        }
+        insumosPorItem[insumo.id_item_cardapio].push({
+          id_insumo: insumo.id_insumos,
+          nome_insumo: insumo.nome_insumos,
+          quantidade_necessaria: insumo.quantidade_necessaria,
+          unidade_medida_receita: insumo.unidade_medida_receita,
+          quantidade_insumos: insumo.quantidade_insumos,
+          unidade_medida: insumo.unidade_medida
+        });
+      });
+
+      // Combinar resultados
+      const resultadosCompletos = cardapioResults.map(item => ({
+        ...item,
+        insumos: insumosPorItem[item.id_cardapio] || []
+      }));
+
+      res.json(resultadosCompletos);
+    });
   });
 });
 
 
-
 // Inserir item no cardápio com insumos relacionados
-app.post('/cardapio/insert', (req, res) => {
+app.post('/cardapio/insert', upload.single('imagem'), (req, res) => {
+
   const {
     nome_produto,
     descricao_produto,
     valor_produto,
-    imagem_url,
-    filtro: categoria,
-    insumos
+    filtro: categoria
   } = req.body;
+
+  const insumos = JSON.parse(req.body.insumos || '[]');
 
   if (
     !nome_produto ||
     !descricao_produto ||
     !valor_produto ||
-    !imagem_url ||
+    !req.file || // ← agora a imagem vem de req.file
     !categoria ||
     !Array.isArray(insumos) ||
     insumos.length === 0
@@ -738,126 +870,150 @@ app.post('/cardapio/insert', (req, res) => {
     return res.status(400).json({ error: 'Todos os campos são obrigatórios e ao menos um insumo deve ser selecionado.' });
   }
 
+  const imagem_url = `/uploads/${req.file.filename}`;
+
   const insertProdutoQuery = `
     INSERT INTO cardapio (nome_item, descricao_item, valor_item, imagem_url, categoria)
     VALUES (?, ?, ?, ?, ?)
   `;
 
-  connection.query(insertProdutoQuery, [nome_produto, descricao_produto, valor_produto, imagem_url, categoria], (err, result) => {
-    if (err) {
-      console.error('Erro ao inserir produto:', err);
-      return res.status(500).json({ error: 'Erro ao cadastrar o produto' });
-    }
-
-    const id_item_cardapio = result.insertId;
-
-    // Função segura para parsear números vindo do frontend
-    const normalizarQuantidade = (valor) => {
-      if (typeof valor === 'number') return valor;
-      if (typeof valor === 'string') {
-        const normalizado = valor.replace(/\./g, '').replace(',', '.');
-        return parseFloat(normalizado);
-      }
-      return 0;
-    };
-
-    const values = insumos.map(insumo => {
-      const idInsumo = insumo.id_insumo || insumo.id_insumos;
-      const quantidade = normalizarQuantidade(insumo.quantidade_necessaria);
-      return [
-        id_item_cardapio,
-        idInsumo,
-        quantidade,
-        insumo.unidade_medida_receita
-      ];
-    });
-
-    const insertInsumosQuery = `
-      INSERT INTO itemcardapioinsumo (id_item_cardapio, id_insumo, quantidade_necessaria, unidade_medida_receita)
-      VALUES ?
-    `;
-
-    connection.query(insertInsumosQuery, [values], (errRelacao) => {
-      if (errRelacao) {
-        console.error('Erro ao associar insumos:', errRelacao);
-        return res.status(500).json({ error: 'Produto criado, mas erro ao associar insumos.' });
-      }
-
-      return res.status(201).json({ message: 'Produto e insumos cadastrados com sucesso!' });
-    });
-  });
-});
-
-
-// ROTA DO BOTÃO DE ALTERAR DA TELA DE CADASTRO DE VISUALIZAR CARDÁPIO (update)
-app.put('/AtualizarCardapio/:id', (req, res) => {
-  const { id } = req.params;
-  const { imagem_url, nome_item, descricao_item, valor_item, insumos } = req.body;
-
-  console.log('Atualizando cardápio ID:', id);
-  console.log('Dados recebidos:', req.body);
-
-  const updateCardapioQuery = `
-    UPDATE cardapio 
-    SET imagem_url = ?, nome_item = ?, descricao_item = ?, valor_item = ? 
-    WHERE id_cardapio = ?
-  `;
-
   connection.query(
-    updateCardapioQuery,
-    [imagem_url, nome_item, descricao_item, valor_item, id],
-    (error, results) => {
-      if (error) {
-        console.error('Erro ao atualizar cardápio:', error);
-        return res.status(500).json({ error: "Erro ao atualizar produto do cardápio." });
+    insertProdutoQuery,
+    [nome_produto, descricao_produto, valor_produto, imagem_url, categoria],
+    (err, result) => {
+      if (err) {
+        console.error('Erro ao inserir produto:', err);
+        return res.status(500).json({ error: 'Erro ao cadastrar o produto' });
       }
 
-      // Deleta insumos antigos do item do cardápio
-      const deleteInsumosQuery = 'DELETE FROM ItemCardapioInsumo WHERE id_item_cardapio = ?';
-      connection.query(deleteInsumosQuery, [id], (error) => {
-        if (error) {
-          console.error('Erro ao deletar insumos antigos:', error);
-          return res.status(500).json({ error: "Erro ao remover insumos antigos." });
+      const id_item_cardapio = result.insertId;
+
+      // Normaliza a quantidade recebida
+      const normalizarQuantidade = (valor) => {
+        if (typeof valor === 'number') return valor;
+        if (typeof valor === 'string') {
+          const normalizado = valor.replace(/\./g, '').replace(',', '.');
+          return parseFloat(normalizado);
+        }
+        return 0;
+      };
+
+      const values = insumos.map(insumo => {
+        const idInsumo = insumo.id_insumo || insumo.id_insumos;
+        const quantidade = normalizarQuantidade(insumo.quantidade_necessaria);
+        return [
+          id_item_cardapio,
+          idInsumo,
+          quantidade,
+          insumo.unidade_medida_receita
+        ];
+      });
+
+      const insertInsumosQuery = `
+        INSERT INTO itemcardapioinsumo 
+        (id_item_cardapio, id_insumo, quantidade_necessaria, unidade_medida_receita)
+        VALUES ?
+      `;
+
+      connection.query(insertInsumosQuery, [values], (errRelacao) => {
+        if (errRelacao) {
+          console.error('Erro ao associar insumos:', errRelacao);
+          return res.status(500).json({ error: 'Produto criado, mas erro ao associar insumos.' });
         }
 
-        if (!Array.isArray(insumos) || insumos.length === 0) {
-          console.warn('Nenhum insumo recebido ou lista vazia:', insumos);
-          return res.status(200).json({ message: 'Produto atualizado sem insumos.' });
-        }
-
-        const values = insumos.map(insumo => {
-          console.log('Insumo processado:', insumo);
-          return [
-            id, // id_item_cardapio
-            insumo.id_insumo,
-            insumo.quantidade_necessaria,
-            insumo.unidade_medida_receita
-          ];
-        });
-
-        console.log('Valores para INSERT:', values);
-
-        const insertInsumoQuery = `
-          INSERT INTO ItemCardapioInsumo 
-          (id_item_cardapio, id_insumo, quantidade_necessaria, unidade_medida_receita)
-          VALUES ?
-        `;
-
-        connection.query(insertInsumoQuery, [values], (error) => {
-          if (error) {
-            console.error('Erro ao inserir insumos:', error);
-            return res.status(500).json({ error: "Erro ao adicionar novos insumos." });
-          }
-
-          console.log('Produto e insumos atualizados com sucesso!');
-          res.status(200).json({ message: 'Produto e insumos atualizados com sucesso!' });
-        });
+        return res.status(201).json({ message: 'Produto e insumos cadastrados com sucesso!' });
       });
     }
   );
 });
 
 
+// ROTA DO BOTÃO DE ALTERAR DA TELA DE CADASTRO DE VISUALIZAR CARDÁPIO (update)
+app.put('/AtualizarCardapio/:id', upload.single('imagem'), (req, res) => {
+  const { id } = req.params;
+
+  const {
+    nome_item,
+    descricao_item,
+    valor_item,
+    categoria // opcional
+  } = req.body;
+
+  // Define URL da imagem (nova ou antiga)
+  const imagem_url = req.file
+    ? `/uploads/${req.file.filename}`
+    : (req.body.imagem_url || '').trim();
+
+  // Verifica campos obrigatórios
+  if (!nome_item || !descricao_item || !valor_item) {
+    return res.status(400).json({ error: 'Campos obrigatórios ausentes.' });
+  }
+
+  // Tenta interpretar insumos recebidos
+  let insumos = [];
+  try {
+    insumos = JSON.parse(req.body.insumos || '[]');
+  } catch (error) {
+    console.error('Erro ao interpretar insumos:', error);
+    return res.status(400).json({ error: 'Formato inválido de insumos.' });
+  }
+
+  const updateQuery = `
+    UPDATE cardapio 
+    SET imagem_url = ?, nome_item = ?, descricao_item = ?, valor_item = ?
+    WHERE id_cardapio = ?
+  `;
+
+  connection.query(updateQuery, [imagem_url, nome_item, descricao_item, valor_item, id], (err) => {
+    if (err) {
+      console.error('Erro ao atualizar cardápio:', err);
+      return res.status(500).json({ error: 'Erro ao atualizar o produto.' });
+    }
+
+    // Remove insumos antigos
+    const deleteQuery = 'DELETE FROM ItemCardapioInsumo WHERE id_item_cardapio = ?';
+    connection.query(deleteQuery, [id], (errDel) => {
+      if (errDel) {
+        console.error('Erro ao remover insumos antigos:', errDel);
+        return res.status(500).json({ error: 'Erro ao remover os insumos antigos.' });
+      }
+
+      // Se não houver insumos, finaliza aqui
+      if (!Array.isArray(insumos) || insumos.length === 0) {
+        return res.status(200).json({ message: 'Produto atualizado (sem insumos).' });
+      }
+
+      // Função para garantir valor numérico
+      const normalizarQuantidade = (val) => {
+        if (typeof val === 'number') return val;
+        if (typeof val === 'string') return parseFloat(val.replace(/\./g, '').replace(',', '.'));
+        return 0;
+      };
+
+      const values = insumos.map(insumo => [
+        id,
+        insumo.id_insumo,
+        normalizarQuantidade(insumo.quantidade_necessaria),
+        insumo.unidade_medida_receita
+      ]);
+
+      const insertQuery = `
+        INSERT INTO ItemCardapioInsumo
+        (id_item_cardapio, id_insumo, quantidade_necessaria, unidade_medida_receita)
+        VALUES ?
+      `;
+
+      connection.query(insertQuery, [values], (errInsert) => {
+        if (errInsert) {
+          console.error('Erro ao inserir novos insumos:', errInsert);
+          return res.status(500).json({ error: 'Erro ao associar novos insumos.' });
+        }
+
+        return res.status(200).json({ message: 'Produto e insumos atualizados com sucesso!' });
+      });
+    });
+  });
+});
 
 // --- ROTA CLIENTE ---
 app.post('/cliente/insert', (req, res) => {
@@ -911,15 +1067,16 @@ app.get('/estoque', (req, res) => {
 function getInsumosDoItem(id_cardapio) {
   return new Promise((resolve, reject) => {
     const sql = `
-      SELECT 
+      SELECT
         i.id_insumos,
         i.nome_insumos,
-        i.quantidade_insumos AS estoque_atual,
-        i.unidade_medida AS unidade_estoque,
+        i.quantidade_insumos AS estoque_atual,            
+        i.unidade_medida AS unidade_estoque,             
         ici.quantidade_necessaria,
-        ici.unidade_medida_receita AS unidade_receita
-      FROM itemcardapioinsumo ici
-      JOIN insumos i ON ici.id_insumo = i.id_insumos
+        ici.unidade_medida_receita AS unidade_receita     
+      FROM
+        ItemCardapioInsumo AS ici
+      JOIN Insumos AS i ON ici.id_insumo = i.id_insumos
       WHERE ici.id_item_cardapio = ?
     `;
 
@@ -930,25 +1087,15 @@ function getInsumosDoItem(id_cardapio) {
   });
 }
 
-function normalizarUnidade(unidade) {
-  if (!unidade) return '';
-  const u = unidade.toLowerCase().trim();
-  if (u === 'l') return 'litro';
-  if (u === 'ml' || u === 'mililitro') return 'ml';
-  if (u === 'kg') return 'kg';
-  if (u === 'g' || u === 'grama') return 'g';
-  if (u === 'unidade' || u === 'unidades') return 'unidade';
-  return u;
-}
-
-// Função utilitária de conversão
 function normalizeUnidade(unidade) {
   const u = unidade?.toLowerCase().trim();
+
   if (['un', 'unidade', 'unidades'].includes(u)) return 'unidade';
-  if (['g', 'grama'].includes(u)) return 'g';
-  if (['kg', 'quilo', 'kilograma'].includes(u)) return 'kg';
-  if (['ml', 'mililitro'].includes(u)) return 'ml';
-  if (['l', 'litro'].includes(u)) return 'l';
+  if (['g', 'grama', 'gramas'].includes(u)) return 'g';
+  if (['kg', 'quilo', 'kilograma', 'quilos'].includes(u)) return 'kg';
+  if (['ml', 'mililitro', 'mililitros'].includes(u)) return 'ml';
+  if (['l', 'litro', 'litros'].includes(u)) return 'l';
+
   return u;
 }
 
@@ -966,6 +1113,7 @@ function convertToStockUnit(quantidade, unidadeReceita, unidadeEstoque) {
 
   return undefined; // unidades incompatíveis
 }
+
 
 app.post('/saida-venda', async (req, res) => {
   const { id_cardapio } = req.body;
@@ -1482,88 +1630,4 @@ const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
-
-/////////////////////////////////////////////////////////////
-
-
-// versionamento gerente , inicio 
-// app.get('/login', (req, res) => {
-//   const { email, senha } = req.body;
-
-//   connection.query(
-//     `SELECT nome_funcionario, email_funcionario FROM funcionario WHERE cargo_funcionario = Gerente `,
-//     [email, senha],
-//     (error, results) => {
-//       if (error) {
-//         console.error("Erro ao fazer login:", error);
-//         return res.status(500).json({ error: 'Erro no servidor' });
-//       }
-
-//       if (results.length === 0) {
-//         return res.status(401).json({ error: 'Email ou senha inválidos, essa pessoa não é um gerente' });
-//       }
-//       else {
-//         return res.status(200).json({ message: 'Login bem-sucedido', usuario: results[0] })
-//       }
-
-//       // Se quiser, pode retornar dados do usuário ou token
-//       return res.status(200).json({ message: 'Login bem-sucedido', usuario: results[0] });
-//     }
-//   );
-// })
-
-// versionamento funcionario, inicio 
-// app.get('/login', (req, res) => {
-//   const { email, senha } = req.body;
-
-//   connection.query(
-//     `SELECT nome_funcionario, email_funcionario FROM funcionario WHERE cargo_funcionario = Funcionario `,
-//     [email, senha],
-//     (error, results) => {
-//       if (error) {
-//         console.error("Erro ao fazer login:", error);
-//         return res.status(500).json({ error: 'Erro no servidor' });
-//       }
-
-//       if (results.length === 0) {
-//         return res.status(401).json({ error: 'Email ou senha inválidos, essa pessoa não é um funcionario' });
-//       }
-//       else {
-//         return res.status(200).json({ message: 'Login bem-sucedido', usuario: results[0] })
-//       }
-
-//       // Se quiser, pode retornar dados do usuário ou token
-//       return res.status(200).json({ message: 'Login bem-sucedido', usuario: results[0] });
-//     }
-//   );
-// })
-
-// versionamento ADM inicio 
-// app.get('/login', (req, res) => {
-//   const { email, senha } = req.body;
-
-//   connection.query(
-//     `SELECT nome_funcionario, email_funcionario FROM funcionario WHERE cargo_funcionario = ADM `,
-//     [email, senha],
-//     (error, results) => {
-//       if (error) {
-//         console.error("Erro ao fazer login:", error);
-//         return res.status(500).json({ error: 'Erro no servidor' });
-//       }
-
-//       if (results.length === 0) {
-//         return res.status(401).json({ error: 'Email ou senha inválidos, essa pessoa não é um ADM' });
-//       }
-//       else {
-//         return res.status(200).json({ message: 'Login bem-sucedido', usuario: results[0] })
-//       }
-
-// Se quiser, pode retornar dados do usuário ou token
-//       return res.status(200).json({ message: 'Login bem-sucedido', usuario: results[0] });
-//     }
-//   );
-// })
-
-
-
 export default app;

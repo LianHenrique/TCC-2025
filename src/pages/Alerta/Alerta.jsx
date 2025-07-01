@@ -19,31 +19,75 @@ const Alerta = () => {
         .then(data => {
           if (!Array.isArray(data)) return;
 
+          // Formata e filtra os insumos com alertas
           const formatados = data
-            .map(insumo => ({
-              id: insumo.id_insumos,
-              nome: insumo.nome_insumos,
-              quantidade: insumo.quantidade_insumos,
-              tipoEstoque: insumo.tipo_alerta_estoque,
-              tipoValidade: insumo.tipo_alerta_validade,
-              unidade: insumo.unidade_medida || '',
-              imagem: insumo.imagem_url || 'https://via.placeholder.com/150'
-            }))
-            .filter(insumo => insumo.tipoEstoque);
+            .map(insumo => {
+              // Corrigir a URL da imagem
+              let imagemUrl = insumo.imagem_url?.trim() || '';
 
-          const ordenados = formatados.sort((a, b) => {
-            if (a.tipoEstoque === 'critico' && b.tipoEstoque !== 'critico') return -1;
-            if (a.tipoEstoque !== 'critico' && b.tipoEstoque === 'critico') return 1;
-            return a.quantidade - b.quantidade;
-          });
+              // Se já for uma URL completa, usar diretamente
+              if (imagemUrl.startsWith('http://') || imagemUrl.startsWith('https://')) {
+                return {
+                  id: insumo.id_insumos,
+                  nome: insumo.nome_insumos,
+                  quantidade: insumo.quantidade_insumos,
+                  tipoEstoque: insumo.tipo_alerta_estoque,
+                  tipoValidade: insumo.tipo_alerta_validade,
+                  unidade: insumo.unidade_medida || '',
+                  imagem: imagemUrl,
+                  dataVencimento: insumo.data_vencimento
+                };
+              }
+              
+              // Se começar com '/uploads', adicionar apenas o domínio
+              if (imagemUrl.startsWith('/uploads/')) {
+                return {
+                  id: insumo.id_insumos,
+                  nome: insumo.nome_insumos,
+                  quantidade: insumo.quantidade_insumos,
+                  tipoEstoque: insumo.tipo_alerta_estoque,
+                  tipoValidade: insumo.tipo_alerta_validade,
+                  unidade: insumo.unidade_medida || '',
+                  imagem: `http://localhost:3000${imagemUrl}`,
+                  dataVencimento: insumo.data_vencimento
+                };
+              }
+              
+              // Se for apenas um nome de arquivo, montar o caminho completo
+              if (imagemUrl) {
+                return {
+                  id: insumo.id_insumos,
+                  nome: insumo.nome_insumos,
+                  quantidade: insumo.quantidade_insumos,
+                  tipoEstoque: insumo.tipo_alerta_estoque,
+                  tipoValidade: insumo.tipo_alerta_validade,
+                  unidade: insumo.unidade_medida || '',
+                  imagem: `http://localhost:3000/uploads/${imagemUrl}`,
+                  dataVencimento: insumo.data_vencimento
+                };
+              }
+              
+              // Caso não tenha imagem, usar placeholder
+              return {
+                id: insumo.id_insumos,
+                nome: insumo.nome_insumos,
+                quantidade: insumo.quantidade_insumos,
+                tipoEstoque: insumo.tipo_alerta_estoque,
+                tipoValidade: insumo.tipo_alerta_validade,
+                unidade: insumo.unidade_medida || '',
+                imagem: 'https://via.placeholder.com/150',
+                dataVencimento: insumo.data_vencimento
+              };
+            })
+            .filter(insumo => insumo.tipoEstoque || insumo.tipoValidade);
 
-          setInsumos(ordenados);
+          setInsumos(formatados);
         })
         .catch(error => console.error('Erro ao buscar insumos:', error));
     };
 
     buscarInsumos();
-    const intervalo = setInterval(buscarInsumos, 10000);
+    const intervalo = setInterval(buscarInsumos, 30000); // Atualiza a cada 30 segundos
     return () => clearInterval(intervalo);
   }, []);
 
@@ -63,12 +107,31 @@ const Alerta = () => {
     }
   };
 
-  const getBadge = (tipoEstoque) => {
-    switch (tipoEstoque) {
-      case 'critico': return <Badge bg="danger">Crítico</Badge>;
-      case 'antecipado': return <Badge bg="warning" text="dark">Antecipado</Badge>;
-      default: return null;
-    }
+  const getBadge = (insumo) => {
+    if (insumo.tipoEstoque === 'critico') 
+      return <Badge bg="danger">Estoque Crítico</Badge>;
+    
+    if (insumo.tipoValidade === 'vencido') 
+      return <Badge bg="dark">Vencido</Badge>;
+    
+    if (insumo.tipoEstoque === 'antecipado') 
+      return <Badge bg="warning" text="dark">Estoque Baixo</Badge>;
+    
+    if (insumo.tipoValidade === 'vencendo') 
+      return <Badge bg="warning" text="dark">Vencendo</Badge>;
+    
+    return null;
+  };
+
+  const calcularDiasVencimento = (dataVencimento) => {
+    if (!dataVencimento) return null;
+    
+    const hoje = new Date();
+    const vencimento = new Date(dataVencimento);
+    const diffTime = vencimento - hoje;
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays;
   };
 
   const handleNavigate = id => navigate(`/visualizar/${id}`);
@@ -82,19 +145,23 @@ const Alerta = () => {
       }}>
         <h1 className="mb-4 text-center">📦 Insumos em Alerta de Estoque</h1>
 
-        <div className="d-flex justify-content-center mb-4">
+        <div className="d-flex justify-content-center mb-4 gap-2">
           <Button
             variant="outline-primary"
             className="text-nowrap"
             onClick={() => navigate('/data/vencimento')}
           >
             <i className="bi bi-calendar-event me-2" />
-            Alertas de Vencimento
+            Todos os Vencimentos
           </Button>
         </div>
 
         {insumos.length === 0 ? (
-          <p className="text-center">✅ Nenhum insumo em alerta.</p>
+          <div className="text-center p-5 border rounded bg-light">
+            <i className="bi bi-check-circle-fill text-success fs-1 mb-3"></i>
+            <p className="fs-4">Nenhum alerta no momento!</p>
+            <p className="text-muted">Todos os insumos estão com estoque adequado e dentro do prazo de validade.</p>
+          </div>
         ) : (
           <Row className="g-4 justify-content-center">
             {insumos.map(insumo => (
