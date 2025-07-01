@@ -133,10 +133,12 @@ const Cardapio = () => {
 
   useEffect(() => {
     let filtrado = [...cardapio];
+    const filtroNorm = normalizeString(filtroSelecionado);
 
-    if (filtroSelecionado !== 'Todos') {
-      const filtroNorm = normalizeString(filtroSelecionado);
-      filtrado = filtrado.filter(item => normalizeString(item.categoria) === filtroNorm);
+    if (filtroNorm && filtroNorm !== 'todos') {
+      filtrado = filtrado.filter(item =>
+        normalizeString(item.categoria) === filtroNorm
+      );
     }
 
     if (textoBusca.trim()) {
@@ -224,9 +226,9 @@ const Cardapio = () => {
               navega="/cadastro_produto"
               TxtButton="Produtos +"
               lista={[
-                { value: 'Lanche', texto: 'Lanche' },
-                { value: 'Bebida', texto: 'Bebida' },
-                { value: 'Sobremesa', texto: 'Sobremesa' }
+                { value: 'Lanches', texto: 'Lanches' },
+                { value: 'Porções', texto: 'Porções' },
+                { value: 'Combos', texto: 'Combos' }
               ]}
               onFilterChange={setFiltroSelecionado}
               onSearchChange={setTextoBusca}

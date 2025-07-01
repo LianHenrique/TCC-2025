@@ -853,8 +853,9 @@ app.post('/cardapio/insert', upload.single('imagem'), (req, res) => {
     nome_produto,
     descricao_produto,
     valor_produto,
-    filtro: categoria
+    categoria 
   } = req.body;
+
 
   const insumos = JSON.parse(req.body.insumos || '[]');
 

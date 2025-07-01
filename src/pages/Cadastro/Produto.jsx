@@ -24,6 +24,7 @@ const Produto = () => {
     unidade_medida_receita: ''
   });
   const [insumosSelecionados, setInsumosSelecionados] = useState([]);
+  const categoriasValidas = ['Lanches', 'Porções', 'Combos'];
 
   const navigate = useNavigate();
 
@@ -47,10 +48,10 @@ const Produto = () => {
   const adicionarInsumo = () => {
     const { id, nome, quantidade_necessaria, unidade_medida_receita } = insumoSelecionado;
     if (!id || !quantidade_necessaria || !unidade_medida_receita) return alert('Preencha todos os campos do insumo.');
-    const jaExiste = insumosSelecionados.find((i) => i.id === id);
+    const jaExiste = insumosSelecionados.find((i) => i.id_insumo === id);
     if (jaExiste) return alert('Insumo já adicionado!');
     setInsumosSelecionados([...insumosSelecionados, {
-      id_insumo: id, 
+      id_insumo: id,
       nome,
       quantidade_necessaria,
       unidade_medida_receita
@@ -71,7 +72,7 @@ const Produto = () => {
     formData.append('nome_produto', nome);
     formData.append('descricao_produto', descricao);
     formData.append('valor_produto', valor);
-    formData.append('filtro', filtro);
+    formData.append('categoria', filtro);
     formData.append('imagem', imagemArquivo); // <- imagem real
     formData.append('insumos', JSON.stringify(insumosSelecionados));
 
@@ -173,7 +174,7 @@ const Produto = () => {
               <Dropdown.Toggle variant="outline-primary rounded">
                 {insumoSelecionado.nome || 'Insumos'}
               </Dropdown.Toggle>
-              <Dropdown.Menu style={{ maxHeight: '200px', overflowY: 'auto' }}>
+              <Dropdown.Menu>
                 {insumos.map(({ nome_insumos, id_insumos }) => (
                   <Dropdown.Item
                     key={`insumo-${id_insumos}`}
@@ -189,7 +190,9 @@ const Produto = () => {
                   </Dropdown.Item>
                 ))}
               </Dropdown.Menu>
+
             </Dropdown>
+
 
             {/* Quantidade */}
             <Form.Control
@@ -245,78 +248,78 @@ const Produto = () => {
           <div className="m-2">
             {insumosSelecionados.length > 0 ? (
               insumosSelecionados.map((i) => (
-                <Badge key={i.id} pill bg="primary"
-                  className="m-1 rounded" style={{ cursor: 'pointer', padding: '10px' }}
-                  onClick={() => removerInsumo(i.id)}>
-                  {i.nome} — {i.quantidade_necessaria} {i.unidade_medida_receita} ✕
-                </Badge>
-              ))
-            ) : (
-              <p className="m-2">Nenhum insumo adicionado</p>
+                <Badge key={i.id_insumo}
+                pill bg = "primary"
+                  className = "m-1 rounded" style = {{ cursor: 'pointer', padding: '10px' }}
+            onClick={() => removerInsumo(i.id)}>
+            {i.nome} — {i.quantidade_necessaria} {i.unidade_medida_receita} ✕
+          </Badge>
+          ))
+          ) : (
+          <p className="m-2">Nenhum insumo adicionado</p>
             )}
-          </div>
+        </div>
 
-          <Form.Group className="m-2" controlId="formImagem">
-            <Form.Label>Imagem do Produto</Form.Label>
-            <Form.Control
-              type="file"
-              accept="image/*"
-              onChange={(e) => setImagemArquivo(e.target.files[0])}
-              className="rounded-5 shadow mt-3"
-            />
-          </Form.Group>
+        <Form.Group className="m-2" controlId="formImagem">
+          <Form.Control
+            type="file"
+            accept="image/*"
+            onChange={(e) => setImagemArquivo(e.target.files[0])}
+            className="rounded-5 shadow mt-3"
+          />
+        </Form.Group>
 
-          <FloatingLabel
-            controlId="floatingValor"
-            label="Valor"
-            className="m-2">
-            <Form.Control
-              type="number"
-              placeholder="Valor"
-              className="rounded shadow mt-3"
-              value={valor}
-              onChange={(e) => setValor(e.target.value)}
-              required
-              min="0"
-              step="0.01" />
-          </FloatingLabel>
+        <FloatingLabel
+          controlId="floatingValor"
+          label="Valor"
+          className="m-2">
+          <Form.Control
+            type="number"
+            placeholder="Valor"
+            className="rounded shadow mt-3"
+            value={valor}
+            onChange={(e) => setValor(e.target.value)}
+            required
+            min="0"
+            step="0.01" />
+        </FloatingLabel>
 
-          <FloatingLabel controlId="descricao" label="Descrição" className="m-2">
-            <Form.Control
-              as="textarea"
-              placeholder="Descrição"
-              value={descricao}
-              onChange={(e) => setDescricao(e.target.value)}
-              className="rounded shadow mt-3"
-              style={{ border: 'none', height: '100px' }}
-            />
-          </FloatingLabel>
+        <FloatingLabel controlId="descricao" label="Descrição" className="m-2">
+          <Form.Control
+            as="textarea"
+            placeholder="Descrição"
+            value={descricao}
+            onChange={(e) => setDescricao(e.target.value)}
+            className="rounded shadow mt-3"
+            style={{ border: 'none', height: '100px' }}
+          />
+        </FloatingLabel>
 
-          <div className="d-flex m-2">
-            <Dropdown className="shadow rounded mt-2">
-              <Dropdown.Toggle variant="outline-primary rounded">
-                {filtro || 'Filtro'}
-              </Dropdown.Toggle>
-              <Dropdown.Menu>
-                {['Lanches', 'Bebidas', 'Acompanhamentos'].map((item) => (
-                  <Dropdown.Item key={item} onClick={() => setFiltro(item)}>{item}</Dropdown.Item>
-                ))}
-              </Dropdown.Menu>
-            </Dropdown>
-          </div>
+        <div className="d-flex m-2">
+          <Dropdown className="shadow rounded mt-2">
+            <Dropdown.Toggle variant="outline-primary rounded">
+              {filtro || 'Categoria'}
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+              {categoriasValidas.map((item) => (
+                <Dropdown.Item key={item} onClick={() => setFiltro(item)}>{item}</Dropdown.Item>
+              ))}
+            </Dropdown.Menu>
+          </Dropdown>
+        </div>
 
-          <div className="d-flex justify-content-center gap-3" style={{ width: "95%", margin: "auto" }}>
-            <Button type="submit" className="shadow mt-4 rounded" style={{ padding: '15px', width: '50%' }}>
-              Cadastrar
-            </Button>
-            <Button variant="outline-danger" onClick={() => navigate('/cardapio')} className="shadow mt-4 rounded" style={{ padding: '15px', width: '50%' }}>
-              Cancelar
-            </Button>
-          </div>
+        <div className="d-flex justify-content-center gap-3" style={{ width: "95%", margin: "auto" }}>
+          <Button type="submit" className="shadow mt-4 rounded" style={{ padding: '15px', width: '50%' }}>
+            Cadastrar
+          </Button>
+          <Button variant="outline-danger" onClick={() => navigate('/cardapio')} className="shadow mt-4 rounded" style={{ padding: '15px', width: '50%' }}>
+            Cancelar
+          </Button>
+        </div>
 
-        </Form>
-      </Container>
-    </div>
+      </Form>
+    </Container>
+    </div >
   );
 };
 

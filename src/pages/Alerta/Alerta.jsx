@@ -38,7 +38,7 @@ const Alerta = () => {
                   dataVencimento: insumo.data_vencimento
                 };
               }
-              
+
               // Se começar com '/uploads', adicionar apenas o domínio
               if (imagemUrl.startsWith('/uploads/')) {
                 return {
@@ -52,7 +52,7 @@ const Alerta = () => {
                   dataVencimento: insumo.data_vencimento
                 };
               }
-              
+
               // Se for apenas um nome de arquivo, montar o caminho completo
               if (imagemUrl) {
                 return {
@@ -66,7 +66,7 @@ const Alerta = () => {
                   dataVencimento: insumo.data_vencimento
                 };
               }
-              
+
               // Caso não tenha imagem, usar placeholder
               return {
                 id: insumo.id_insumos,
@@ -79,7 +79,7 @@ const Alerta = () => {
                 dataVencimento: insumo.data_vencimento
               };
             })
-            .filter(insumo => insumo.tipoEstoque || insumo.tipoValidade);
+            .filter(insumo => insumo.tipoEstoque); // ignora validade, mostra só os de estoque
 
           setInsumos(formatados);
         })
@@ -91,46 +91,47 @@ const Alerta = () => {
     return () => clearInterval(intervalo);
   }, []);
 
-  const getCorDeFundo = (tipoEstoque) => {
+  const getCorDeFundo = (tipoEstoque, tipoValidade) => {
     if (darkMode) {
-      switch (tipoEstoque) {
-        case 'critico': return '#880100';
-        case 'antecipado': return '#a78911';
-        default: return '#1e1e1e';
-      }
+      if (tipoEstoque === 'critico') return '#880100';
+      if (tipoEstoque === 'antecipado') return '#a78911';
+      if (tipoValidade === 'vencido') return '#6c757d'; // escuro
+      if (tipoValidade === 'vencendo') return '#a78911'; // amarelo escuro
+      return '#1e1e1e';
     } else {
-      switch (tipoEstoque) {
-        case 'critico': return '#ffe6e6';
-        case 'antecipado': return '#ffffd9';
-        default: return '#ffffff';
-      }
+      if (tipoEstoque === 'critico') return '#ffe6e6'; // vermelho claro
+      if (tipoEstoque === 'antecipado') return '#ffffd9'; // amarelo claro
+      if (tipoValidade === 'vencido') return '#dee2e6'; // cinza claro
+      if (tipoValidade === 'vencendo') return '#ffffd9'; // amarelo claro
+      return '#ffffff';
     }
   };
 
+
   const getBadge = (insumo) => {
-    if (insumo.tipoEstoque === 'critico') 
+    if (insumo.tipoEstoque === 'critico')
       return <Badge bg="danger">Estoque Crítico</Badge>;
-    
-    if (insumo.tipoValidade === 'vencido') 
+
+    if (insumo.tipoValidade === 'vencido')
       return <Badge bg="dark">Vencido</Badge>;
-    
-    if (insumo.tipoEstoque === 'antecipado') 
+
+    if (insumo.tipoEstoque === 'antecipado')
       return <Badge bg="warning" text="dark">Estoque Baixo</Badge>;
-    
-    if (insumo.tipoValidade === 'vencendo') 
+
+    if (insumo.tipoValidade === 'vencendo')
       return <Badge bg="warning" text="dark">Vencendo</Badge>;
-    
+
     return null;
   };
 
   const calcularDiasVencimento = (dataVencimento) => {
     if (!dataVencimento) return null;
-    
+
     const hoje = new Date();
     const vencimento = new Date(dataVencimento);
     const diffTime = vencimento - hoje;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     return diffDays;
   };
 
@@ -167,11 +168,10 @@ const Alerta = () => {
             {insumos.map(insumo => (
               <Col key={insumo.id} xs={12} md={7} lg={5}>
                 <Card
-                  className={`h-100 shadow-sm ${
-                    darkMode ? styles.cardDark : styles.cardLight
-                  } ${styles.card}`}
+                  className={`h-100 shadow-sm ${darkMode ? styles.cardDark : styles.cardLight
+                    } ${styles.card}`}
                   style={{
-                    backgroundColor: getCorDeFundo(insumo.tipoEstoque),
+                    backgroundColor: getCorDeFundo(insumo.tipoEstoque, insumo.tipoValidade),
                     transition: 'all 0.3s ease'
                   }}
                 >
@@ -188,9 +188,8 @@ const Alerta = () => {
                       }}
                     />
                     <div style={{ flex: 1 }}>
-                      <Card.Title className="mb-1 d-flex justify-content-between align-items-center">
-                        <span>{insumo.nome}</span>
-                        {getBadge(insumo.tipoEstoque)}
+                      <Card.Title className="mb-1">
+                        {insumo.nome}
                       </Card.Title>
                       <Card.Text>
                         Quantidade: {Number(insumo.quantidade).toLocaleString('pt-BR')} {insumo.unidade}

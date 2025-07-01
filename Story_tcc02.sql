@@ -107,6 +107,20 @@ CREATE TABLE ItemCardapioInsumo (
     FOREIGN KEY (id_insumo) REFERENCES Insumos(id_insumos) ON DELETE CASCADE
 );
 
+-- Relação do Hambúrguer Simples: 1 hambúrguer de carne
+INSERT INTO ItemCardapioInsumo (id_item_cardapio, id_insumo, quantidade_necessaria, unidade_medida_receita)
+VALUES (1, 1, 1.0, 'unidade');
+
+-- Relação do X-Duplo Hambúrguer: 2 hambúrgueres de carne
+INSERT INTO ItemCardapioInsumo (id_item_cardapio, id_insumo, quantidade_necessaria, unidade_medida_receita)
+VALUES (2, 1, 2.0, 'unidade');
+
+-- Relação do X-Bacon: 1 hambúrguer de carne + 250g de bacon
+INSERT INTO ItemCardapioInsumo (id_item_cardapio, id_insumo, quantidade_necessaria, unidade_medida_receita)
+VALUES 
+(3, 1, 1.0, 'unidade'),
+(3, 4, 0.25, 'kg');
+
 -- Tabela de Clientes
 CREATE TABLE Cliente (
     id_cliente INT PRIMARY KEY AUTO_INCREMENT,
@@ -154,9 +168,14 @@ VALUES
 (4, 5, '2025-06-14', 'Venda', NULL);  -- Alterado para NULL
 
 -- Atualização segura da unidade_medida
-UPDATE Insumos 
-SET unidade_medida = 'unidade' 
-WHERE unidade_medida = 'unidades' AND id_insumos > 0;
+SET SQL_SAFE_UPDATES = 0;
+
+UPDATE Insumos
+SET unidade_medida = 'unidade'
+WHERE LOWER(TRIM(unidade_medida)) = 'unidades';
+
+SET SQL_SAFE_UPDATES = 1;
+
 
 -- Atualização segura da unidade_medida
 UPDATE Insumos SET unidade_medida = 'unidade' WHERE unidade_medida = 'unidades' AND id_insumos > 0;
@@ -172,10 +191,6 @@ MODIFY quantidade_insumos DECIMAL(10,3);
 
 ALTER TABLE Cliente ADD palavra_chave VARCHAR(255) AFTER senha_cliente;
 
-<<<<<<< HEAD
-ALTER TABLE Cliente 
-ADD COLUMN cargo ENUM('ADM', 'Gerente', 'Funcionario') NOT NULL DEFAULT 'ADM';
-=======
 
 
 -- Atualiza funcionários para usar imagens locais
@@ -258,6 +273,17 @@ UPDATE cardapio SET
     imagem_url = '/uploads/1751293323641-x-bacon.webp'
 WHERE id_cardapio = 3;
 
+UPDATE Insumos SET unidade_medida = 'unidade' 
+WHERE TRIM(LOWER(unidade_medida)) NOT IN ('kg', 'litro', 'g', 'ml')
+  AND nome_insumos IN ('Hamburguer de carne', 'Pão', 'Queijo Cheddar Fatiado', 'Molho Barbecue', 'Alface Crespa', 'Tomate Italiano');
+
+UPDATE Insumos SET unidade_medida = 'kg'
+WHERE nome_insumos IN ('Bacon Fatiado', 'Batata Palito Congelada');
+
+UPDATE Insumos
+SET data_vencimento = '2025-07-08'
+WHERE nome_insumos = 'Hamburguer de carne';
+
 SET SQL_SAFE_UPDATES = 1;
 
 ALTER TABLE cliente ADD COLUMN cargo ENUM('ADM') DEFAULT 'ADM';
@@ -285,7 +311,13 @@ UPDATE cardapio SET
   imagem_url = 'uploads/1751330858718-5098e75e57e36807c173cb7490b1b0d2_XL.jpg',
   data_cadastro = '2025-06-30 17:49:42'
 WHERE id_cardapio = 3;
->>>>>>> Wesley
+
+ALTER TABLE Cardapio
+MODIFY COLUMN categoria ENUM('Lanches', 'Porções', 'Combos') NOT NULL DEFAULT 'Lanches';
+
+UPDATE Cardapio
+SET categoria = 'Lanches'
+WHERE id_cardapio IN (1, 2, 3);
 
 -- Adicionando Índices para Otimização (Exemplos)
 CREATE INDEX idx_insumos_nome ON Insumos(nome_insumos);
