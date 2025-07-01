@@ -211,7 +211,7 @@ const Funcionarios = () => {
             </Button>
             <Button
               className="shadow mt-4 rounded"
-              variant="outline-primary"
+              variant="outline-danger"
               onClick={() => navigate('/funcionarios')}
               style={{ padding: '15px', width: '50%', margin: "auto" }}>
               Cancelar

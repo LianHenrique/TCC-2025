@@ -149,7 +149,7 @@ const Insumos = () => {
   };
 
   return (
-    <div style={{ marginTop: '100px' }}>
+    <div style={{ marginTop: '100px', marginBottom: "20px" }}>
       <NavBar />
       <Container style={{ maxWidth: "800px" }}>
         <Form onSubmit={handleSubmit} className="shadow rounded" style={{ padding: '30px', border: '1px blue solid', textAlign:"center" }}>
@@ -320,7 +320,7 @@ const Insumos = () => {
             <Button type="submit" className="shadow mt-4 rounded" style={{ padding: '15px', width: '50%' }}>
               Cadastrar
             </Button>
-            <Button variant="outline-primary" onClick={() => navigate('/estoque')} className="shadow mt-4 rounded" style={{ padding: '15px', width: '50%' }}>
+            <Button variant="outline-danger" onClick={() => navigate('/estoque')} className="shadow mt-4 rounded" style={{ padding: '15px', width: '50%' }}>
               Cancelar
             </Button>
           </div>

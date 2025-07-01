@@ -161,7 +161,7 @@ const Produto = () => {
             <Form.Control
               type="text"
               placeholder="Nome"
-              className="rounded-5 shadow mt-3"
+              className="rounded shadow mt-3"
               value={nome}
               onChange={(e) => setNome(e.target.value)}
               required />
@@ -169,8 +169,8 @@ const Produto = () => {
 
           <div className="d-flex align-items-center m-2 gap-2">
             {/* Seleção de insumo */}
-            <Dropdown className="shadow rounded-5">
-              <Dropdown.Toggle variant="outline-primary rounded-5">
+            <Dropdown className="shadow rounded">
+              <Dropdown.Toggle variant="outline-primary rounded">
                 {insumoSelecionado.nome || 'Insumos'}
               </Dropdown.Toggle>
               <Dropdown.Menu style={{ maxHeight: '200px', overflowY: 'auto' }}>
@@ -208,14 +208,14 @@ const Produto = () => {
                   quantidade_necessaria: isNaN(valor) ? '' : valor
                 }));
               }}
-              className="shadow rounded-5"
+              className="shadow rounded"
               style={{ width: '150px' }}
             />
 
             {/* Unidade de medida */}
-            <Dropdown className="shadow rounded-5">
+            <Dropdown className="shadow rounded">
               <Dropdown.Toggle
-                variant="outline-primary rounded-5">
+                variant="outline-primary rounded">
                 {insumoSelecionado.unidade_medida_receita || 'Unidade'}
               </Dropdown.Toggle>
               <Dropdown.Menu
@@ -237,7 +237,7 @@ const Produto = () => {
             </Dropdown>
 
             {/* Botão de adicionar */}
-            <Button variant="primary" onClick={adicionarInsumo} className="rounded-5">
+            <Button variant="primary" onClick={adicionarInsumo} className="rounded">
               +
             </Button>
           </div>
@@ -246,13 +246,13 @@ const Produto = () => {
             {insumosSelecionados.length > 0 ? (
               insumosSelecionados.map((i) => (
                 <Badge key={i.id} pill bg="primary"
-                  className="m-1 rounded-5" style={{ cursor: 'pointer', padding: '10px' }}
+                  className="m-1 rounded" style={{ cursor: 'pointer', padding: '10px' }}
                   onClick={() => removerInsumo(i.id)}>
                   {i.nome} — {i.quantidade_necessaria} {i.unidade_medida_receita} ✕
                 </Badge>
               ))
             ) : (
-              <p className="text-muted m-2">Nenhum insumo adicionado</p>
+              <p className="m-2">Nenhum insumo adicionado</p>
             )}
           </div>
 
@@ -262,7 +262,7 @@ const Produto = () => {
             className="m-2">
             <Form.Control
               type="text"
-              className="rounded-5 shadow mt-3"
+              className="rounded shadow mt-3"
               placeholder="URL da imagem"
               value={imagemUrl}
               onChange={(e) =>
@@ -276,7 +276,7 @@ const Produto = () => {
             <Form.Control
               type="number"
               placeholder="Valor"
-              className="rounded-5 shadow mt-3"
+              className="rounded shadow mt-3"
               value={valor}
               onChange={(e) => setValor(e.target.value)}
               required
@@ -290,14 +290,14 @@ const Produto = () => {
               placeholder="Descrição"
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
-              className="rounded-5 shadow mt-3"
+              className="rounded shadow mt-3"
               style={{ border: 'none', height: '100px' }}
             />
           </FloatingLabel>
 
           <div className="d-flex m-2">
-            <Dropdown className="shadow rounded-5 mt-2">
-              <Dropdown.Toggle variant="outline-primary rounded-5">
+            <Dropdown className="shadow rounded mt-2">
+              <Dropdown.Toggle variant="outline-primary rounded">
                 {filtro || 'Filtro'}
               </Dropdown.Toggle>
               <Dropdown.Menu>
@@ -308,13 +308,15 @@ const Produto = () => {
             </Dropdown>
           </div>
 
-          <Button type="submit" className="shadow mt-4" style={{ padding: '15px', width: '90%', borderRadius: '30px', marginLeft: '20px' }}>
-            Cadastrar
-          </Button>
+          <div className="d-flex justify-content-center gap-3" style={{ width: "95%", margin: "auto" }}>
+            <Button type="submit" className="shadow mt-4 rounded" style={{ padding: '15px', width: '50%' }}>
+              Cadastrar
+            </Button>
+            <Button variant="outline-danger" onClick={() => navigate('/cardapio')} className="shadow mt-4 rounded" style={{ padding: '15px', width: '50%' }}>
+              Cancelar
+            </Button>
+          </div>
 
-          <Button type="button" className="shadow mt-4" variant="outline-primary" onClick={() => navigate('/cardapio')} style={{ padding: '15px', width: '90%', borderRadius: '30px', marginLeft: '20px' }}>
-            Cancelar
-          </Button>
         </Form>
       </Container>
     </div>
