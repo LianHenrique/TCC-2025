@@ -319,6 +319,10 @@ UPDATE Cardapio
 SET categoria = 'Lanches'
 WHERE id_cardapio IN (1, 2, 3);
 
+INSERT INTO cliente (id_cliente, nome_cliente, email_cliente, senha_cliente, palavra_chave, data_cadastro, cargo)
+VALUES (1, 'ADM', 'ADM@gmail.com', 123321, 'ADIMIN', '2025-07-01', 'ADM');
+
+
 -- Adicionando Índices para Otimização (Exemplos)
 CREATE INDEX idx_insumos_nome ON Insumos(nome_insumos);
 CREATE INDEX idx_cardapio_nome ON Cardapio(nome_item);
