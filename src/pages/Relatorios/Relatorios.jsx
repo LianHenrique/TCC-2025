@@ -82,12 +82,6 @@ const RelatorioInsumos = () => {
           </div>
           <div className="d-flex flex-column flex-md-row gap-2">
             <ButtonGroup>
-              <Button
-                variant={periodo === 'diario' ? 'primary' : 'outline-primary'}
-                onClick={() => setPeriodo('diario')}
-              >
-                Diário
-              </Button>
             </ButtonGroup>
             <Button variant="success" onClick={handleDownloadPDF}>
               📥 Exportar PDF
