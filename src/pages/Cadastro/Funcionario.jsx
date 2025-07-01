@@ -126,23 +126,22 @@ const Funcionarios = () => {
             />
           </FloatingLabel>
 
-          <FloatingLabel controlId="imagemFuncionario" label="Foto do funcionário" className="m-2">
-            <Form.Control
-              type="file"
-              accept="image/*"
-              onChange={(e) => setUrlFuncionario(e.target.files[0])}
-              className="rounded shadow mt-3"
-              style={{ border: 'none' }}
-            />
-          </FloatingLabel>
-
-
           <FloatingLabel controlId="confSenhaFuncionario" label="Confirmar senha" className="m-2">
             <Form.Control
               type="password"
               placeholder="Confirmar senha"
               value={confSenhaFuncionario}
               onChange={(e) => setConfSenhaFuncionario(e.target.value)}
+              className="rounded shadow mt-3"
+              style={{ border: 'none' }}
+            />
+          </FloatingLabel>
+
+               <FloatingLabel controlId="imagemFuncionario" label="Foto do funcionário" className="m-2">
+            <Form.Control
+              type="file"
+              accept="image/*"
+              onChange={(e) => setUrlFuncionario(e.target.files[0])}
               className="rounded shadow mt-3"
               style={{ border: 'none' }}
             />

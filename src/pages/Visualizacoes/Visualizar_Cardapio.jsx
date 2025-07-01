@@ -82,18 +82,23 @@ const Visualizar_Cardapio = () => {
       return;
     }
 
+    // Corrige a quantidade de acordo com a unidade
+    const quantidadeCorrigida = parseFloat(quantidade);
+    const unidadeNormalizada = unidade.toLowerCase();
+
     setInsumosSelecionados([
       ...insumosSelecionados,
       {
         id,
         nome,
-        quantidade_necessaria: parseFloat(quantidade),
-        unidade_medida_receita: unidade
+        quantidade_necessaria: quantidadeCorrigida,
+        unidade_medida_receita: unidadeNormalizada
       }
     ]);
 
     setInsumoAtual({ id: null, nome: '', quantidade: '', unidade: '' });
   };
+
 
   const removerInsumo = (id) => {
     setInsumosSelecionados(insumosSelecionados.filter(i => i.id !== id));

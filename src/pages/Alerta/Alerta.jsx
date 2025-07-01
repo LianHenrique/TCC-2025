@@ -9,7 +9,7 @@ import NavBar from '../../components/NavBar/NavBar';
 
 const Alerta = () => {
   const [insumos, setInsumos] = useState([]);
-  const { darkMode, toggleTheme } = useContext(ThemeContext);
+  const { darkMode } = useContext(ThemeContext);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,67 +19,25 @@ const Alerta = () => {
         .then(data => {
           if (!Array.isArray(data)) return;
 
-          // Formata e filtra os insumos com alertas
           const formatados = data
             .map(insumo => {
-              // Corrigir a URL da imagem
               let imagemUrl = insumo.imagem_url?.trim() || '';
 
-              // Se já for uma URL completa, usar diretamente
               if (imagemUrl.startsWith('http://') || imagemUrl.startsWith('https://')) {
-                return {
-                  id: insumo.id_insumos,
-                  nome: insumo.nome_insumos,
-                  quantidade: insumo.quantidade_insumos,
-                  tipoEstoque: insumo.tipo_alerta_estoque,
-                  tipoValidade: insumo.tipo_alerta_validade,
-                  unidade: insumo.unidade_medida || '',
-                  imagem: imagemUrl,
-                  dataVencimento: insumo.data_vencimento
-                };
+                return { ...formata(insumo), imagem: imagemUrl };
               }
 
-              // Se começar com '/uploads', adicionar apenas o domínio
               if (imagemUrl.startsWith('/uploads/')) {
-                return {
-                  id: insumo.id_insumos,
-                  nome: insumo.nome_insumos,
-                  quantidade: insumo.quantidade_insumos,
-                  tipoEstoque: insumo.tipo_alerta_estoque,
-                  tipoValidade: insumo.tipo_alerta_validade,
-                  unidade: insumo.unidade_medida || '',
-                  imagem: `http://localhost:3000${imagemUrl}`,
-                  dataVencimento: insumo.data_vencimento
-                };
+                return { ...formata(insumo), imagem: `http://localhost:3000${imagemUrl}` };
               }
 
-              // Se for apenas um nome de arquivo, montar o caminho completo
               if (imagemUrl) {
-                return {
-                  id: insumo.id_insumos,
-                  nome: insumo.nome_insumos,
-                  quantidade: insumo.quantidade_insumos,
-                  tipoEstoque: insumo.tipo_alerta_estoque,
-                  tipoValidade: insumo.tipo_alerta_validade,
-                  unidade: insumo.unidade_medida || '',
-                  imagem: `http://localhost:3000/uploads/${imagemUrl}`,
-                  dataVencimento: insumo.data_vencimento
-                };
+                return { ...formata(insumo), imagem: `http://localhost:3000/uploads/${imagemUrl}` };
               }
 
-              // Caso não tenha imagem, usar placeholder
-              return {
-                id: insumo.id_insumos,
-                nome: insumo.nome_insumos,
-                quantidade: insumo.quantidade_insumos,
-                tipoEstoque: insumo.tipo_alerta_estoque,
-                tipoValidade: insumo.tipo_alerta_validade,
-                unidade: insumo.unidade_medida || '',
-                imagem: 'https://via.placeholder.com/150',
-                dataVencimento: insumo.data_vencimento
-              };
+              return { ...formata(insumo), imagem: 'https://via.placeholder.com/150' };
             })
-            .filter(insumo => insumo.tipoEstoque); // ignora validade, mostra só os de estoque
+            .filter(insumo => insumo.tipoEstoque); // filtra só por estoque
 
           setInsumos(formatados);
         })
@@ -87,52 +45,52 @@ const Alerta = () => {
     };
 
     buscarInsumos();
-    const intervalo = setInterval(buscarInsumos, 30000); // Atualiza a cada 30 segundos
+    const intervalo = setInterval(buscarInsumos, 30000);
     return () => clearInterval(intervalo);
   }, []);
+
+  const formata = (insumo) => ({
+    id: insumo.id_insumos,
+    nome: insumo.nome_insumos,
+    quantidade: insumo.quantidade_insumos,
+    tipoEstoque: insumo.tipo_alerta_estoque,
+    tipoValidade: insumo.tipo_alerta_validade,
+    unidade: insumo.unidade_medida || '',
+    dataVencimento: insumo.data_vencimento
+  });
 
   const getCorDeFundo = (tipoEstoque, tipoValidade) => {
     if (darkMode) {
       if (tipoEstoque === 'critico') return '#880100';
       if (tipoEstoque === 'antecipado') return '#a78911';
-      if (tipoValidade === 'vencido') return '#6c757d'; // escuro
-      if (tipoValidade === 'vencendo') return '#a78911'; // amarelo escuro
+      if (tipoValidade === 'vencido') return '#6c757d';
+      if (tipoValidade === 'vencendo') return '#a78911';
       return '#1e1e1e';
     } else {
-      if (tipoEstoque === 'critico') return '#ffe6e6'; // vermelho claro
-      if (tipoEstoque === 'antecipado') return '#ffffd9'; // amarelo claro
-      if (tipoValidade === 'vencido') return '#dee2e6'; // cinza claro
-      if (tipoValidade === 'vencendo') return '#ffffd9'; // amarelo claro
+      if (tipoEstoque === 'critico') return '#ffe6e6';
+      if (tipoEstoque === 'antecipado') return '#ffffd9';
+      if (tipoValidade === 'vencido') return '#dee2e6';
+      if (tipoValidade === 'vencendo') return '#ffffd9';
       return '#ffffff';
     }
   };
 
-
   const getBadge = (insumo) => {
-    if (insumo.tipoEstoque === 'critico')
-      return <Badge bg="danger">Estoque Crítico</Badge>;
+    const badges = [];
 
-    if (insumo.tipoValidade === 'vencido')
-      return <Badge bg="dark">Vencido</Badge>;
+    if (insumo.tipoEstoque === 'critico')
+      badges.push(<Badge bg="danger" className="ms-2" key="estoque-critico">Estoque Crítico</Badge>);
 
     if (insumo.tipoEstoque === 'antecipado')
-      return <Badge bg="warning" text="dark">Estoque Baixo</Badge>;
+      badges.push(<Badge bg="warning" text="dark" className="ms-2" key="estoque-baixo">Estoque Baixo</Badge>);
+
+    if (insumo.tipoValidade === 'vencido')
+      badges.push(<Badge bg="dark" className="ms-2" key="vencido">Vencido</Badge>);
 
     if (insumo.tipoValidade === 'vencendo')
-      return <Badge bg="warning" text="dark">Vencendo</Badge>;
+      badges.push(<Badge bg="warning" text="dark" className="ms-2" key="vencendo">Vencendo</Badge>);
 
-    return null;
-  };
-
-  const calcularDiasVencimento = (dataVencimento) => {
-    if (!dataVencimento) return null;
-
-    const hoje = new Date();
-    const vencimento = new Date(dataVencimento);
-    const diffTime = vencimento - hoje;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    return diffDays;
+    return badges;
   };
 
   const handleNavigate = id => navigate(`/visualizar/${id}`);
@@ -141,9 +99,7 @@ const Alerta = () => {
     <div>
       <NavBar />
 
-      <Container style={{
-        marginTop: "150px"
-      }}>
+      <Container style={{ marginTop: "150px" }}>
         <h1 className="mb-4 text-center">📦 Insumos em Alerta de Estoque</h1>
 
         <div className="d-flex justify-content-center mb-4 gap-2">
@@ -168,8 +124,7 @@ const Alerta = () => {
             {insumos.map(insumo => (
               <Col key={insumo.id} xs={12} md={7} lg={5}>
                 <Card
-                  className={`h-100 shadow-sm ${darkMode ? styles.cardDark : styles.cardLight
-                    } ${styles.card}`}
+                  className={`h-100 shadow-sm ${darkMode ? styles.cardDark : styles.cardLight} ${styles.card}`}
                   style={{
                     backgroundColor: getCorDeFundo(insumo.tipoEstoque, insumo.tipoValidade),
                     transition: 'all 0.3s ease'
@@ -188,8 +143,9 @@ const Alerta = () => {
                       }}
                     />
                     <div style={{ flex: 1 }}>
-                      <Card.Title className="mb-1">
-                        {insumo.nome}
+                      <Card.Title className="mb-1 d-flex justify-content-between align-items-center">
+                        <span>{insumo.nome}</span>
+                        <div className="d-flex flex-wrap">{getBadge(insumo)}</div>
                       </Card.Title>
                       <Card.Text>
                         Quantidade: {Number(insumo.quantidade).toLocaleString('pt-BR')} {insumo.unidade}

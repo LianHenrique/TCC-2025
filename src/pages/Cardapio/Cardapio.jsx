@@ -3,7 +3,7 @@ import NavBar from '../../components/NavBar/NavBar';
 import Pesquisa from '../../components/Pesquisa/Pesquisa';
 import { FaEdit, FaRegTrashAlt } from 'react-icons/fa';
 import CardGeral from '../../components/Cards/CardGeral';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react'; // Adicionei useCallback
 import { useNavigate } from 'react-router';
 
 const Cardapio = () => {
@@ -15,78 +15,85 @@ const Cardapio = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
-  function normalizeUnidade(unidade) {
+  const normalizeUnidade = (unidade) => {
     const u = unidade?.toLowerCase().trim();
-
     if (['un', 'unidade', 'unidades'].includes(u)) return 'unidade';
     if (['g', 'grama', 'gramas'].includes(u)) return 'g';
     if (['kg', 'quilo', 'kilograma', 'quilos'].includes(u)) return 'kg';
     if (['ml', 'mililitro', 'mililitros'].includes(u)) return 'ml';
     if (['l', 'litro', 'litros'].includes(u)) return 'l';
-
     return u;
-  }
+  };
 
-  function convertToStockUnit(quantidade, unidadeReceita, unidadeEstoque) {
+  const convertToStockUnit = (quantidade, unidadeReceita, unidadeEstoque) => {
     const receita = normalizeUnidade(unidadeReceita);
     const estoque = normalizeUnidade(unidadeEstoque);
 
     if (receita === estoque) return quantidade;
 
-    // Regras de conversão
-    if (receita === 'g' && estoque === 'kg') return quantidade / 1000;
-    if (receita === 'kg' && estoque === 'g') return quantidade * 1000;
-    if (receita === 'ml' && estoque === 'l') return quantidade / 1000;
-    if (receita === 'l' && estoque === 'ml') return quantidade * 1000;
+    const conversoes = {
+      'g->kg': val => val / 1000,
+      'kg->g': val => val * 1000,
+      'ml->l': val => val / 1000,
+      'l->ml': val => val * 1000,
+    };
 
-    return undefined; // unidades incompatíveis
-  }
+    const chaveConversao = `${receita}->${estoque}`;
+    if (conversoes[chaveConversao]) {
+      return conversoes[chaveConversao](quantidade);
+    }
 
+    console.warn(`Conversão não suportada: ${chaveConversao}`);
+    return quantidade;
+  };
 
   const normalizeString = (str) =>
     str ? String(str).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim() : '';
 
-  useEffect(() => {
-    const fetchCardapio = async () => {
-      try {
-        setLoading(true);
-        const response = await fetch(`http://localhost:3000/cardapio`);
+  // UseCallback para memoizar a função de carregamento
+  const fetchCardapio = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(`http://localhost:3000/cardapio?t=${Date.now()}`); // Cache busting
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Erro ao buscar cardápio');
-        }
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erro ao buscar cardápio');
+      }
 
-        const data = await response.json();
+      const data = await response.json();
 
-        if (!Array.isArray(data)) {
-          throw new Error('Dados retornados não são um array');
-        }
+      if (!Array.isArray(data)) {
+        throw new Error('Dados retornados não são um array');
+      }
 
-        const cardapioFormatado = data.map(item => {
+      // Função de formatação movida para dentro do callback
+      const formatarCardapio = (items) => {
+        return items.map(item => {
           const imageUrl = item.imagem_url || 'https://cdn.melhoreshospedagem.com/wp/wp-content/uploads/2023/07/erro-404.jpg';
 
-          // Verificação de estoque simplificada para demonstração
-          // (Você pode manter sua lógica original se preferir)
           const estoqueInsuficiente = item.insumos.some(insumo => {
-            const quantidadeEstoque = Number(insumo.quantidade_insumos) || 0;
-            const quantidadeReceita = Number(insumo.quantidade_necessaria) || 0;
+            const quantidadeEstoque = Number(insumo.quantidade_insumos);
+            const quantidadeReceita = Number(insumo.quantidade_necessaria);
             const unidadeEstoque = insumo.unidade_medida;
             const unidadeReceita = insumo.unidade_medida_receita;
 
+            if (
+              isNaN(quantidadeEstoque) ||
+              isNaN(quantidadeReceita) ||
+              !unidadeEstoque ||
+              !unidadeReceita
+            ) {
+              return false;
+            }
+
             const convertido = convertToStockUnit(quantidadeReceita, unidadeReceita, unidadeEstoque);
 
+            if (typeof convertido !== 'number') {
+              return false;
+            }
 
-            console.log({
-              nome: insumo.nome_insumos,
-              necessario: quantidadeReceita,
-              unidade_receita: unidadeReceita,
-              estoque: quantidadeEstoque,
-              unidade_estoque: unidadeEstoque,
-              convertido
-            });
-
-            return convertido === undefined || quantidadeEstoque < convertido;
+            return quantidadeEstoque < convertido;
           });
 
           const ingredientesTexto = item.insumos.length
@@ -117,20 +124,25 @@ const Cardapio = () => {
             ]
           };
         });
+      };
 
-        setCardapio(cardapioFormatado);
-        setError(null);
-      } catch (error) {
-        console.error('Erro ao buscar cardápio:', error);
-        setError(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+      const cardapioFormatado = formatarCardapio(data);
+      setCardapio(cardapioFormatado);
+      setError(null);
+    } catch (error) {
+      console.error('Erro ao buscar cardápio:', error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  }, [navigate]); // Adicionei navigate como dependência
 
+  // Efeito principal para carregar dados
+  useEffect(() => {
     fetchCardapio();
-  }, []);
+  }, [fetchCardapio]); // Dependência adicionada
 
+  // Efeito para filtrar os dados
   useEffect(() => {
     let filtrado = [...cardapio];
     const filtroNorm = normalizeString(filtroSelecionado);
@@ -152,22 +164,27 @@ const Cardapio = () => {
     setCardapioFiltrado(filtrado);
   }, [cardapio, filtroSelecionado, textoBusca]);
 
-
-  const handleDelete = (id) => {
+  const handleDelete = useCallback(async (id) => {
     if (window.confirm('Tem certeza que deseja excluir este produto?')) {
-      fetch(`http://localhost:3000/cardapio/${id}`, { method: 'DELETE' })
-        .then(res => {
-          if (res.ok) setCardapio(prev => prev.filter(item => item.id !== id));
-          else alert('Erro ao excluir produto');
-        })
-        .catch(err => console.error('Erro ao excluir:', err));
+      try {
+        const response = await fetch(`http://localhost:3000/cardapio/${id}`, { 
+          method: 'DELETE' 
+        });
+
+        if (response.ok) {
+          // Recarrega os dados após exclusão
+          await fetchCardapio();
+        } else {
+          alert('Erro ao excluir produto');
+        }
+      } catch (err) {
+        console.error('Erro ao excluir:', err);
+      }
     }
-  };
+  }, [fetchCardapio]); // Dependência adicionada
 
-  const handlePedir = async (idItemCardapio, nomeProduto) => {
+  const handlePedir = useCallback(async (idItemCardapio, nomeProduto) => {
     try {
-      console.log("Enviando id_cardapio:", idItemCardapio);
-
       const response = await fetch('http://localhost:3000/saida-venda', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -179,10 +196,9 @@ const Cardapio = () => {
       if (!response.ok) {
         if (data?.error?.includes('Estoque insuficiente')) {
           alert(`Não foi possível concluir o pedido:\n\n${data.error}`);
-
           setCardapio(prev =>
             prev.map(prod =>
-              prod.nome === nomeProduto
+              prod.id === idItemCardapio
                 ? { ...prod, estoqueInsuficiente: true }
                 : prod
             )
@@ -194,11 +210,15 @@ const Cardapio = () => {
       }
 
       alert('Pedido realizado com sucesso!');
+      
+      // Recarrega os dados do backend após o pedido
+      await fetchCardapio();
+
     } catch (err) {
       console.error(err);
       alert('Erro de conexão com o servidor.');
     }
-  };
+  }, [fetchCardapio]); // Dependência adicionada
 
   return (
     <div>
@@ -212,7 +232,7 @@ const Cardapio = () => {
             <strong>Erro:</strong> {error}
             <button
               className="btn btn-sm btn-outline-secondary ms-2"
-              onClick={() => window.location.reload()}
+              onClick={fetchCardapio} // Recarrega diretamente
             >
               Tentar novamente
             </button>

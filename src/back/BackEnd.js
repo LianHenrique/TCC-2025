@@ -853,7 +853,7 @@ app.post('/cardapio/insert', upload.single('imagem'), (req, res) => {
     nome_produto,
     descricao_produto,
     valor_produto,
-    categoria 
+    categoria
   } = req.body;
 
 
@@ -987,7 +987,7 @@ app.put('/AtualizarCardapio/:id', upload.single('imagem'), (req, res) => {
       // Função para garantir valor numérico
       const normalizarQuantidade = (val) => {
         if (typeof val === 'number') return val;
-        if (typeof val === 'string') return parseFloat(val.replace(/\./g, '').replace(',', '.'));
+        if (typeof val === 'string') return parseFloat(val.trim().replace(',', '.')); // NÃO remove ponto
         return 0;
       };
 
@@ -1180,7 +1180,10 @@ app.post('/saida-venda', async (req, res) => {
     for (const insumo of insumosValidados) {
       await new Promise((resolve, reject) => {
         connection.query(
-          `UPDATE Insumos SET quantidade_insumos = quantidade_insumos - ? WHERE id_insumos = ?`,
+          `UPDATE Insumos 
+SET quantidade_insumos = ROUND(quantidade_insumos - ?, 3) 
+WHERE id_insumos = ?
+`,
           [insumo.quantidadeParaDeduzir, insumo.id_insumos],
           (err, result) => {
             if (err) return reject(err);
