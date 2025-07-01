@@ -256,6 +256,30 @@ WHERE id_cardapio = 3;
 
 SET SQL_SAFE_UPDATES = 1;
 
+UPDATE cardapio SET
+  nome_item = 'Hamburguer Simples',
+  descricao_item = 'Po, carne, queijo, alface',
+  valor_item = 20.00,
+  imagem_url = 'uploads/1751331731712-hamburguer.jpeg',  
+  data_cadastro = '2025-06-30 17:49:42'
+WHERE id_cardapio = 1;
+
+UPDATE cardapio SET
+  nome_item = 'X-Duplo Hambirguer',
+  descricao_item = 'P30, 2 carnes, 2 queijos alface',
+  valor_item = 40.00,
+  imagem_url = 'uploads/1751330730301-x-duplo.jpeg',
+  data_cadastro = '2025-06-30 17:49:42'
+WHERE id_cardapio = 2;
+
+UPDATE cardapio SET
+  nome_item = 'X-Bacon',
+  descricao_item = 'Po, carne, queijo, alface, bacon',
+  valor_item = 35.00,
+  imagem_url = 'uploads/1751330858718-5098e75e57e36807c173cb7490b1b0d2_XL.jpg',
+  data_cadastro = '2025-06-30 17:49:42'
+WHERE id_cardapio = 3;
+
 -- Adicionando Índices para Otimização (Exemplos)
 CREATE INDEX idx_insumos_nome ON Insumos(nome_insumos);
 CREATE INDEX idx_cardapio_nome ON Cardapio(nome_item);

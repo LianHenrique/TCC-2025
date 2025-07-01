@@ -47,23 +47,48 @@ const CardGeral = ({
 
   // SOLUÇÃO FINAL PARA AS IMAGENS - Versão simplificada e robusta
   const getImagemSrc = (item) => {
-    if (!item?.imagem_url) {
+    // Se não houver URL de imagem, retornar fallback
+    if (!item?.imagem_url && !item?.link) {
       return 'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg';
     }
 
-    // Se já é uma URL completa (http/https)
-    if (/^https?:\/\//i.test(item.imagem_url)) {
-      return item.imagem_url;
+    const rawUrl = item.imagem_url || item.link || '';
+
+    // Caso 1: URL completa (http/https)
+    if (/^https?:\/\//i.test(rawUrl)) {
+      return rawUrl;
     }
 
-    // Se é um caminho local
-    if (item.imagem_url.startsWith('/uploads/')) {
-      return `http://localhost:3000${item.imagem_url}`;
+    // Caso 2: Caminho que já começa com 'uploads/'
+    if (rawUrl.startsWith('uploads/')) {
+      return `http://localhost:3000/${rawUrl}`;
     }
 
-    // Padrão final - considera como caminho relativo
-    return `http://localhost:3000/uploads/${item.imagem_url}`;
+    // Caso 3: Caminho que começa com '/uploads'
+    if (rawUrl.startsWith('/uploads/')) {
+      return `http://localhost:3000${rawUrl}`;
+    }
+
+    // Caso 4: Nome simples de arquivo
+    if (/\.(jpe?g|png|webp|gif|avif)$/i.test(rawUrl)) {
+      return `http://localhost:3000/uploads/${rawUrl}`;
+    }
+
+    // Caso padrão: retornar fallback
+    return 'https://upload.wikimedia.org/wikipedia/commons/a/ac/No_image_available.svg';
   };
+
+  const normalizeImageUrl = (url) => {
+    if (!url) return url;
+
+    // Remover barras duplas e protocolo local
+    return url
+      .replace(/(http:\/\/localhost:3000)?\/?uploads\/?/i, '')
+      .replace(/^\/+/, '')
+      .replace(/\/{2,}/g, '/');
+  };
+
+
 
   return (
     <div className={ClassNameCard} style={{ width: '100%' }}>
