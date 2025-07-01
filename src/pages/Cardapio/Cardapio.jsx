@@ -15,6 +15,34 @@ const Cardapio = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  function normalizeUnidade(unidade) {
+    const u = unidade?.toLowerCase().trim();
+
+    if (['un', 'unidade', 'unidades'].includes(u)) return 'unidade';
+    if (['g', 'grama', 'gramas'].includes(u)) return 'g';
+    if (['kg', 'quilo', 'kilograma', 'quilos'].includes(u)) return 'kg';
+    if (['ml', 'mililitro', 'mililitros'].includes(u)) return 'ml';
+    if (['l', 'litro', 'litros'].includes(u)) return 'l';
+
+    return u;
+  }
+
+  function convertToStockUnit(quantidade, unidadeReceita, unidadeEstoque) {
+    const receita = normalizeUnidade(unidadeReceita);
+    const estoque = normalizeUnidade(unidadeEstoque);
+
+    if (receita === estoque) return quantidade;
+
+    // Regras de conversão
+    if (receita === 'g' && estoque === 'kg') return quantidade / 1000;
+    if (receita === 'kg' && estoque === 'g') return quantidade * 1000;
+    if (receita === 'ml' && estoque === 'l') return quantidade / 1000;
+    if (receita === 'l' && estoque === 'ml') return quantidade * 1000;
+
+    return undefined; // unidades incompatíveis
+  }
+
+
   const normalizeString = (str) =>
     str ? String(str).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim() : '';
 
@@ -41,9 +69,24 @@ const Cardapio = () => {
           // Verificação de estoque simplificada para demonstração
           // (Você pode manter sua lógica original se preferir)
           const estoqueInsuficiente = item.insumos.some(insumo => {
-            const disponivel = Number(insumo.quantidade_insumos) || 0;
-            const necessario = Number(insumo.quantidade_necessaria) || 0;
-            return disponivel < necessario;
+            const quantidadeEstoque = Number(insumo.quantidade_insumos) || 0;
+            const quantidadeReceita = Number(insumo.quantidade_necessaria) || 0;
+            const unidadeEstoque = insumo.unidade_medida;
+            const unidadeReceita = insumo.unidade_medida_receita;
+
+            const convertido = convertToStockUnit(quantidadeReceita, unidadeReceita, unidadeEstoque);
+
+
+            console.log({
+              nome: insumo.nome_insumos,
+              necessario: quantidadeReceita,
+              unidade_receita: unidadeReceita,
+              estoque: quantidadeEstoque,
+              unidade_estoque: unidadeEstoque,
+              convertido
+            });
+
+            return convertido === undefined || quantidadeEstoque < convertido;
           });
 
           const ingredientesTexto = item.insumos.length

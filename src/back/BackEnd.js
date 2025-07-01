@@ -4,6 +4,8 @@ import path from 'path';
 import cors from 'cors';
 import connection from './db.js';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -12,6 +14,8 @@ const uploadsPath = path.join(__dirname, 'public', 'uploads');
 if (!fs.existsSync(uploadsPath)) {
   fs.mkdirSync(uploadsPath, { recursive: true });
 }
+
+const app = express();
 
 app.use('/uploads', express.static(uploadsPath, {
   setHeaders: (res, filePath) => {
@@ -22,8 +26,6 @@ app.use('/uploads', express.static(uploadsPath, {
     else if (ext === '.png') res.setHeader('Content-Type', 'image/png');
   }
 }));
-
-const app = express();
 
 
 // 1. Configurações essenciais
@@ -776,7 +778,7 @@ app.get('/cardapio', (req, res) => {
   connection.query(sql, (error, cardapioResults) => {
     if (error) {
       console.error('Erro ao buscar cardápio:', error);
-      return res.status(500).json({ 
+      return res.status(500).json({
         error: 'Erro ao buscar cardápio',
         details: error.message
       });
@@ -1082,26 +1084,15 @@ function getInsumosDoItem(id_cardapio) {
   });
 }
 
-
-function normalizarUnidade(unidade) {
-  if (!unidade) return '';
-  const u = unidade.toLowerCase().trim();
-  if (u === 'l') return 'litro';
-  if (u === 'ml' || u === 'mililitro') return 'ml';
-  if (u === 'kg') return 'kg';
-  if (u === 'g' || u === 'grama') return 'g';
-  if (u === 'unidade' || u === 'unidades') return 'unidade';
-  return u;
-}
-
-// Função utilitária de conversão
 function normalizeUnidade(unidade) {
   const u = unidade?.toLowerCase().trim();
+
   if (['un', 'unidade', 'unidades'].includes(u)) return 'unidade';
-  if (['g', 'grama'].includes(u)) return 'g';
-  if (['kg', 'quilo', 'kilograma'].includes(u)) return 'kg';
-  if (['ml', 'mililitro'].includes(u)) return 'ml';
-  if (['l', 'litro'].includes(u)) return 'l';
+  if (['g', 'grama', 'gramas'].includes(u)) return 'g';
+  if (['kg', 'quilo', 'kilograma', 'quilos'].includes(u)) return 'kg';
+  if (['ml', 'mililitro', 'mililitros'].includes(u)) return 'ml';
+  if (['l', 'litro', 'litros'].includes(u)) return 'l';
+
   return u;
 }
 
@@ -1119,6 +1110,7 @@ function convertToStockUnit(quantidade, unidadeReceita, unidadeEstoque) {
 
   return undefined; // unidades incompatíveis
 }
+
 
 app.post('/saida-venda', async (req, res) => {
   const { id_cardapio } = req.body;

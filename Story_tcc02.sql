@@ -256,6 +256,8 @@ WHERE id_cardapio = 3;
 
 SET SQL_SAFE_UPDATES = 1;
 
+ALTER TABLE cliente ADD COLUMN cargo ENUM('ADM') DEFAULT 'ADM';
+
 UPDATE cardapio SET
   nome_item = 'Hamburguer Simples',
   descricao_item = 'Po, carne, queijo, alface',
