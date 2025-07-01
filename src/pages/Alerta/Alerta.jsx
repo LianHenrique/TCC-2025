@@ -17,19 +17,65 @@ const Alerta = () => {
 
           // Formata e filtra os insumos com alertas
           const formatados = data
-            .map(insumo => ({
-              id: insumo.id_insumos,
-              nome: insumo.nome_insumos,
-              quantidade: insumo.quantidade_insumos,
-              tipoEstoque: insumo.tipo_alerta_estoque,
-              tipoValidade: insumo.tipo_alerta_validade,
-              unidade: insumo.unidade_medida || '',
-              imagem: insumo.imagem_url?.trim()
-                ? `http://localhost:3000${insumo.imagem_url.trim()}`
-                : 'https://via.placeholder.com/150',
-              dataVencimento: insumo.data_vencimento
-            }))
-            .filter(insumo => insumo.tipoEstoque || insumo.tipoValidade); // Filtra por qualquer alerta
+            .map(insumo => {
+              // Corrigir a URL da imagem
+              let imagemUrl = insumo.imagem_url?.trim() || '';
+
+              // Se já for uma URL completa, usar diretamente
+              if (imagemUrl.startsWith('http://') || imagemUrl.startsWith('https://')) {
+                return {
+                  id: insumo.id_insumos,
+                  nome: insumo.nome_insumos,
+                  quantidade: insumo.quantidade_insumos,
+                  tipoEstoque: insumo.tipo_alerta_estoque,
+                  tipoValidade: insumo.tipo_alerta_validade,
+                  unidade: insumo.unidade_medida || '',
+                  imagem: imagemUrl,
+                  dataVencimento: insumo.data_vencimento
+                };
+              }
+              
+              // Se começar com '/uploads', adicionar apenas o domínio
+              if (imagemUrl.startsWith('/uploads/')) {
+                return {
+                  id: insumo.id_insumos,
+                  nome: insumo.nome_insumos,
+                  quantidade: insumo.quantidade_insumos,
+                  tipoEstoque: insumo.tipo_alerta_estoque,
+                  tipoValidade: insumo.tipo_alerta_validade,
+                  unidade: insumo.unidade_medida || '',
+                  imagem: `http://localhost:3000${imagemUrl}`,
+                  dataVencimento: insumo.data_vencimento
+                };
+              }
+              
+              // Se for apenas um nome de arquivo, montar o caminho completo
+              if (imagemUrl) {
+                return {
+                  id: insumo.id_insumos,
+                  nome: insumo.nome_insumos,
+                  quantidade: insumo.quantidade_insumos,
+                  tipoEstoque: insumo.tipo_alerta_estoque,
+                  tipoValidade: insumo.tipo_alerta_validade,
+                  unidade: insumo.unidade_medida || '',
+                  imagem: `http://localhost:3000/uploads/${imagemUrl}`,
+                  dataVencimento: insumo.data_vencimento
+                };
+              }
+              
+              // Caso não tenha imagem, usar placeholder
+              return {
+                id: insumo.id_insumos,
+                nome: insumo.nome_insumos,
+                quantidade: insumo.quantidade_insumos,
+                tipoEstoque: insumo.tipo_alerta_estoque,
+                tipoValidade: insumo.tipo_alerta_validade,
+                unidade: insumo.unidade_medida || '',
+                imagem: 'https://via.placeholder.com/150',
+                dataVencimento: insumo.data_vencimento
+              };
+            })
+            .filter(insumo => insumo.tipoEstoque || insumo.tipoValidade);
 
           setInsumos(formatados);
         })
@@ -126,6 +172,9 @@ const Alerta = () => {
                           height: '100px',
                           objectFit: 'contain',
                           backgroundColor: '#f8f9fa'
+                        }}
+                        onError={(e) => {
+                          e.target.src = 'https://via.placeholder.com/150';
                         }}
                       />
                       <div style={{ flex: 1 }}>
