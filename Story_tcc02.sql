@@ -60,7 +60,7 @@ MODIFY COLUMN categoria ENUM('Carnes', 'Perecíveis', 'Molhos', 'Congelados') NO
 
 INSERT INTO insumos (nome_insumos, descricao_insumos, quantidade_insumos, unidade_medida, valor_insumos, data_vencimento, imagem_url, categoria) VALUES
 ('Hambúrguer de carne', 'Hambúrguer bovino congelado', 20, 'unidades', 9.90, '2025-04-17', 'https://organic4.com.br/wp-content/uploads/2023/04/img-site-1-lanches-burger-carne.jpg', 'Carnes'),
-('Pão', 'Pão de hambúrguer tradicional', 5, 'unidades', 14.00, '2025-11-17', 'https://guiadacozinha.com.br/wp-content/uploads/2018/10/paofrancesfolhado.jpg', 'Carnes'),
+('Pão', 'Pão de hambúrguer tradicional', 5, 'unidades', 14.00, '2025-11-17', 'https://guiadacozinha.com.br/wp-content/uploads/2018/10/paofrancesfolhado.jpg', 'Perecíveis'),
 ('Queijo Cheddar Fatiado', 'Queijo cheddar fatiado para lanches', 40, 'unidades', 1.50, '2025-11-19', 'https://cdn.awsli.com.br/600x700/510/510640/produto/43196021/570ee096e3.jpg', 'Perecíveis'),
 ('Bacon Fatiado', 'Bacon defumado fatiado 500g', 17, 'kg', 16.50, '2025-12-19', 'https://feed.com.br/wp-content/uploads/2021/09/Bacon-Fatiado.jpg', 'Carnes'),
 ('Molho Barbecue', 'Molho barbecue 300ml', 10, 'unidades', 7.90, '2025-12-10', 'https://debetti.com.br/cdn/shop/files/barbecue-heinz.jpg?v=1684184440', 'Molhos'),
@@ -92,9 +92,9 @@ CREATE TABLE Cardapio (
 
 INSERT INTO Cardapio (nome_item, descricao_item, valor_item, imagem_url)
 VALUES 
-('Hambúrguer Simples', 'Pão, carne, queijo, alface', 20.00, 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/NCI_Visuals_Food_Hamburger.jpg/960px-NCI_Visuals_Food_Hamburger.jpg'),
-('X-Duplo Hambúrguer', 'Pão, 2 carnes, 2 queijos, alface', 40.00, 'https://img.freepik.com/fotos-premium/hamburguer-duplo-delicioso-com-pepinos-de-bacon-de-carne-e-tomates-isolados_524291-2260.jpg'),
-('X-Bacon', 'Pão, carne, queijo, alface, bacon', 35.00, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2iq1NJAbIYJHdnOj10joXxG1hGOQlo4_M5g&s');
+('Hambúrguer Simples', 'Pao, carne, queijo, alface', 20.00, 'https://upload.wikimedia.org/wikipedia/commons/thumb/6/62/NCI_Visuals_Food_Hamburger.jpg/960px-NCI_Visuals_Food_Hamburger.jpg'),
+('X-Duplo Hambúrguer', 'Pao, 2 carnes, 2 queijos, alface', 40.00, 'https://img.freepik.com/fotos-premium/hamburguer-duplo-delicioso-com-pepinos-de-bacon-de-carne-e-tomates-isolados_524291-2260.jpg'),
+('X-Bacon', 'Pao, carne, queijo, alface, bacon', 35.00, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS2iq1NJAbIYJHdnOj10joXxG1hGOQlo4_M5g&s');
 
 -- Tabela de Ligação ItemCardapio-Insumo (Muitos-para-Muitos - Receita)
 CREATE TABLE ItemCardapioInsumo (

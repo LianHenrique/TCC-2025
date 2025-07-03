@@ -179,7 +179,7 @@ const Insumos = () => {
             />
           </FloatingLabel>
 
-          <FloatingLabel controlId="valor_insumos" label="Valor por Unidade" className="m-2">
+          <FloatingLabel controlId="valor_insumos" label="Valor do insumo" className="m-2">
             <Form.Control
               type="number"
               name="valor_insumos"

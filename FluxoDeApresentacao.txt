@@ -1,0 +1,34 @@
+ -------------- ADM --------------
+e-mail: ADM@gmail.com
+senha: 123321
+
+
+------------ Gerente ------------
+e-mail: ana.souza@empresa.com
+senha: 123321
+
+
+--------- Funcionário ---------
+email: marcos.silva@empresa.com
+senha: 123456
+
+
+------- Cadastro de insumo -------
+Nome: Queijo Coalho
+Valor: 35
+validade: dia 06
+Alerta de vencimento (dias antes): 1
+Imagem: Selecionar o fixeiro 'QueijoCoalho' em downloads
+unidade: KG
+Quantidade: 12
+Alerta de estoque: 1
+Relacionar Fornecedor:
+Nome: João
+Telefone: 22222222222
+Email: joao@gmail.com
+Salvar Fornecedor 
+Descricao: Queijo firme, de sabor suave e levemente salgado
+Categoria: Perecíveis
+
+
+--------- 
