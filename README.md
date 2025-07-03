@@ -1,12 +1,5 @@
-# React + Vite
+Instalação do projeto Story_box.
+Desenvolvido por: Lian, Pedro, Kleiton e Wesley.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript and enable type-aware lint rules. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Crie uma pasta no computador, abra a pasta no vscode e dê gitclone no terminal. Após isso, execute o comando: cd TCC_2025 e execute o npm i. Após isso, execute o XAMP em MySql. Vá na pasta raiz do projeto copie e cole no workbench. Após isso, execute o script, completando a criação do banco de dados. Voltando ao projeto, selecione a pasta back com o botão direito, clique em executar no terminal integrado e rode o comando: node BackEnd.js, após isso, abra o projeto e realize o login com: email: ADM@gmail.com
+                                                                  senha: 123321
