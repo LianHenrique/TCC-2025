@@ -167,7 +167,7 @@ const RelatorioInsumos = () => {
                 )}
 
                 {/* Resumo */}
-                {relatorioData?.dias?.length && (
+                {/* {relatorioData?.dias?.length && (
                   <div className="mt-4 text-end fs-5 fw-semibold">
                     <span>Total de saídas: </span>
                     <span className="text-primary">
@@ -176,7 +176,7 @@ const RelatorioInsumos = () => {
                         , 0)}
                     </span>
                   </div>
-                )}
+                )} */}
               </div>
             </div>
           </>

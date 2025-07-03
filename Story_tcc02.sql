@@ -59,7 +59,7 @@ ALTER TABLE Insumos
 MODIFY COLUMN categoria ENUM('Carnes', 'Perecíveis', 'Molhos', 'Congelados') NOT NULL;
 
 INSERT INTO insumos (nome_insumos, descricao_insumos, quantidade_insumos, unidade_medida, valor_insumos, data_vencimento, imagem_url, categoria) VALUES
-('Hamburguer de carne', 'Hambúrguer bovino congelado', 20, 'unidades', 9.90, '2025-04-17', 'https://organic4.com.br/wp-content/uploads/2023/04/img-site-1-lanches-burger-carne.jpg', 'Carnes'),
+('Hambúrguer de carne', 'Hambúrguer bovino congelado', 20, 'unidades', 9.90, '2025-04-17', 'https://organic4.com.br/wp-content/uploads/2023/04/img-site-1-lanches-burger-carne.jpg', 'Carnes'),
 ('Pão', 'Pão de hambúrguer tradicional', 5, 'unidades', 14.00, '2025-11-17', 'https://guiadacozinha.com.br/wp-content/uploads/2018/10/paofrancesfolhado.jpg', 'Carnes'),
 ('Queijo Cheddar Fatiado', 'Queijo cheddar fatiado para lanches', 40, 'unidades', 1.50, '2025-11-19', 'https://cdn.awsli.com.br/600x700/510/510640/produto/43196021/570ee096e3.jpg', 'Perecíveis'),
 ('Bacon Fatiado', 'Bacon defumado fatiado 500g', 17, 'kg', 16.50, '2025-12-19', 'https://feed.com.br/wp-content/uploads/2021/09/Bacon-Fatiado.jpg', 'Carnes'),
@@ -275,21 +275,21 @@ WHERE id_cardapio = 3;
 
 UPDATE Insumos SET unidade_medida = 'unidade' 
 WHERE TRIM(LOWER(unidade_medida)) NOT IN ('kg', 'litro', 'g', 'ml')
-  AND nome_insumos IN ('Hamburguer de carne', 'Pão', 'Queijo Cheddar Fatiado', 'Molho Barbecue', 'Alface Crespa', 'Tomate Italiano');
+  AND nome_insumos IN ('Hambúrguer de carne', 'Pão', 'Queijo Cheddar Fatiado', 'Molho Barbecue', 'Alface Crespa', 'Tomate Italiano');
 
 UPDATE Insumos SET unidade_medida = 'kg'
 WHERE nome_insumos IN ('Bacon Fatiado', 'Batata Palito Congelada');
 
 UPDATE Insumos
 SET data_vencimento = '2025-07-08'
-WHERE nome_insumos = 'Hamburguer de carne';
+WHERE nome_insumos = 'Hambúrguer de carne';
 
 SET SQL_SAFE_UPDATES = 1;
 
 ALTER TABLE cliente ADD COLUMN cargo ENUM('ADM') DEFAULT 'ADM';
 
 UPDATE cardapio SET
-  nome_item = 'Hamburguer Simples',
+  nome_item = 'Hambúrguer Simples',
   descricao_item = 'Po, carne, queijo, alface',
   valor_item = 20.00,
   imagem_url = 'uploads/1751331731712-hamburguer.jpeg',  
@@ -297,8 +297,8 @@ UPDATE cardapio SET
 WHERE id_cardapio = 1;
 
 UPDATE cardapio SET
-  nome_item = 'X-Duplo Hambirguer',
-  descricao_item = 'P30, 2 carnes, 2 queijos alface',
+  nome_item = 'X-Duplo Hamburguer',
+  descricao_item = 'Pão, 2 carnes, 2 queijos alface',
   valor_item = 40.00,
   imagem_url = 'uploads/1751330730301-x-duplo.jpeg',
   data_cadastro = '2025-06-30 17:49:42'
@@ -306,7 +306,7 @@ WHERE id_cardapio = 2;
 
 UPDATE cardapio SET
   nome_item = 'X-Bacon',
-  descricao_item = 'Po, carne, queijo, alface, bacon',
+  descricao_item = 'Pão, carne, queijo, alface, bacon',
   valor_item = 35.00,
   imagem_url = 'uploads/1751330858718-5098e75e57e36807c173cb7490b1b0d2_XL.jpg',
   data_cadastro = '2025-06-30 17:49:42'
