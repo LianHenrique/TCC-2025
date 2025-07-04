@@ -2,7 +2,7 @@ import { useState, useEffect, useContext } from 'react';
 import { Container, Card, Button, Badge, Row, Col } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import 'bootstrap-icons/font/bootstrap-icons.css';
-
+import { AuthContext } from '../../Contexts/UserContext'; // Importe do UserContext
 import styles from "./Alerta.module.css";
 import { ThemeContext } from '../../Contexts/ThemeContext';
 import NavBar from '../../components/NavBar/NavBar';
@@ -10,9 +10,18 @@ import NavBar from '../../components/NavBar/NavBar';
 const Alerta = () => {
   const [insumos, setInsumos] = useState([]);
   const { darkMode } = useContext(ThemeContext);
+  const { cargoUsuario } = useContext(AuthContext); // Use cargoUsuario
   const navigate = useNavigate();
 
+  // Verifica se o usuário tem permissão
+  const temPermissao = cargoUsuario === 'ADM' || cargoUsuario === 'Gerente';
+
   useEffect(() => {
+    if (!temPermissao) {
+      navigate('/home'); // Redireciona se não tiver permissão
+      return;
+    }
+
     const buscarInsumos = () => {
       fetch('http://localhost:3000/insumos/alerta')
         .then(res => res.json())
@@ -37,7 +46,7 @@ const Alerta = () => {
 
               return { ...formata(insumo), imagem: 'https://via.placeholder.com/150' };
             })
-            .filter(insumo => insumo.tipoEstoque); // filtra só por estoque
+            .filter(insumo => insumo.tipoEstoque);
 
           setInsumos(formatados);
         })
@@ -47,7 +56,7 @@ const Alerta = () => {
     buscarInsumos();
     const intervalo = setInterval(buscarInsumos, 30000);
     return () => clearInterval(intervalo);
-  }, []);
+  }, [temPermissao, navigate]);
 
   const formata = (insumo) => ({
     id: insumo.id_insumos,

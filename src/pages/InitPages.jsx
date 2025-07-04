@@ -8,6 +8,7 @@ const InitPages = () => {
   return (
     <ThemeProvider>
       <AuthProvider> 
+        {/* O AlertaCritico agora só será exibido para ADM e Gerente */}
         <AlertaCritico />
         <Outlet />
       </AuthProvider>

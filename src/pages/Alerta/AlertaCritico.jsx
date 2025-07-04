@@ -1,9 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { Modal, Button } from 'react-bootstrap';
+import { AuthContext } from '../../Contexts/UserContext'; // Importação correta do contexto
 
 const AlertaCriticoGlobal = () => {
   const [alertasPendentes, setAlertasPendentes] = useState([]);
   const [indexAtual, setIndexAtual] = useState(0);
+  const { cargoUsuario } = useContext(AuthContext); // Usando o contexto corretamente
 
   const getEstadosExibidos = () => {
     const raw = sessionStorage.getItem('estados_alerta_exibidos');
@@ -15,6 +17,10 @@ const AlertaCriticoGlobal = () => {
   };
 
   useEffect(() => {
+    // Verifica se o usuário tem permissão
+    const temPermissao = cargoUsuario === 'ADM' || cargoUsuario === 'Gerente';
+    if (!temPermissao) return;
+
     const buscarAlertas = () => {
       const exibidos = getEstadosExibidos();
 
@@ -61,7 +67,7 @@ const AlertaCriticoGlobal = () => {
     buscarAlertas();
     const interval = setInterval(buscarAlertas, 4000);
     return () => clearInterval(interval);
-  }, []);
+  }, [cargoUsuario]);
 
   const alertaAtual = alertasPendentes[indexAtual] || null;
 
