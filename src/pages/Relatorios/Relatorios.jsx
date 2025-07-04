@@ -75,14 +75,17 @@ const RelatorioInsumos = () => {
   // Função para formatar a data do relatório
   const getDataRelatorio = () => {
     if (!relatorioData?.dias?.length) return '';
-    
+
+    const parseData = isoString => {
+      const partes = isoString.split('-');
+      return new Date(Number(partes[0]), Number(partes[1]) - 1, Number(partes[2]));
+    };
+
     if (periodo === 'diario') {
-      // Para relatório diário, mostra a data mais recente
       const dataMaisRecente = relatorioData.dias[0];
-      return new Date(dataMaisRecente).toLocaleDateString('pt-BR');
+      return parseData(dataMaisRecente).toLocaleDateString('pt-BR');
     } else {
-      // Para relatório semanal, mostra o intervalo de datas
-      const datas = relatorioData.dias.map(d => new Date(d));
+      const datas = relatorioData.dias.map(parseData);
       const primeiraData = new Date(Math.min(...datas));
       const ultimaData = new Date(Math.max(...datas));
       return `${primeiraData.toLocaleDateString('pt-BR')} a ${ultimaData.toLocaleDateString('pt-BR')}`;
@@ -97,8 +100,8 @@ const RelatorioInsumos = () => {
           <div>
             <h2 className="fw-bold mb-1">📊 Relatório de Insumos</h2>
             <p className="mb-0">
-              {periodo === 'diario' 
-                ? `Dados do dia ${getDataRelatorio()}` 
+              {periodo === 'diario'
+                ? `Dados do dia ${getDataRelatorio()}`
                 : `Dados da semana (${getDataRelatorio()})`}
             </p>
           </div>
@@ -162,13 +165,13 @@ const RelatorioInsumos = () => {
                 {relatorioData?.dias?.length ? relatorioData.dias.map(dia => (
                   <div key={dia} className="mb-4">
                     <h6 className="text-primary fw-semibold mb-2">
-                      {periodo === 'diario' 
-                        ? new Date(dia).toLocaleDateString('pt-BR', { 
-                            weekday: 'long', 
-                            day: '2-digit', 
-                            month: 'long', 
-                            year: 'numeric' 
-                          }) 
+                      {periodo === 'diario'
+                        ? new Date(dia).toLocaleDateString('pt-BR', {
+                          weekday: 'long',
+                          day: '2-digit',
+                          month: 'long',
+                          year: 'numeric'
+                        })
                         : `Semana ${dia}`}
                     </h6>
                     <div className="table-responsive rounded shadow-sm border">

@@ -66,6 +66,12 @@ const Funcionarios = () => {
     }
   };
 
+  const cargos = [
+    { label: 'Administrador', value: 'ADM' },
+    { label: 'Gerente', value: 'Gerente' },
+    { label: 'Funcionário', value: 'Funcionario' }
+  ];
+
   return (
     <div style={{ marginTop: '100px' }}>
       <NavBar />
@@ -75,16 +81,6 @@ const Funcionarios = () => {
           onSubmit={handleSubmit}
           className="shadow rounded"
           style={{ padding: '30px', border: '1px blue solid', textAlign: "center" }}>
-          {urlFuncionario && (
-            <img
-              src={URL.createObjectURL(urlFuncionario)}
-              alt="Prévia da imagem"
-              width={100}
-              height={100}
-              style={{ objectFit: 'cover', borderRadius: '50%' }}
-            />
-          )}
-
           <h1 style={{ textAlign: 'center' }}>Cadastro</h1>
 
           {error && (
@@ -137,7 +133,7 @@ const Funcionarios = () => {
             />
           </FloatingLabel>
 
-               <FloatingLabel controlId="imagemFuncionario" label="Foto do funcionário" className="m-2">
+          <FloatingLabel controlId="imagemFuncionario" label="Foto do funcionário" className="m-2">
             <Form.Control
               type="file"
               accept="image/*"
@@ -158,6 +154,29 @@ const Funcionarios = () => {
             />
           </FloatingLabel>
 
+          {urlFuncionario && (
+            <div
+              className="shadow rounded mt-3 mb-4"
+              style={{
+                width: '65%',
+                padding: '10px',
+                border: '1px solid #ccc',
+                textAlign: 'center',
+                marginLeft: '0.6rem', // ou qualquer valor que afaste o suficiente da borda esquerda
+              }}
+            >
+              <img
+                src={URL.createObjectURL(urlFuncionario)}
+                alt="Prévia da imagem"
+                style={{
+                  width: '100%',
+                  height: 'auto',
+                  borderRadius: '10px',
+                  objectFit: 'cover',
+                }}
+              />
+            </div>
+          )}
 
           {/* <Form.Select
             aria-label="Selecione o cargo"
@@ -175,20 +194,21 @@ const Funcionarios = () => {
           <div className="d-flex m-2" style={{ alignContent: 'center' }}>
             <Dropdown className="d-flex shadow rounded mt-2" style={{ width: '150px', height: '60px' }}>
               <Dropdown.Toggle variant="outline-primary rounded" style={{ width: '150px', height: '60px' }}>
-                {cargoFuncionario}
+                {cargos.find(c => c.value === cargoFuncionario)?.label || 'Cargo'}
               </Dropdown.Toggle>
               <Dropdown.Menu className="rounded-3">
-                {['Gerente', 'Estoquista', 'Geral'].map((cargo) => (
+                {cargos.map(({ label, value }) => (
                   <Dropdown.Item
-                    key={cargo}
-                    onClick={() => setCargoFuncionario(cargo)}
+                    key={value}
+                    onClick={() => setCargoFuncionario(value)}
                     className="dropdown-item rounded"
                   >
-                    {cargo}
+                    {label}
                   </Dropdown.Item>
                 ))}
               </Dropdown.Menu>
             </Dropdown>
+
             {/* <Button
               className="rounded m-2 mt-2 fs-5"
               style={{ width: '100px', height: '60px' }}

@@ -59,13 +59,25 @@ const Funcionarios = () => {
       return correspondeNome && correspondeCargo;
     });
 
+    const traduzirCargo = (cargo) => {
+      switch (cargo) {
+        case 'ADM':
+          return 'Administrador';
+        case 'Funcionario':
+          return 'Funcionário';
+        case 'Gerente':
+        default:
+          return cargo;
+      }
+    };
+
     const formatados = filtrado.map(func => ({
       id: func.id_funcionario,
       nome: func.nome_funcionario,
       imagem_url: func.imagem_url || 'https://via.placeholder.com/150',
       descricao: [
         { texto: `Email: ${func.email_funcionario}` },
-        { texto: `Cargo: ${func.cargo_funcionario}` }
+        { texto: `Cargo: ${traduzirCargo(func.cargo_funcionario)}` }
       ],
       acoes: [
         { onClick: () => navigate(`/visualizar_funcionario/${func.id_funcionario}`) },

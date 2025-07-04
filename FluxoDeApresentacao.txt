@@ -22,13 +22,34 @@ Imagem: Selecionar o fixeiro 'QueijoCoalho' em downloads
 unidade: KG
 Quantidade: 12
 Alerta de estoque: 1
+
 Relacionar Fornecedor:
 Nome: João
 Telefone: 22222222222
 Email: joao@gmail.com
 Salvar Fornecedor 
+
 Descricao: Queijo firme, de sabor suave e levemente salgado
 Categoria: Perecíveis
-
-
 --------- 
+
+
+------- Cadastro de funcionario -------
+Nome: Pedro
+Email: pedro@gmail.com
+Senha: 456654
+Confirmar senha: 456654
+Foto: Pasta downloads do pc
+Palavra-chave: Chave
+Cargo: Funcionário
+----------
+
+
+
+-------- Cadastro de Produto -----------
+Nome: Combo Especial
+insumos: ----
+Imagem: Pasta downloads do pc
+Valor: 55,90
+Descrição: Combo especial e recheado
+Categoria: Combos

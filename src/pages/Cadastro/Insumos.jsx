@@ -75,42 +75,6 @@ const Insumos = () => {
     return true;
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validarInsumos()) return;
-
-    try {
-      const formDataEnvio = new FormData();
-      formDataEnvio.append('nome_insumos', formData.nome_insumos);
-      formDataEnvio.append('valor_insumos', formData.valor_insumos);
-      formDataEnvio.append('categoria', formData.categoria);
-      formDataEnvio.append('unidade_medida', formData.unidade_medida);
-      formDataEnvio.append('quantidade_insumos', formData.quantidade_insumos);
-      formDataEnvio.append('data_vencimento', formData.data_vencimento);
-      formDataEnvio.append('descricao_insumos', formData.descricao_insumos);
-      formDataEnvio.append('alerta_estoque', formData.alerta_estoque);
-      formDataEnvio.append('alertar_dias_antes', formData.alertar_dias_antes);
-      formDataEnvio.append('fornecedor_id', formData.fornecedor_id ?? null);
-      formDataEnvio.append('imagem', imagemFile);
-
-      const res = await fetch("http://localhost:3000/insumos/insert", {
-        method: "POST",
-        body: formDataEnvio
-      });
-
-      if (res.ok) {
-        alert("Insumo cadastrado com sucesso!");
-        setFormData(getFormDataInicial());
-        navigate('/estoque');
-      } else {
-        alert("Erro ao cadastrar insumo.");
-      }
-    } catch (error) {
-      console.error("Erro:", error);
-      alert("Erro de rede ou servidor.");
-    }
-  };
-
   const handleSalvarFornecedor = async () => {
     const telefoneLimpo = fornecedor.telefone.replace(/\D/g, '');
 
@@ -152,6 +116,48 @@ const Insumos = () => {
     }
   };
 
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  
+  // Primeiro valida os campos
+  if (!validarInsumos()) {
+    return; // Se a validação falhar, interrompe o envio
+  }
+
+  try {
+    // Prepara os dados para envio
+    const formDataEnvio = new FormData();
+    formDataEnvio.append('nome_insumos', formData.nome_insumos);
+    formDataEnvio.append('valor_insumos', formData.valor_insumos);
+    formDataEnvio.append('categoria', formData.categoria);
+    formDataEnvio.append('unidade_medida', formData.unidade_medida);
+    formDataEnvio.append('quantidade_insumos', formData.quantidade_insumos);
+    formDataEnvio.append('data_vencimento', formData.data_vencimento);
+    formDataEnvio.append('descricao_insumos', formData.descricao_insumos);
+    formDataEnvio.append('alerta_estoque', formData.alerta_estoque);
+    formDataEnvio.append('alertar_dias_antes', formData.alertar_dias_antes);
+    formDataEnvio.append('fornecedor_id', formData.fornecedor_id ?? null);
+    formDataEnvio.append('imagem', imagemFile);
+
+    // Envia para o servidor
+    const res = await fetch("http://localhost:3000/insumos/insert", {
+      method: "POST",
+      body: formDataEnvio
+    });
+
+    if (res.ok) {
+      alert("Insumo cadastrado com sucesso!");
+      setFormData(getFormDataInicial());
+      navigate('/estoque');
+    } else {
+      alert("Erro ao cadastrar insumo.");
+    }
+  } catch (error) {
+    console.error("Erro:", error);
+    alert("Erro de rede ou servidor.");
+  }
+};
+
   const formatarTelefone = (valor) => {
     const numero = valor.replace(/\D/g, '');
     if (numero.length <= 2) return numero;
@@ -164,7 +170,7 @@ const Insumos = () => {
     <div style={{ marginTop: '100px', marginBottom: "20px" }}>
       <NavBar />
       <Container style={{ maxWidth: "800px" }}>
-        <Form onSubmit={handleSubmit} className="shadow rounded" style={{ padding: '30px', border: '1px blue solid', textAlign:"center" }}>
+        <Form onSubmit={handleSubmit} className="shadow rounded" style={{ padding: '30px', border: '1px blue solid', textAlign: "center" }}>
           <img src={logo} width={100} alt="logo" className="me-2" />
           <h1 className="text-center">Cadastro de Insumos</h1>
 

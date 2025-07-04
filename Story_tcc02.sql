@@ -63,7 +63,7 @@ INSERT INTO insumos (nome_insumos, descricao_insumos, quantidade_insumos, unidad
 ('Pão', 'Pão de hambúrguer tradicional', 5, 'unidades', 14.00, '2025-11-17', 'https://guiadacozinha.com.br/wp-content/uploads/2018/10/paofrancesfolhado.jpg', 'Perecíveis'),
 ('Queijo Cheddar Fatiado', 'Queijo cheddar fatiado para lanches', 40, 'unidades', 1.50, '2025-11-19', 'https://cdn.awsli.com.br/600x700/510/510640/produto/43196021/570ee096e3.jpg', 'Perecíveis'),
 ('Bacon Fatiado', 'Bacon defumado fatiado 500g', 17, 'kg', 16.50, '2025-12-19', 'https://feed.com.br/wp-content/uploads/2021/09/Bacon-Fatiado.jpg', 'Carnes'),
-('Molho Barbecue', 'Molho barbecue 300ml', 10, 'unidades', 7.90, '2025-12-10', 'https://debetti.com.br/cdn/shop/files/barbecue-heinz.jpg?v=1684184440', 'Molhos'),
+('Molho Barbecue', 'Molho barbecue 300ml', 10, 'litro', 7.90, '2025-12-10', 'https://debetti.com.br/cdn/shop/files/barbecue-heinz.jpg?v=1684184440', 'Molhos'),
 ('Batata Palito Congelada', 'Batata pré-frita congelada 2kg', 10, 'kg', 18.90, '2026-02-11', 'https://d3gdr9n5lqb5z7.cloudfront.net/fotos/990415-06-09-2022-13-33-40-769.jpg', 'Congelados'),
 
 ('Alface Crespa', 'Alface fresca crespa', 75, 'unidades', 2.50, '2026-01-01', 'https://organicosinbox.com.br/wp-content/uploads/2020/11/alface-crespa-organica.jpg', 'Congelados'),
@@ -321,6 +321,38 @@ WHERE id_cardapio IN (1, 2, 3);
 
 INSERT INTO cliente (id_cliente, nome_cliente, email_cliente, senha_cliente, palavra_chave, data_cadastro, cargo)
 VALUES (1, 'ADM', 'ADM@gmail.com', 123321, 'ADIMIN', '2025-07-01', 'ADM');
+
+INSERT INTO insumos (
+  nome_insumos,
+  descrição_insumos,
+  quantidade_insumos,
+  unidade_medida,
+  valor_insumos,
+  data_entrada_insumos,
+  data_vendimento,
+  imagem_url,
+  categoria,
+  alertar_dias_antes,
+  alerta_estoque,
+  data_cadastro,
+  data_ultima_modificacao
+) VALUES (
+  'Coca-Cola',
+  'Coca-Cola gelada 2litros por unidade',
+  50.000,
+  'unidade',
+  15.99, 
+  '2025-07-04',
+  '2025-07-06',
+  '/uploads/1751650578144-coca-cola.jpeg',
+  'Congelados',
+  10,
+  10,
+  '2025-07-04 14:36:18',
+  '2025-07-04 14:37:03'
+);
+
+
 
 
 -- Adicionando Índices para Otimização (Exemplos)
