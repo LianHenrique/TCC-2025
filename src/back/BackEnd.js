@@ -1285,22 +1285,20 @@ app.get('/relatorios/insumos-diario', async (req, res) => {
       JOIN insumos i ON r.id_insumos_registroSaidaProduto = i.id_insumos
       WHERE r.motivo_saida = 'Venda'
       GROUP BY DATE(r.data_saida), i.nome_insumos, i.categoria, i.unidade_medida
-      ORDER BY dia DESC, quantidade_total DESC
+      ORDER BY dia DESC
+      LIMIT 7  -- Retorna apenas os últimos 7 dias
     `;
 
     connection.query(query, (error, results) => {
-      if (error) {
-        console.error('Erro ao buscar relatório de insumos:', error);
-        return res.status(500).json({ error: 'Erro ao gerar relatório' });
-      }
+      if (error) return res.status(500).json({ error: 'Erro ao gerar relatório' });
 
-      // Organizar os dados por dia
       const relatorioPorDia = {};
       results.forEach(row => {
-        if (!relatorioPorDia[row.dia]) {
-          relatorioPorDia[row.dia] = [];
+        const dia = row.dia.toISOString().split('T')[0];
+        if (!relatorioPorDia[dia]) {
+          relatorioPorDia[dia] = [];
         }
-        relatorioPorDia[row.dia].push({
+        relatorioPorDia[dia].push({
           nome: row.nome_insumos,
           categoria: row.categoria,
           quantidade: row.quantidade_total,
@@ -1314,7 +1312,6 @@ app.get('/relatorios/insumos-diario', async (req, res) => {
       });
     });
   } catch (err) {
-    console.error('Erro no relatório de insumos:', err);
     res.status(500).json({ error: 'Erro interno no servidor' });
   }
 });

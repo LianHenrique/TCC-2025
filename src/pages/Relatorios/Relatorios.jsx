@@ -38,26 +38,29 @@ const RelatorioInsumos = () => {
   };
 
   const preparePieData = () => {
-    if (!relatorioData?.dias?.length) return { labels: [], datasets: [] };
-    const map = {};
-    relatorioData.dias.forEach(dia => {
-      (relatorioData.dados[dia] || []).forEach(i => {
-        map[i.nome] = (map[i.nome] || 0) + i.quantidade;
-      });
-    });
-    const top = Object.entries(map)
-      .sort(([, a], [, b]) => b - a)
-      .slice(0, 5);
-    return {
-      labels: top.map(([n]) => n),
-      datasets: [{
-        data: top.map(([, q]) => q),
-        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
-        borderWidth: 2,
-        borderColor: '#fff',
-      }],
-    };
+  if (!relatorioData?.dias?.length) return { labels: [], datasets: [] };
+
+  // Pega apenas o primeiro dia (mais recente) para o gráfico
+  const diaMaisRecente = relatorioData.dias[0];
+  const dadosDoDia = relatorioData.dados[diaMaisRecente] || [];
+
+  // Ordena os itens do dia por quantidade (decrescente) e pega os top 5
+  const topInsumos = [...dadosDoDia]
+    .sort((a, b) => b.quantidade - a.quantidade)
+    .slice(0, 5);
+
+  return {
+    labels: topInsumos.map(item => item.nome),
+    datasets: [{
+      data: topInsumos.map(item => item.quantidade),
+      backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
+    }],
+    metadata: topInsumos.map(item => ({
+      unidade: item.unidade,
+      categoria: item.categoria
+    }))
   };
+};
 
   const getBadgeColor = c => {
     switch (c) {
@@ -96,25 +99,40 @@ const RelatorioInsumos = () => {
         ) : (
           <>
             {/* Gráfico de Pizza */}
-            <div className="card shadow-sm mb-5 rounded">
-              <div className="card-header border-bottom">
-                <h5 className="mb-0 fw-semibold">Top 5 Insumos com Mais Saídas</h5>
-              </div>
-              <div className="card-body text-center">
-                <div style={{ height: 400, maxWidth: 600, margin: 'auto' }}>
-                  {pieData.labels.length ? (
-                    <Pie
-                      data={pieData}
-                      options={{
-                        maintainAspectRatio: false,
-                        plugins: { legend: { position: 'bottom' } },
-                      }}
-                    />
-                  ) : (
-                    <p className="text-muted py-5">Nenhum dado disponível</p>
-                  )}
-                </div>
-              </div>
+            <div style={{ height: 400, maxWidth: 600, margin: 'auto' }}>
+              {pieData.labels.length ? (
+                <Pie
+                  data={{
+                    labels: pieData.labels,
+                    datasets: pieData.datasets
+                  }}
+                  options={{
+                    maintainAspectRatio: false,
+                    plugins: {
+                      legend: {
+                        position: 'bottom',
+                        labels: {
+                          font: {
+                            size: 14
+                          }
+                        }
+                      },
+                      tooltip: {
+                        callbacks: {
+                          label: (context) => {
+                            const label = context.label || '';
+                            const value = context.raw || 0;
+                            const unidade = pieData.metadata[context.dataIndex]?.unidade || 'unidade';
+                            return `${label}: ${value} ${unidade}`;
+                          }
+                        }
+                      }
+                    }
+                  }}
+                />
+              ) : (
+                <p className="text-muted py-5">Nenhum dado disponível</p>
+              )}
             </div>
 
             {/* Tabela detalhada */}
