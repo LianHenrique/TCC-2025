@@ -38,29 +38,27 @@ const RelatorioInsumos = () => {
   };
 
   const preparePieData = () => {
-  if (!relatorioData?.dias?.length) return { labels: [], datasets: [] };
+    if (!relatorioData?.dias?.length) return { labels: [], datasets: [] };
 
-  // Pega apenas o primeiro dia (mais recente) para o gráfico
-  const diaMaisRecente = relatorioData.dias[0];
-  const dadosDoDia = relatorioData.dados[diaMaisRecente] || [];
+    const diaMaisRecente = relatorioData.dias[0];
+    const dadosDoDia = relatorioData.dados[diaMaisRecente] || [];
 
-  // Ordena os itens do dia por quantidade (decrescente) e pega os top 5
-  const topInsumos = [...dadosDoDia]
-    .sort((a, b) => b.quantidade - a.quantidade)
-    .slice(0, 5);
+    const topInsumos = [...dadosDoDia]
+      .sort((a, b) => b.quantidade - a.quantidade)
+      .slice(0, 5);
 
-  return {
-    labels: topInsumos.map(item => item.nome),
-    datasets: [{
-      data: topInsumos.map(item => item.quantidade),
-      backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
-    }],
-    metadata: topInsumos.map(item => ({
-      unidade: item.unidade,
-      categoria: item.categoria
-    }))
+    return {
+      labels: topInsumos.map(item => item.nome),
+      datasets: [{
+        data: topInsumos.map(item => item.quantidade),
+        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
+      }],
+      metadata: topInsumos.map(item => ({
+        unidade: item.unidade,
+        categoria: item.categoria
+      }))
+    };
   };
-};
 
   const getBadgeColor = c => {
     switch (c) {
@@ -74,6 +72,23 @@ const RelatorioInsumos = () => {
 
   const pieData = preparePieData();
 
+  // Função para formatar a data do relatório
+  const getDataRelatorio = () => {
+    if (!relatorioData?.dias?.length) return '';
+    
+    if (periodo === 'diario') {
+      // Para relatório diário, mostra a data mais recente
+      const dataMaisRecente = relatorioData.dias[0];
+      return new Date(dataMaisRecente).toLocaleDateString('pt-BR');
+    } else {
+      // Para relatório semanal, mostra o intervalo de datas
+      const datas = relatorioData.dias.map(d => new Date(d));
+      const primeiraData = new Date(Math.min(...datas));
+      const ultimaData = new Date(Math.max(...datas));
+      return `${primeiraData.toLocaleDateString('pt-BR')} a ${ultimaData.toLocaleDateString('pt-BR')}`;
+    }
+  };
+
   return (
     <div style={{ minHeight: '100vh' }}>
       <NavBar />
@@ -81,11 +96,13 @@ const RelatorioInsumos = () => {
         <div className="d-flex flex-wrap justify-content-between align-items-center mb-4">
           <div>
             <h2 className="fw-bold mb-1">📊 Relatório de Insumos</h2>
-            <p className="mb-0">{periodo === 'diario' ? 'Visão diária' : 'Visão semanal'}</p>
+            <p className="mb-0">
+              {periodo === 'diario' 
+                ? `Dados do dia ${getDataRelatorio()}` 
+                : `Dados da semana (${getDataRelatorio()})`}
+            </p>
           </div>
           <div className="d-flex flex-column flex-md-row gap-2">
-            <ButtonGroup>
-            </ButtonGroup>
             <Button variant="success" onClick={handleDownloadPDF}>
               📥 Exportar PDF
             </Button>
@@ -145,7 +162,14 @@ const RelatorioInsumos = () => {
                 {relatorioData?.dias?.length ? relatorioData.dias.map(dia => (
                   <div key={dia} className="mb-4">
                     <h6 className="text-primary fw-semibold mb-2">
-                      {periodo === 'diario' ? new Date(dia).toLocaleDateString('pt-BR') : `Semana ${dia}`}
+                      {periodo === 'diario' 
+                        ? new Date(dia).toLocaleDateString('pt-BR', { 
+                            weekday: 'long', 
+                            day: '2-digit', 
+                            month: 'long', 
+                            year: 'numeric' 
+                          }) 
+                        : `Semana ${dia}`}
                     </h6>
                     <div className="table-responsive rounded shadow-sm border">
                       <Table
@@ -183,18 +207,6 @@ const RelatorioInsumos = () => {
                 )) : (
                   <div className="text-center py-4 text-muted">Nenhum dado para o período.</div>
                 )}
-
-                {/* Resumo */}
-                {/* {relatorioData?.dias?.length && (
-                  <div className="mt-4 text-end fs-5 fw-semibold">
-                    <span>Total de saídas: </span>
-                    <span className="text-primary">
-                      {relatorioData.dias.reduce((sum, dia) =>
-                        sum + relatorioData.dados[dia].reduce((s, i) => s + i.quantidade, 0)
-                        , 0)}
-                    </span>
-                  </div>
-                )} */}
               </div>
             </div>
           </>
