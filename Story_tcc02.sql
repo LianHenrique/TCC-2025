@@ -324,12 +324,12 @@ VALUES (1, 'ADM', 'ADM@gmail.com', 123321, 'ADIMIN', '2025-07-01', 'ADM');
 
 INSERT INTO insumos (
   nome_insumos,
-  descrição_insumos,
+  descricao_insumos,
   quantidade_insumos,
   unidade_medida,
   valor_insumos,
   data_entrada_insumos,
-  data_vendimento,
+  data_vencimento,
   imagem_url,
   categoria,
   alertar_dias_antes,
@@ -338,12 +338,12 @@ INSERT INTO insumos (
   data_ultima_modificacao
 ) VALUES (
   'Coca-Cola',
-  'Coca-Cola gelada 2litros por unidade',
+  'Coca-Cola gelada 2 litros por unidade',
   50.000,
   'unidade',
   15.99, 
   '2025-07-04',
-  '2025-07-06',
+  '2025-08-04',
   '/uploads/1751650578144-coca-cola.jpeg',
   'Congelados',
   10,
@@ -351,7 +351,6 @@ INSERT INTO insumos (
   '2025-07-04 14:36:18',
   '2025-07-04 14:37:03'
 );
-
 
 
 
