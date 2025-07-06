@@ -71,11 +71,11 @@ INSERT INTO insumos (nome_insumos, descricao_insumos, quantidade_insumos, unidad
 
 -- Tabela de Ligação Fornecedor-Insumo (Muitos-para-Muitos)
 CREATE TABLE FornecedorInsumo (
-    id_fornecedor INT NOT NULL,
-    id_insumo INT NOT NULL,
-    PRIMARY KEY (id_fornecedor, id_insumo), -- Chave primária composta
-    FOREIGN KEY (id_fornecedor) REFERENCES Fornecedor(id_fornecedor) ON DELETE CASCADE, -- Se o fornecedor for deletado, a relação é removida
-    FOREIGN KEY (id_insumo) REFERENCES Insumos(id_insumos) ON DELETE CASCADE -- Se o insumo for deletado, a relação é removida
+  id_fornecedor INT NOT NULL,
+  id_insumo INT NOT NULL,
+  PRIMARY KEY (id_fornecedor, id_insumo),
+  FOREIGN KEY (id_fornecedor) REFERENCES fornecedor(id_fornecedor),
+  FOREIGN KEY (id_insumo) REFERENCES insumos(id_insumos)
 );
 
 -- Tabela de Itens do Cardápio (Produtos Finais)

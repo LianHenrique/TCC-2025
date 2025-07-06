@@ -117,46 +117,43 @@ const Insumos = () => {
   };
 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  
-  // Primeiro valida os campos
-  if (!validarInsumos()) {
-    return; // Se a validação falhar, interrompe o envio
-  }
+    e.preventDefault();
 
-  try {
-    // Prepara os dados para envio
-    const formDataEnvio = new FormData();
-    formDataEnvio.append('nome_insumos', formData.nome_insumos);
-    formDataEnvio.append('valor_insumos', formData.valor_insumos);
-    formDataEnvio.append('categoria', formData.categoria);
-    formDataEnvio.append('unidade_medida', formData.unidade_medida);
-    formDataEnvio.append('quantidade_insumos', formData.quantidade_insumos);
-    formDataEnvio.append('data_vencimento', formData.data_vencimento);
-    formDataEnvio.append('descricao_insumos', formData.descricao_insumos);
-    formDataEnvio.append('alerta_estoque', formData.alerta_estoque);
-    formDataEnvio.append('alertar_dias_antes', formData.alertar_dias_antes);
-    formDataEnvio.append('fornecedor_id', formData.fornecedor_id ?? null);
-    formDataEnvio.append('imagem', imagemFile);
+    if (!validarInsumos()) return;
 
-    // Envia para o servidor
-    const res = await fetch("http://localhost:3000/insumos/insert", {
-      method: "POST",
-      body: formDataEnvio
-    });
+    
 
-    if (res.ok) {
-      alert("Insumo cadastrado com sucesso!");
-      setFormData(getFormDataInicial());
-      navigate('/estoque');
-    } else {
-      alert("Erro ao cadastrar insumo.");
+    try {
+      const formDataEnvio = new FormData();
+      formDataEnvio.append('nome_insumos', formData.nome_insumos);
+      formDataEnvio.append('valor_insumos', formData.valor_insumos);
+      formDataEnvio.append('categoria', formData.categoria);
+      formDataEnvio.append('unidade_medida', formData.unidade_medida);
+      formDataEnvio.append('quantidade_insumos', formData.quantidade_insumos);
+      formDataEnvio.append('data_vencimento', formData.data_vencimento);
+      formDataEnvio.append('descricao_insumos', formData.descricao_insumos);
+      formDataEnvio.append('alerta_estoque', formData.alerta_estoque);
+      formDataEnvio.append('alertar_dias_antes', formData.alertar_dias_antes);
+      formDataEnvio.append('fornecedor_id', formData.fornecedor_id || '');
+      formDataEnvio.append('imagem', imagemFile);
+
+      const res = await fetch("http://localhost:3000/insumos/insert", {
+        method: "POST",
+        body: formDataEnvio
+      });
+
+      if (res.ok) {
+        alert("Insumo cadastrado com sucesso!");
+        setFormData(getFormDataInicial());
+        navigate('/estoque');
+      } else {
+        alert("Erro ao cadastrar insumo.");
+      }
+    } catch (error) {
+      console.error("Erro:", error);
+      alert("Erro de rede ou servidor.");
     }
-  } catch (error) {
-    console.error("Erro:", error);
-    alert("Erro de rede ou servidor.");
-  }
-};
+  };
 
   const formatarTelefone = (valor) => {
     const numero = valor.replace(/\D/g, '');

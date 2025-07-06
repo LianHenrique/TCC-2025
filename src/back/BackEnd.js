@@ -565,9 +565,8 @@ app.get('/insumos/:id_insumos', (req, res) => {
 
 
 // Inserir insumo
-app.post('/insumos/insert', upload.single('imagem'), (req, res) => {
+app.post('/insumos/insert', upload.single('imagem'), async (req, res) => {
   console.log('Recebido no backend:', req.body);
-  console.log('Arquivo recebido:', req.file);
 
   const {
     nome_insumos,
@@ -582,69 +581,50 @@ app.post('/insumos/insert', upload.single('imagem'), (req, res) => {
     fornecedor_id
   } = req.body;
 
-  const imagem_url = req.file ? `/uploads/${req.file.filename}`.replace(/\\/g, '/') : null;
+  const imagem_url = req.file ? `/uploads/${req.file.filename}` : null;
 
-  const data_entrada_insumos = new Date().toISOString().split('T')[0];
+  try {
+     // Se houver fornecedor, criar o relacionamento
+    if (fornecedor_id && !isNaN(fornecedor_id)) {
+      await connection.promise().query(
+        `INSERT INTO FornecedorInsumo (id_fornecedor, id_insumo) VALUES (?, ?)`,
+        [fornecedor_id, id_insumo] // Usar ID do insumo recém-criado
+      );
+    }
+    
+    // Inserir o insumo
+    const [insumoResult] = await connection.promise().query(
+      `INSERT INTO insumos (
+        nome_insumos, descricao_insumos, quantidade_insumos, unidade_medida,
+        valor_insumos, data_vencimento, imagem_url, categoria,
+        alertar_dias_antes, alerta_estoque
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        nome_insumos, descricao_insumos, quantidade_insumos, unidade_medida,
+        valor_insumos, data_vencimento, imagem_url, categoria,
+        alertar_dias_antes, alerta_estoque
+      ]
+    );
 
-  const camposObrigatorios = {
-    nome_insumos,
-    imagem_url,
-    valor_insumos,
-    categoria,
-    quantidade_insumos,
-    data_vencimento,
-    descricao_insumos,
-    alertar_dias_antes,
-    alerta_estoque,
-    unidade_medida
-  };
+    const id_insumo = insumoResult.insertId;
 
-  const camposVazios = Object.entries(camposObrigatorios)
-    .filter(([_, valor]) => valor === undefined || valor === null || valor === '')
-    .map(([chave]) => chave);
-
-  if (camposVazios.length > 0) {
-    return res.status(400).json({ error: `Campos obrigatórios ausentes: ${camposVazios.join(', ')}` });
-  }
-
-  const sql = `
-    INSERT INTO insumos (
-      nome_insumos,
-      descricao_insumos,
-      quantidade_insumos,
-      unidade_medida,
-      valor_insumos,
-      data_entrada_insumos,
-      data_vencimento,
-      imagem_url,
-      categoria,
-      alertar_dias_antes,
-      alerta_estoque
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-
-  const values = [
-    nome_insumos,
-    descricao_insumos,
-    quantidade_insumos,
-    unidade_medida,
-    valor_insumos,
-    data_entrada_insumos,
-    data_vencimento,
-    imagem_url,
-    categoria,
-    alertar_dias_antes,
-    alerta_estoque
-  ];
-
-  connection.query(sql, values, (error, results) => {
-    if (error) {
-      console.error('[Erro ao inserir insumo]:', error);
-      return res.status(500).json({ error: 'Erro ao cadastrar insumo no banco de dados' });
+    // Se houver fornecedor, criar o relacionamento
+    if (fornecedor_id) {
+      await connection.promise().query(
+        `INSERT INTO FornecedorInsumo (id_fornecedor, id_insumo) VALUES (?, ?)`,
+        [fornecedor_id, id_insumo]
+      );
     }
 
-    res.status(201).json({ message: 'Insumo cadastrado com sucesso', id_inserido: results.insertId });
-  });
+    res.status(201).json({
+      message: 'Insumo cadastrado com sucesso',
+      id_inserido: id_insumo
+    });
+
+  } catch (error) {
+    console.error('Erro ao cadastrar insumo:', error);
+    res.status(500).json({ error: 'Erro ao cadastrar insumo no banco de dados' });
+  }
 });
 
 
