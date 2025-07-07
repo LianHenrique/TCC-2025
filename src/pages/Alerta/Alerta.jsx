@@ -126,7 +126,7 @@ const Alerta = () => {
           <div className="text-center p-5 border rounded bg-light">
             <i className="bi bi-check-circle-fill text-success fs-1 mb-3"></i>
             <p className="fs-4">Nenhum alerta no momento!</p>
-            <p className="text-muted">Todos os insumos estão com estoque adequado e dentro do prazo de validade.</p>
+            <p className="text-muted">Todos os insumos estão com estoque adequado.</p>
           </div>
         ) : (
           <Row className="g-4 justify-content-center">

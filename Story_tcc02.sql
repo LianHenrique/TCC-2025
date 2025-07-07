@@ -60,11 +60,11 @@ MODIFY COLUMN categoria ENUM('Carnes', 'Perecíveis', 'Molhos', 'Congelados') NO
 
 INSERT INTO insumos (nome_insumos, descricao_insumos, quantidade_insumos, unidade_medida, valor_insumos, data_vencimento, imagem_url, categoria) VALUES
 ('Hambúrguer de carne', 'Hambúrguer bovino congelado', 20, 'unidades', 9.90, '2025-04-17', 'https://organic4.com.br/wp-content/uploads/2023/04/img-site-1-lanches-burger-carne.jpg', 'Carnes'),
-('Pão', 'Pão de hambúrguer tradicional', 12, 'unidades', 14.00, '2025-11-17', 'https://guiadacozinha.com.br/wp-content/uploads/2018/10/paofrancesfolhado.jpg', 'Perecíveis'),
+('Pão', 'Pão de hambúrguer tradicional', 5, 'unidades', 14.00, '2025-11-17', 'https://guiadacozinha.com.br/wp-content/uploads/2018/10/paofrancesfolhado.jpg', 'Perecíveis'),
 ('Queijo Cheddar Fatiado', 'Queijo cheddar fatiado para lanches', 40, 'unidades', 1.50, '2025-11-19', 'https://cdn.awsli.com.br/600x700/510/510640/produto/43196021/570ee096e3.jpg', 'Perecíveis'),
 ('Bacon Fatiado', 'Bacon defumado fatiado 500g', 17, 'kg', 16.50, '2025-12-19', 'https://feed.com.br/wp-content/uploads/2021/09/Bacon-Fatiado.jpg', 'Carnes'),
-('Molho Barbecue', 'Molho barbecue 300ml', 12, 'litro', 7.90, '2025-12-10', 'https://debetti.com.br/cdn/shop/files/barbecue-heinz.jpg?v=1684184440', 'Molhos'),
-('Batata Palito Congelada', 'Batata pré-frita congelada 2kg', 12, 'kg', 18.90, '2026-02-11', 'https://d3gdr9n5lqb5z7.cloudfront.net/fotos/990415-06-09-2022-13-33-40-769.jpg', 'Congelados'),
+('Molho Barbecue', 'Molho barbecue 300ml', 10, 'litro', 7.90, '2025-12-10', 'https://debetti.com.br/cdn/shop/files/barbecue-heinz.jpg?v=1684184440', 'Molhos'),
+('Batata Palito Congelada', 'Batata pré-frita congelada 2kg', 10, 'kg', 18.90, '2026-02-11', 'https://d3gdr9n5lqb5z7.cloudfront.net/fotos/990415-06-09-2022-13-33-40-769.jpg', 'Congelados'),
 
 ('Alface Crespa', 'Alface fresca crespa', 75, 'unidades', 2.50, '2026-01-01', 'https://organicosinbox.com.br/wp-content/uploads/2020/11/alface-crespa-organica.jpg', 'Congelados'),
 ('Tomate Italiano', 'Tomate italiano fresco', 55, 'unidades', 3.20, '2025-12-19', 'https://www.biosementes.com.br/loja/product_images/p/805/tomateitaliano_paramolhos__47507_zoom.jpg.webp', 'Perecíveis');
