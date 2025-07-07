@@ -16,7 +16,7 @@ senha: 123456
 ------- Cadastro de insumo -------
 Nome: Queijo Coalho
 Valor: 35
-validade: dia 06
+validade: dia 08
 Alerta de vencimento (dias antes): 1
 Imagem: Selecionar o fixeiro 'QueijoCoalho' em downloads
 unidade: KG

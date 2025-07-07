@@ -92,6 +92,11 @@ const RelatorioInsumos = () => {
     }
   };
 
+  const parseDataLocal = isoString => {
+    const [ano, mes, diaStr] = isoString.split('-');
+    return new Date(Number(ano), Number(mes) - 1, Number(diaStr));
+  };
+
   return (
     <div style={{ minHeight: '100vh' }}>
       <NavBar />
@@ -166,7 +171,7 @@ const RelatorioInsumos = () => {
                   <div key={dia} className="mb-4">
                     <h6 className="text-primary fw-semibold mb-2">
                       {periodo === 'diario'
-                        ? new Date(dia).toLocaleDateString('pt-BR', {
+                        ? parseDataLocal(dia).toLocaleDateString('pt-BR', {
                           weekday: 'long',
                           day: '2-digit',
                           month: 'long',

@@ -118,56 +118,34 @@ const Login = () => {
             }}>
             Entrar
           </Button>
-          <div className="d-flex"
-            style={{
-              alignContent: "center"
-            }}>
-            <p
-              style={{
-                marginLeft: "20px",
-                marginBottom: "0"
-              }}>Esqueceu a senha? <a
+          <div className="d-flex align-items-center">
+            <p className="ms-3 my-2 fs-6">
+              Esqueceu a senha?{" "}
+              <a
                 href="/recuperar_senha"
-                style={{
-                  color: darkMode ? 'white' : 'black',
-                  background: "none",
-                  border: "none",
-                  padding: 0,
-                }}>
+                className={`text-decoration-underline ${darkMode ? "text-white" : "text-dark"} link-hover-primary`}
+                style={{ transition: "color 0.2s" }}
+              >
                 recuperar senha
-              </a></p>
+              </a>
+            </p>
           </div>
-          <Button
-            className="shadow mt-4"
-            variant='outline-primary'
-            href="/home"
-            style={{
-              padding: "15px",
-              width: "90%",
-            }}>
-            Voltar
-          </Button>
 
-          <div className="d-flex"
-            style={{
-              alignContent: "center"
-            }}>
-            <p
-              style={{
-                marginLeft: "20px"
-              }}>Ainda não cadastrou? <a
+          <div className="d-flex align-items-center">
+            <p className="ms-3 my-2 fs-6">
+              Ainda não cadastrou?{" "}
+              <a
                 href="/cadastro"
-                style={{
-                  color: darkMode ? 'white' : 'black',
-                  background: "none",
-                  border: "none",
-                  padding: 0,
-                }}>
+                className={`text-decoration-underline ${darkMode ? "text-white" : "text-dark"} link-hover-primary`}
+                style={{ transition: "color 0.2s" }}
+              >
                 cadastre-se
-              </a></p>
-        </div>
-      </Form>
-    </Container>
+              </a>
+            </p>
+          </div>
+
+        </Form>
+      </Container>
     </div >
 
   )

@@ -290,7 +290,7 @@ ALTER TABLE cliente ADD COLUMN cargo ENUM('ADM') DEFAULT 'ADM';
 
 UPDATE cardapio SET
   nome_item = 'Hambúrguer Simples',
-  descricao_item = 'Po, carne, queijo, alface',
+  descricao_item = 'Pão, carne, queijo, alface',
   valor_item = 20.00,
   imagem_url = 'uploads/1751331731712-hamburguer.jpeg',  
   data_cadastro = '2025-06-30 17:49:42'

@@ -583,16 +583,7 @@ app.post('/insumos/insert', upload.single('imagem'), async (req, res) => {
 
   const imagem_url = req.file ? `/uploads/${req.file.filename}` : null;
 
-  try {
-     // Se houver fornecedor, criar o relacionamento
-    if (fornecedor_id && !isNaN(fornecedor_id)) {
-      await connection.promise().query(
-        `INSERT INTO FornecedorInsumo (id_fornecedor, id_insumo) VALUES (?, ?)`,
-        [fornecedor_id, id_insumo] // Usar ID do insumo recém-criado
-      );
-    }
-    
-    // Inserir o insumo
+  try { 
     const [insumoResult] = await connection.promise().query(
       `INSERT INTO insumos (
         nome_insumos, descricao_insumos, quantidade_insumos, unidade_medida,
@@ -607,9 +598,8 @@ app.post('/insumos/insert', upload.single('imagem'), async (req, res) => {
     );
 
     const id_insumo = insumoResult.insertId;
-
-    // Se houver fornecedor, criar o relacionamento
-    if (fornecedor_id) {
+ 
+    if (fornecedor_id && !isNaN(fornecedor_id)) {
       await connection.promise().query(
         `INSERT INTO FornecedorInsumo (id_fornecedor, id_insumo) VALUES (?, ?)`,
         [fornecedor_id, id_insumo]
