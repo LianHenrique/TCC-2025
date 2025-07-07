@@ -175,7 +175,7 @@ const Cardapio = () => {
           // Recarrega os dados após exclusão
           await fetchCardapio();
         } else {
-          alert('Erro ao excluir produto');
+          alert('Erro ao desativar produto');
         }
       } catch (err) {
         console.error('Erro ao excluir:', err);
